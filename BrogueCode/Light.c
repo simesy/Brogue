@@ -51,13 +51,14 @@ void logLights() {
 	printf("\n");
 }
 
-void paintLight(lightSource *theLight, short x, short y, boolean isMinersLight, boolean maintainShadows) {
+// Returns true if any part of the light hit cells that are in the player's field of view.
+boolean paintLight(lightSource *theLight, short x, short y, boolean isMinersLight, boolean maintainShadows) {
 	short i, j, k;
 	short colorComponents[3], randComponent, lightMultiplier;
 	short fadeToPercent;
 	float radius;
 	char grid[DCOLS][DROWS];
-	boolean dispelShadows;
+	boolean dispelShadows, overlappedFieldOfView;
 	
 #ifdef BROGUE_ASSERTS
 	assert(rogue.RNG == RNG_SUBSTANTIVE);
@@ -86,6 +87,8 @@ void paintLight(lightSource *theLight, short x, short y, boolean isMinersLight, 
 	
 	getFOVMask(grid, x, y, radius, T_OBSTRUCTS_VISION, (theLight->passThroughCreatures ? 0 : (HAS_MONSTER | HAS_PLAYER)),
 			   (!isMinersLight));
+    
+    overlappedFieldOfView = false;
 	
 	for (i = max(0, x - radius); i < DCOLS && i < x + radius; i++) {
 		for (j = max(0, y - radius); j < DROWS && j < y + radius; j++) {
@@ -97,6 +100,9 @@ void paintLight(lightSource *theLight, short x, short y, boolean isMinersLight, 
 				if (dispelShadows) {
 					pmap[i][j].flags &= ~IS_IN_SHADOW;
 				}
+                if (pmap[i][j].flags & (IN_FIELD_OF_VIEW | ANY_KIND_OF_VISIBLE)) {
+                    overlappedFieldOfView = true;
+                }
 			}
 		}
 	}
@@ -108,6 +114,8 @@ void paintLight(lightSource *theLight, short x, short y, boolean isMinersLight, 
 	if (dispelShadows) {
 		pmap[x][y].flags &= ~IS_IN_SHADOW;
 	}
+    
+    return overlappedFieldOfView;
 }
 
 
@@ -167,24 +175,59 @@ void updateDisplayDetail() {
 	}
 }
 
+void backUpLighting(short lights[DCOLS][DROWS][3]) {
+	short i, j, k;
+	for (i=0; i<DCOLS; i++) {
+		for (j=0; j<DROWS; j++) {
+			for (k=0; k<3; k++) {
+				lights[i][j][k] = tmap[i][j].light[k];
+			}
+		}
+	}
+}
+
+void restoreLighting(short lights[DCOLS][DROWS][3]) {
+	short i, j, k;
+	for (i=0; i<DCOLS; i++) {
+		for (j=0; j<DROWS; j++) {
+			for (k=0; k<3; k++) {
+				tmap[i][j].light[k] = lights[i][j][k];
+			}
+		}
+	}
+}
+
+void recordOldLights() {
+    short i, j, k;
+    for (i = 0; i < DCOLS; i++) {
+		for (j = 0; j < DROWS; j++) {
+			for (k=0; k<3; k++) {
+				tmap[i][j].oldLight[k] = tmap[i][j].light[k];
+			}
+		}
+	}
+}
+
 void updateLighting() {
 	short i, j, k;
 	enum dungeonLayers layer;
 	enum tileType tile;
 	creature *monst;
 
-	// Copy Light over oldLight and then zero out Light.
+	// Copy Light over oldLight
+    recordOldLights();
+    
+    // and then zero out Light.
 	for (i = 0; i < DCOLS; i++) {
 		for (j = 0; j < DROWS; j++) {
 			for (k=0; k<3; k++) {
-				tmap[i][j].oldLight[k] = tmap[i][j].light[k];
 				tmap[i][j].light[k] = 0;
 			}
 			pmap[i][j].flags |= IS_IN_SHADOW;
 		}
 	}
 	
-	// Go through all glowing tiles.
+	// Paint all glowing tiles.
 	for (i = 0; i < DCOLS; i++) {
 		for (j = 0; j < DROWS; j++) {
 			for (layer = 0; layer < NUMBER_TERRAIN_LAYERS; layer++) {
@@ -240,4 +283,125 @@ boolean playerInDarkness() {
 	return (tmap[player.xLoc][player.yLoc].light[0] + 10 < minersLightColor.red
 			&& tmap[player.xLoc][player.yLoc].light[1] + 10 < minersLightColor.green
 			&& tmap[player.xLoc][player.yLoc].light[2] + 10 < minersLightColor.blue);
+}
+
+flare *newFlare(lightSource *light, short x, short y, short changePerFrame, short limit) {
+    flare *theFlare = malloc(sizeof(flare));
+	memset(theFlare, '\0', sizeof(flare));
+    theFlare->light = light;
+    theFlare->xLoc = x;
+    theFlare->yLoc = y;
+    theFlare->coeffChangeAmount = changePerFrame;
+    if (theFlare->coeffChangeAmount == 0) {
+        theFlare->coeffChangeAmount = 1; // no change would mean it lasts forever, which usually breaks things
+    }
+    theFlare->coeffLimit = limit;
+    theFlare->coeff = 100.0;
+    theFlare->turnNumber = rogue.absoluteTurnNumber;
+    return theFlare;
+}
+
+// Creates a new fading flare as described and sticks it into the stack so it will fire at the end of the turn.
+void createFlare(short x, short y, enum lightType lightIndex) {
+    flare *theFlare;
+    
+    theFlare = newFlare(&(lightCatalog[lightIndex]), x, y, -15, 0);
+    
+    if (rogue.flareCount >= rogue.flareCapacity) {
+        rogue.flareCapacity += 10;
+        rogue.flares = realloc(rogue.flares, sizeof(flare *) * rogue.flareCapacity);
+    }
+    rogue.flares[rogue.flareCount] = theFlare;
+    rogue.flareCount++;
+}
+
+boolean flareIsActive(flare *theFlare) {
+    const boolean increasing = (theFlare->coeffChangeAmount > 0);
+    boolean active = true;
+    
+    if (theFlare->turnNumber > 0 && theFlare->turnNumber < rogue.absoluteTurnNumber - 1) {
+        active = false;
+    }
+    if (increasing) {
+        if ((short) (theFlare->coeff + FLOAT_FUDGE) > theFlare->coeffLimit) {
+            active = false;
+        }
+    } else {
+        if ((short) (theFlare->coeff + FLOAT_FUDGE) < theFlare->coeffLimit) {
+            active = false;
+        }
+    }
+    return active;
+}
+
+// Returns true if the flare is still active; false if it's not.
+boolean updateFlare(flare *theFlare) {
+    if (!flareIsActive(theFlare)) {
+        return false;
+    }
+    theFlare->coeff += ((float) theFlare->coeffChangeAmount) / 10;
+    theFlare->coeffChangeAmount *= 1.2;
+    return flareIsActive(theFlare);
+}
+
+// Returns whether it overlaps with the field of view.
+boolean drawFlareFrame(flare *theFlare) {
+    boolean inView;
+    if (!flareIsActive(theFlare)) {
+        return false;
+    }
+    
+    lightSource tempLight = *(theFlare->light);
+    color tempColor = *(tempLight.lightColor);
+    tempLight.lightRadius.lowerBound = ((short) ((float) tempLight.lightRadius.lowerBound) * (theFlare->coeff / 100.0 + FLOAT_FUDGE));
+    tempLight.lightRadius.upperBound = ((short) ((float) tempLight.lightRadius.upperBound) * (theFlare->coeff / 100.0 + FLOAT_FUDGE));
+    applyColorScalar(&tempColor, (short) (theFlare->coeff + FLOAT_FUDGE));
+    tempLight.lightColor = &tempColor;
+    inView = paintLight(&tempLight, theFlare->xLoc, theFlare->yLoc, false, true);
+    
+    return inView;
+}
+
+// Frees the flares as they expire.
+void animateFlares(flare **flares, short count) {
+    short lights[DCOLS][DROWS][3];
+    boolean inView, fastForward, atLeastOneFlareStillActive;
+    short i; // i iterates through the flare list
+    
+    backUpLighting(lights);
+    fastForward = rogue.trueColorMode;
+    
+    do {
+        inView = false;
+        atLeastOneFlareStillActive = false;
+        for (i = 0; i < count; i++) {
+            if (flares[i]) {
+                if (updateFlare(flares[i])) {
+                    atLeastOneFlareStillActive = true;
+                    if (drawFlareFrame(flares[i])) {
+                        inView = true;
+                    }
+                } else {
+                    free(flares[i]);
+                    flares[i] = NULL;
+                }
+            }
+        }
+        demoteVisibility();
+        updateFieldOfViewDisplay(false, true);
+        if (!fastForward && (inView || rogue.playbackOmniscience) && atLeastOneFlareStillActive) {
+            fastForward = rogue.playbackFastForward || pauseBrogue(10);
+        }
+        recordOldLights();
+        restoreLighting(lights);
+    } while (atLeastOneFlareStillActive);
+    updateFieldOfViewDisplay(false, true);
+}
+
+void deleteAllFlares() {
+    short i;
+    for (i=0; i<rogue.flareCount; i++) {
+        free(rogue.flares[i]);
+    }
+    rogue.flareCount = 0;
 }

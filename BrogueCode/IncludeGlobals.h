@@ -26,18 +26,14 @@ extern pcell pmap[DCOLS][DROWS];						// grids with info about the map
 extern short **scentMap;
 extern cellDisplayBuffer displayBuffer[COLS][ROWS];
 extern short terrainRandomValues[DCOLS][DROWS][8];
-extern char buffer[DCOLS][DROWS];						// used in cave generation
 extern short **safetyMap;										// used to help monsters flee
 extern short **allySafetyMap;
 extern short **chokeMap;
 extern short **playerPathingMap;
 
-extern short listOfWallsX[4][DROWS*DCOLS];
-extern short listOfWallsY[4][DROWS*DCOLS];
-extern short numberOfWalls[4];
-extern short nbDirs[8][2];
-extern short numberOfRooms;
-extern levelData levels[101];
+extern const short nbDirs[8][2];
+extern const short cDirs[8][2];
+extern levelData levels[DEEPEST_LEVEL+1];
 extern creature player;
 extern playerCharacter rogue;
 extern creature *monsters;
@@ -45,10 +41,8 @@ extern creature *dormantMonsters;
 extern creature *graveyard;
 extern item *floorItems;
 extern item *packItems;
-extern room *rooms;
-extern waypoint waypoints[MAX_WAYPOINTS];
+extern item *monsterItemsHopper;
 extern short numberOfWaypoints;
-extern levelProfile *thisLevelProfile;
 
 extern char displayedMessage[MESSAGE_LINES][COLS];
 extern boolean messageConfirmed[3];
@@ -156,6 +150,10 @@ extern color playerInvisibleColor;
 extern color playerInShadowColor;
 extern color playerInLightColor;
 extern color playerInDarknessColor;
+
+extern const color inLightMultiplierColor;
+extern const color inDarknessMultiplierColor;
+
 extern const color buttonHoverColor;
 extern color titleButtonColor;
 
@@ -176,6 +174,8 @@ extern color flavorTextColor;
 extern color flameSourceColor;
 extern color flameTitleColor;
 
+extern const color superVictoryColor;
+
 extern color *dynamicColors[NUMBER_DYNAMIC_COLORS][3];
 
 extern const autoGenerator autoGeneratorCatalog[NUMBER_AUTOGENERATORS];
@@ -191,7 +191,6 @@ extern const blueprint blueprintCatalog[NUMBER_BLUEPRINTS];
 extern creatureType monsterCatalog[NUMBER_MONSTER_KINDS];
 extern monsterWords monsterText[NUMBER_MONSTER_KINDS];
 extern hordeType hordeCatalog[NUMBER_HORDES];
-extern levelProfile levelProfileCatalog[NUMBER_LEVEL_PROFILES];
 
 extern color *boltColors[NUMBER_BOLT_KINDS];
 

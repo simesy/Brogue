@@ -58,7 +58,7 @@ short randClumpedRange(short lowerBound, short upperBound, short clumpFactor) {
 
 // Get a random int between lowerBound and upperBound, inclusive
 boolean rand_percent(short percent) {
-	return (rand_range(0, 99) < max(0, min(100, percent)));
+	return (rand_range(0, 99) < clamp(percent, 0, 100));
 }
 
 void shuffleList(short *list, short listLength) {
@@ -71,6 +71,13 @@ void shuffleList(short *list, short listLength) {
 			list[i] = buf;
 		}
 	}
+}
+
+void fillSequentialList(short *list, short listLength) {
+    short i;
+    for (i=0; i<listLength; i++) {
+        list[i] = i;
+    }
 }
 
 //typedef unsigned long int  u4;
@@ -163,7 +170,7 @@ int rand_range(int lowerBound, int upperBound) {
 // All RNGs are seeded simultaneously and identically.
 unsigned long seedRandomGenerator(unsigned long seed) {
 	if (seed == 0) {
-		seed = (unsigned long) time(NULL);
+		seed = (unsigned long) time(NULL) - 1352700000;
 	}
 	raninit(&(RNGState[RNG_SUBSTANTIVE]), seed);
 	raninit(&(RNGState[RNG_COSMETIC]), seed);

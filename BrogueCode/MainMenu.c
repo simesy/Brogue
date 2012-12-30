@@ -58,7 +58,7 @@ void drawMenuFlames(signed short flames[COLS][(ROWS + MENU_FLAME_ROW_PADDING)][3
             }
             
 			if (mask[i][j] == 100) {
-				plotCharWithColor(dchar, i, j, darkGray, *maskColor);
+				plotCharWithColor(dchar, i, j, &darkGray, maskColor);
 			} else {
 				tempColor = black;
 				tempColor.red	= flames[i][j][0] / MENU_FLAME_PRECISION_FACTOR;
@@ -67,7 +67,7 @@ void drawMenuFlames(signed short flames[COLS][(ROWS + MENU_FLAME_ROW_PADDING)][3
 				if (mask[i][j] > 0) {
 					applyColorAverage(&tempColor, maskColor, mask[i][j]);
 				}
-				plotCharWithColor(dchar, i, j, darkGray, tempColor);
+				plotCharWithColor(dchar, i, j, &darkGray, &tempColor);
 			}
 		}
 	}
@@ -201,8 +201,6 @@ void initializeMenuFlames(boolean includeTitle,
 		"                            ##                                            ",
 		"                           ####                                           ",
 	};
-	
-	rogue.gameHasEnded = false;
 	
 	for (i=0; i<COLS; i++) {
 		for (j=0; j<ROWS; j++) {
@@ -575,7 +573,7 @@ boolean dialogChooseFile(char *path, const char *suffix, const char *prompt) {
 // we'll do it. The path (rogue.nextGamePath) is essentially a parameter for this command, and
 // tells NG_VIEW_RECORDING and NG_OPEN_GAME which file to open. If there is a command but no
 // accompanying path, and it's a command that should take a path, then pop up a dialog to have
-// the player specify a path. If there is no command (i.e. if rogue.nextGame contains NG_NEW_GAME),
+// the player specify a path. If there is no command (i.e. if rogue.nextGame contains NG_NOTHING),
 // then we'll display the title screen so the player can choose.
 void mainBrogueJunction() {
 	rogueEvent theEvent;
@@ -594,13 +592,16 @@ void mainBrogueJunction() {
 				displayBuffer[i][j].foreColorComponents[k] = 0;
 				displayBuffer[i][j].backColorComponents[k] = 0;
 			}
-			plotCharWithColor(' ', i, j, black, black);
+			plotCharWithColor(' ', i, j, &black, &black);
 		}
 	}
 	
 	initializeLaunchArguments(&rogue.nextGame, rogue.nextGamePath, &rogue.nextGameSeed);
 	
 	do {
+        rogue.gameHasEnded = false;
+        rogue.playbackFastForward = false;
+        rogue.playbackMode = false;
 		switch (rogue.nextGame) {
 			case NG_NOTHING:
 				// Run the main menu to get a decision out of the player.

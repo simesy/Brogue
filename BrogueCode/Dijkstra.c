@@ -180,7 +180,7 @@ void pdsBatchInput(pdsMap *map, short **distanceMap, short **costMap, short maxD
 			if (i == 0 || j == 0 || i == DCOLS - 1 || j == DROWS - 1) {
 				cost = PDS_OBSTRUCTION;
 			} else if (costMap == NULL) {
-				if (cellHasTerrainFlag(i, j, T_OBSTRUCTS_PASSABILITY)) cost = PDS_OBSTRUCTION;
+				if (cellHasTerrainFlag(i, j, T_OBSTRUCTS_PASSABILITY) && cellHasTerrainFlag(i, j, T_OBSTRUCTS_DIAGONAL_MOVEMENT)) cost = PDS_OBSTRUCTION;
 				else cost = PDS_FORBIDDEN;
 			} else {
 				cost = costMap[i][j];
@@ -258,11 +258,16 @@ void calculateDistances(short **distanceMap,
 	for (i=0; i<DCOLS; i++) {
 		for (j=0; j<DROWS; j++) {
 			char cost;
-			if (canUseSecretDoors && pmap[i][j].layers[DUNGEON] == SECRET_DOOR) {
+			if (canUseSecretDoors
+                && cellHasTMFlag(i, j, TM_IS_SECRET)
+                && cellHasTerrainFlag(i, j, T_OBSTRUCTS_PASSABILITY)
+                && !(discoveredTerrainFlagsAtLoc(i, j) & T_OBSTRUCTS_PASSABILITY)) {
+                
 				cost = 1;
 			} else if (cellHasTerrainFlag(i, j, T_OBSTRUCTS_PASSABILITY)
 					   || (traveler && traveler == &player && !(pmap[i][j].flags & (DISCOVERED | MAGIC_MAPPED)))) {
-				cost = PDS_OBSTRUCTION;
+                
+				cost = cellHasTerrainFlag(i, j, T_OBSTRUCTS_DIAGONAL_MOVEMENT) ? PDS_OBSTRUCTION : PDS_FORBIDDEN;
 			} else if ((traveler && monsterAvoids(traveler, i, j)) || cellHasTerrainFlag(i, j, blockingTerrainFlags)) {
 				cost = PDS_FORBIDDEN;
 			} else {
@@ -279,10 +284,10 @@ void calculateDistances(short **distanceMap,
 }
 
 short pathingDistance(short x1, short y1, short x2, short y2, unsigned long blockingTerrainFlags) {
-	short retval, **distanceMap = allocDynamicGrid();
+	short retval, **distanceMap = allocGrid();
 	calculateDistances(distanceMap, x2, y2, blockingTerrainFlags, NULL, true, true);
 	retval = distanceMap[x1][y1];
-	freeDynamicGrid(distanceMap);
+	freeGrid(distanceMap);
 	return retval;
 }
 

@@ -109,7 +109,7 @@ void drawButton(brogueButton *button, enum buttonDrawStates highlight, cellDispl
 				plotCharToBuffer(displayCharacter, button->x + i, button->y, &fColor, &bColor, dbuf);
 				dbuf[button->x + i][button->y].opacity = opacity;
 			} else {
-				plotCharWithColor(displayCharacter, button->x + i, button->y, fColor, bColor);
+				plotCharWithColor(displayCharacter, button->x + i, button->y, &fColor, &bColor);
 			}
 		}
 	}
@@ -332,7 +332,7 @@ short buttonInputLoop(brogueButton *buttons,
 //		for (j=0; j<COLS; j++) {
 //			if (i >= winX		&& i < winX + winWidth
 //				&& j >= winY	&& j < winY + winHeight) {
-//				plotCharWithColor(' ', i, j, white, gray);
+//				plotCharWithColor(' ', i, j, &white, &gray);
 //			}
 //		}
 //	}

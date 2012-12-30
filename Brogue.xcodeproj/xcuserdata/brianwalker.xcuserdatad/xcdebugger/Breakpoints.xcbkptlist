@@ -2,21 +2,4 @@
 <Bucket
    type = "1"
    version = "1.0">
-   <FileBreakpoints>
-      <FileBreakpoint
-         shouldBeEnabled = "Yes"
-         ignoreCount = "0"
-         condition = "theItem-&gt;category == AMULET"
-         continueAfterRunningActions = "No"
-         isPathRelative = "1"
-         filePath = "BrogueCode/RogueMain.c"
-         timestampString = "364700325.612354"
-         startingColumnNumber = "9223372036854775807"
-         endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "1078"
-         endingLineNumber = "1078"
-         landmarkName = "victory()"
-         landmarkType = "7">
-      </FileBreakpoint>
-   </FileBreakpoints>
 </Bucket>

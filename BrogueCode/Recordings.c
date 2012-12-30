@@ -163,7 +163,7 @@ void writeHeaderInfo(char *path) {
 	i = 16;
 	numberToString(rogue.seed, 4, &c[i]);
 	i += 4;
-	numberToString(rogue.turnNumber, 4, &c[i]);
+	numberToString(rogue.playerTurnNumber, 4, &c[i]);
 	i += 4;
 	numberToString(rogue.deepestLevel, 4, &c[i]);
 	i += 4;
@@ -285,11 +285,12 @@ void playbackPanic() {
 		rogue.playbackFastForward = false;
 		rogue.playbackPaused = true;
 		rogue.playbackOOS = true;
+        blackOutScreen();
 		displayLevel();
 		refreshSideBar(-1, -1, false);
 		
 		confirmMessages();
-		message("Playback is out of sync. The file is corrupted.", false);
+		message("Playback is out of sync.", false);
 		
 		printTextBox(OOS_APOLOGY, 0, 0, 0, &white, &black, rbuf, NULL, 0);
 		
@@ -381,8 +382,8 @@ void loadNextAnnotation() {
 		// load description
 		fgets(rogue.nextAnnotation, 5000, annotationFile);
 		
-		if (currentReadTurn > rogue.turnNumber ||
-			(currentReadTurn <= 1 && rogue.turnNumber <= 1 && currentReadTurn >= rogue.turnNumber)) {
+		if (currentReadTurn > rogue.playerTurnNumber ||
+			(currentReadTurn <= 1 && rogue.playerTurnNumber <= 1 && currentReadTurn >= rogue.playerTurnNumber)) {
 			rogue.nextAnnotationTurn = currentReadTurn;
 			
 			// strip the newline off the end
@@ -405,7 +406,7 @@ void displayAnnotation() {
 	cellDisplayBuffer rbuf[COLS][ROWS];
 	
 	if (rogue.playbackMode
-		&& rogue.turnNumber == rogue.nextAnnotationTurn) {
+		&& rogue.playerTurnNumber == rogue.nextAnnotationTurn) {
 		
 		if (!rogue.playbackFastForward) {
 			refreshSideBar(-1, -1, false);
@@ -470,6 +471,7 @@ void initRecording() {
 			dialogAlert(buf);
 			rogue.playbackMode = true;
 			rogue.playbackPaused = true;
+			rogue.playbackFastForward = false;
 			rogue.playbackOOS = false;
 			rogue.gameHasEnded = true;
 		}
@@ -604,7 +606,7 @@ void advanceToLocation(unsigned long destinationFrame) {
 	
 	cellDisplayBuffer dbuf[COLS][ROWS];
     
-    if (destinationFrame < rogue.turnNumber) {
+    if (destinationFrame < rogue.playerTurnNumber) {
         useProgressBar = (destinationFrame > 100 ? true : false);
         
         // Start the recording over, and fast-forward to chosen frame.
@@ -617,7 +619,7 @@ void advanceToLocation(unsigned long destinationFrame) {
             blackOutScreen();
         }
     } else {
-        useProgressBar = (destinationFrame - rogue.turnNumber > 100 ? true : false);
+        useProgressBar = (destinationFrame - rogue.playerTurnNumber > 100 ? true : false);
     }
     
     clearDisplayBuffer(dbuf);
@@ -627,14 +629,14 @@ void advanceToLocation(unsigned long destinationFrame) {
     displayMoreSign();
     
     rogue.playbackFastForward = true;
-    progressBarInterval = max(1, (destinationFrame - rogue.turnNumber) / 500);
-    initialFrameNumber = rogue.turnNumber;
+    progressBarInterval = max(1, (destinationFrame - rogue.playerTurnNumber) / 500);
+    initialFrameNumber = rogue.playerTurnNumber;
     
-    while (rogue.turnNumber < destinationFrame && !rogue.gameHasEnded && !rogue.playbackOOS) {
-        if (useProgressBar && !(rogue.turnNumber % progressBarInterval)) {
+    while (rogue.playerTurnNumber < destinationFrame && !rogue.gameHasEnded && !rogue.playbackOOS) {
+        if (useProgressBar && !(rogue.playerTurnNumber % progressBarInterval)) {
             rogue.playbackFastForward = false;
             printProgressBar((COLS - 20) / 2, ROWS / 2, "[     Loading...   ]",
-                             rogue.turnNumber - initialFrameNumber,
+                             rogue.playerTurnNumber - initialFrameNumber,
                              destinationFrame - initialFrameNumber, &darkPurple, false);
             rogue.playbackFastForward = true;
             pauseBrogue(1);
@@ -673,7 +675,7 @@ void promptToAdvanceToLocation(short keystroke) {
 			
 			if (destinationFrame >= rogue.howManyTurns) {
 				flashTemporaryAlert(" Past end of recording ", 3000);
-			} else if (destinationFrame == rogue.turnNumber) {
+			} else if (destinationFrame == rogue.playerTurnNumber) {
 				sprintf(buf, " Already at turn %li ", destinationFrame);
 				flashTemporaryAlert(buf, 1000);
 			} else {
@@ -796,20 +798,20 @@ void executePlaybackInput(rogueEvent *recordingInput) {
 				}
                 
                 if (frameCount < 0) {
-                    if (frameCount * -1 > rogue.turnNumber) {
+                    if ((unsigned long) (frameCount * -1) > rogue.playerTurnNumber) {
                         destinationFrame = 0;
                     } else {
-                        destinationFrame = rogue.turnNumber + frameCount;
+                        destinationFrame = rogue.playerTurnNumber + frameCount;
                     }
                 } else {
-                    destinationFrame = min(rogue.turnNumber + frameCount, rogue.howManyTurns - 1);    
+                    destinationFrame = min(rogue.playerTurnNumber + frameCount, rogue.howManyTurns - 1);    
                 }
                 
-                if (destinationFrame == rogue.turnNumber) {
+                if (destinationFrame == rogue.playerTurnNumber) {
                     flashTemporaryAlert(" Already at end of recording ", 1000);
                 } else if (frameCount < 0) {
                     rogue.playbackMode = false;
-                    proceed = (rogue.turnNumber < 100 || confirm("Rewind?", true));
+                    proceed = (rogue.playerTurnNumber < 100 || confirm("Rewind?", true));
                     rogue.playbackMode = true;
                     if (proceed) {
                         advanceToLocation(destinationFrame);
@@ -817,7 +819,7 @@ void executePlaybackInput(rogueEvent *recordingInput) {
                 } else {
                     // advance by the right number of turns
                     if (!rogue.playbackPaused || unpause()) {
-                        while (rogue.turnNumber < destinationFrame && !rogue.gameHasEnded && !rogue.playbackOOS) {
+                        while (rogue.playerTurnNumber < destinationFrame && !rogue.gameHasEnded && !rogue.playbackOOS) {
                             rogue.RNG = RNG_COSMETIC; // dancing terrain colors can't influence recordings
                             rogue.playbackDelayThisTurn = 0;
                             nextBrogueEvent(&theEvent, false, true, false);
@@ -901,7 +903,7 @@ void executePlaybackInput(rogueEvent *recordingInput) {
                 break;
 			case SEED_KEY:
 				//rogue.playbackMode = false;
-				//DEBUG {displayMap(safetyMap); displayMoreSign(); displayLevel();}
+				//DEBUG {displayGrid(safetyMap); displayMoreSign(); displayLevel();}
 				//rogue.playbackMode = true;
 				printSeed();
 				break;
@@ -1052,13 +1054,11 @@ void switchToPlaying() {
 }
 
 void loadSavedGame() {
-	short progressBarInterval;
+	unsigned long progressBarInterval;
 	rogueEvent theEvent;
 	
 	cellDisplayBuffer dbuf[COLS][ROWS];
 	
-//	pauseBrogue(1);
-//	freeEverything();
 	randomNumbersGenerated = 0;
 	rogue.playbackMode = true;
 	rogue.playbackFastForward = true;
@@ -1074,10 +1074,12 @@ void loadSavedGame() {
 		
 		clearDisplayBuffer(dbuf);
 		rectangularShading((COLS - 20) / 2, ROWS / 2, 20, 1, &black, INTERFACE_OPACITY, dbuf);
+        rogue.playbackFastForward = false;
 		overlayDisplayBuffer(dbuf, 0);
+        rogue.playbackFastForward = true;
 		
 		while (recordingLocation < lengthOfPlaybackFile
-			   && rogue.turnNumber < rogue.howManyTurns
+			   && rogue.playerTurnNumber < rogue.howManyTurns
 			   && !rogue.gameHasEnded
 			   && !rogue.playbackOOS) {
 			
@@ -1147,6 +1149,25 @@ void appendModifierKeyDescription(char *description) {
 	if (c & Fl(2)) {
 		strcat(description, " + SHIFT");
 	}
+}
+
+// Deprecated! Only used to parse recordings, a debugging feature.
+boolean selectFile(char *prompt, char *defaultName, char *suffix) {
+	boolean retval;
+	char newFilePath[BROGUE_FILENAME_MAX];
+	
+	retval = false;
+    
+	if (chooseFile(newFilePath, prompt, defaultName, suffix)) {
+		if (openFile(newFilePath)) {
+			retval = true;
+		} else {
+			confirmMessages();
+			message("File not found.", false);
+			retval = false;
+		}
+	}
+	return retval;
 }
 
 void parseFile() {
