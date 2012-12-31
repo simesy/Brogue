@@ -272,7 +272,7 @@ const color potionStrengthColor =   {1000,  0,      400,	600,	0,			0,          0
 const color genericFlashColor =     {800,   800,    800,    0,      0,          0,          0,      false};
 const color summoningFlashColor =   {0,     0,      0,      600,    0,          1200,       0,      true};
 const color fireFlashColor =		{750,	225,	0,		100,	50,			0,			0,		true};
-const color bloatExplosionLightColor = {10000,6000, 1000,   0,      0,          0,          0,      false}; // ^^
+const color explosionFlareColor =   {10000,6000, 1000,   0,      0,          0,          0,      false}; // ^^
 
 // color multipliers
 const color colorDim25 =			{25,	25,		25,		25,		25,			25,			25,		false};
@@ -598,7 +598,7 @@ const floorTileType tileCatalog[NUMBER_TILETYPES] = {
 // Features in the gas layer use the startprob as volume, ignore probdecr, and spawn in only a single point.
 // Intercepts and slopes are in units of 0.01.
 dungeonFeature dungeonFeatureCatalog[NUMBER_DUNGEON_FEATURES] = {
-	// tileType					layer		start	decr	fl	txt	fCol fRad	propTerrain	subseqDF		
+	// tileType					layer		start	decr	fl	txt	 fCol fRad	propTerrain	subseqDF		
 	{0}, // nothing
 	{GRANITE,					DUNGEON,	80,		70,		DFF_CLEAR_OTHER_TERRAIN},
 	{CRYSTAL_WALL,				DUNGEON,	200,	50,		DFF_CLEAR_OTHER_TERRAIN},
@@ -646,8 +646,7 @@ dungeonFeature dungeonFeatureCatalog[NUMBER_DUNGEON_FEATURES] = {
 	// monster effects
 	{VOMIT,						SURFACE,	30,		10,		0},
 	{POISON_GAS,				GAS,		2000,	0,		0},
-	//{GAS_EXPLOSION,				SURFACE,	350,	100,	0,	"", 0,	&darkOrange, 4},
-    {GAS_EXPLOSION,				SURFACE,	350,	100,	0,	"", BLOAT_EXPLOSION_LIGHT}, // ^^
+    {GAS_EXPLOSION,				SURFACE,	350,	100,	0,	"", EXPLOSION_FLARE_LIGHT},
 	{RED_BLOOD,					SURFACE,	150,	30,		0},
 	{FLAMEDANCER_FIRE,			SURFACE,	200,	75,		0},
 	
@@ -736,7 +735,7 @@ dungeonFeature dungeonFeatureCatalog[NUMBER_DUNGEON_FEATURES] = {
 	{POISON_GAS,				GAS,		1000,	0,		0,	"", 0,	&poisonGasColor,4},
 	{PARALYSIS_GAS,				GAS,		1000,	0,		0,	"", 0,	&pink,4},
 	{CONFUSION_GAS,				GAS,		1000,	0,		0,	"", 0,	&confusionGasColor, 4},
-	{PLAIN_FIRE,				SURFACE,	100,	37,		0,	"", 0,	&darkOrange,4},
+	{PLAIN_FIRE,				SURFACE,	100,	37,		0,	"", EXPLOSION_FLARE_LIGHT},
 	{DARKNESS_CLOUD,			GAS,		200,	0,		0},
 	{HOLE_EDGE,					SURFACE,	300,	100,	0,	"", 0,	&darkBlue,3,0,			DF_HOLE_2},
 	{LICHEN,					SURFACE,	70,		60,		0},
@@ -901,7 +900,7 @@ const lightSource lightCatalog[NUMBER_LIGHT_KINDS] = {
     {&genericFlashColor,    {300, 300, 1},			0,		true},		// generic flash flare
 	{&fireFlashColor,		{800, 800, 1},			0,		false},		// fallen torch flare
     {&summoningFlashColor,  {600, 600, 1},			0,		true},		// summoning flare
-    {&bloatExplosionLightColor, {5000, 5000},       0,      false},     // bloat explosion ^^
+    {&explosionFlareColor,  {5000, 5000},       0,      false},     // bloat explosion ^^
 	
 	// glowing terrain:
 	{&torchLightColor,		{1000, 1000, 1},		50,		false},		// torch
