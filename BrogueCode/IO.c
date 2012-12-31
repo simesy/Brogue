@@ -2270,8 +2270,8 @@ void executeKeystroke(signed long keystroke, boolean controlKey, boolean shiftKe
 			}*/
 			// DEBUG displayLoops();
 			// DEBUG displayChokeMap();
-			//DEBUG displayMachines();
-            DEBUG displayWaypoints();
+			DEBUG displayMachines();
+            //DEBUG displayWaypoints();
 			// DEBUG {displayGrid(safetyMap); displayMoreSign(); displayLevel();}
 			// parseFile();
 			// DEBUG spawnDungeonFeature(player.xLoc, player.yLoc, &dungeonFeatureCatalog[DF_METHANE_GAS_ARMAGEDDON], true, false);

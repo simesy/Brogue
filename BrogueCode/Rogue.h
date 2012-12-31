@@ -48,7 +48,7 @@
 #define D_WORMHOLING					(DEBUGGING && 1)
 #define D_IMMORTAL						(DEBUGGING && 1)
 #define D_INSPECT_LEVELGEN				(DEBUGGING && 0)
-#define D_INSPECT_MACHINES				(DEBUGGING && rogue.depthLevel == 19)
+#define D_INSPECT_MACHINES				(DEBUGGING && 0)
 
 // set to false to allow multiple loads from the same saved file:
 #define DELETE_SAVE_FILE_AFTER_LOADING	true
@@ -567,6 +567,7 @@ enum lightType {
     GENERIC_FLASH_LIGHT,
     FALLEN_TORCH_FLASH_LIGHT,
     SUMMONING_FLASH_LIGHT,
+    BLOAT_EXPLOSION_LIGHT,
 	
 	TORCH_LIGHT,
 	LAVA_LIGHT,
@@ -1585,11 +1586,10 @@ typedef struct floorTileType {
 	const color *backColor;
 	// draw priority (lower number means higher priority):
 	short drawPriority;
-	// settings related to fire:
-	char chanceToIgnite;					// doubles as chance to extinguish once ignited, if T_IS_FIRE set
-	enum dungeonFeatureTypes fireType;		// doubles as terrain type remaining after extinguished, if T_IS_FIRE is set
+	char chanceToIgnite;					// chance to burn if a flame terrain is on one of the four cardinal neighbors
+	enum dungeonFeatureTypes fireType;		// spawn this DF when the terrain ignites (or, if it's T_IS_DF_TRAP, when the pressure plate clicks)
 	enum dungeonFeatureTypes discoverType;	// spawn this DF when successfully searched if T_IS_SECRET is set
-	enum dungeonFeatureTypes promoteType;	// creates this dungeon spawn type
+	enum dungeonFeatureTypes promoteType;	// creates this dungeon spawn type when it promotes for some other reason (random promotion or promotion through machine activation)
 	short promoteChance;					// percent chance per turn to spawn the promotion type; will also vanish upon doing so if T_VANISHES_UPON_PROMOTION is set
 	short glowLight;						// if it glows, this is the ID of the light type
 	unsigned long flags;

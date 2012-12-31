@@ -272,6 +272,7 @@ const color potionStrengthColor =   {1000,  0,      400,	600,	0,			0,          0
 const color genericFlashColor =     {800,   800,    800,    0,      0,          0,          0,      false};
 const color summoningFlashColor =   {0,     0,      0,      600,    0,          1200,       0,      true};
 const color fireFlashColor =		{750,	225,	0,		100,	50,			0,			0,		true};
+const color bloatExplosionLightColor = {10000,6000, 1000,   0,      0,          0,          0,      false}; // ^^
 
 // color multipliers
 const color colorDim25 =			{25,	25,		25,		25,		25,			25,			25,		false};
@@ -645,7 +646,8 @@ dungeonFeature dungeonFeatureCatalog[NUMBER_DUNGEON_FEATURES] = {
 	// monster effects
 	{VOMIT,						SURFACE,	30,		10,		0},
 	{POISON_GAS,				GAS,		2000,	0,		0},
-	{GAS_EXPLOSION,				SURFACE,	350,	100,	0,	"", 0,	&darkOrange, 4},
+	//{GAS_EXPLOSION,				SURFACE,	350,	100,	0,	"", 0,	&darkOrange, 4},
+    {GAS_EXPLOSION,				SURFACE,	350,	100,	0,	"", BLOAT_EXPLOSION_LIGHT}, // ^^
 	{RED_BLOOD,					SURFACE,	150,	30,		0},
 	{FLAMEDANCER_FIRE,			SURFACE,	200,	75,		0},
 	
@@ -683,7 +685,7 @@ dungeonFeature dungeonFeatureCatalog[NUMBER_DUNGEON_FEATURES] = {
     
     // algae
     {DEEP_WATER_ALGAE_WELL,     DUNGEON,    0,      0,      DFF_SUPERPRIORITY},
-    {DEEP_WATER_ALGAE_1,		LIQUID,		50,		100,	0,  "", 0,  0,      DEEP_WATER, DF_ALGAE_2},
+    {DEEP_WATER_ALGAE_1,		LIQUID,		50,		100,	0,  "", 0,  0,   0,     DEEP_WATER, DF_ALGAE_2},
     {DEEP_WATER_ALGAE_2,        LIQUID,     0,      0,      0},
     {DEEP_WATER,                LIQUID,     0,      0,      DFF_SUPERPRIORITY},
 	
@@ -747,7 +749,7 @@ dungeonFeature dungeonFeatureCatalog[NUMBER_DUNGEON_FEATURES] = {
 	// machine components
 	
 	// coffin bursts open to reveal vampire:
-	{COFFIN_OPEN,				DUNGEON,	0,		0,		DFF_ACTIVATE_DORMANT_MONSTER,	"the coffin opens and a dark figure rises!", 0, &darkGray, 3, 0, 0},
+	{COFFIN_OPEN,				DUNGEON,	0,		0,		DFF_ACTIVATE_DORMANT_MONSTER,	"the coffin opens and a dark figure rises!", 0, &darkGray, 3},
 	{PLAIN_FIRE,				SURFACE,	0,		0,		DFF_ACTIVATE_DORMANT_MONSTER,	"as flames begin to lick the coffin, its tenant bursts forth!", 0, 0, 0, 0, DF_EMBERS_PATCH},
 	{MACHINE_TRIGGER_FLOOR,		DUNGEON,	200,	100,	0},
 	
@@ -771,7 +773,7 @@ dungeonFeature dungeonFeatureCatalog[NUMBER_DUNGEON_FEATURES] = {
 	{MACHINE_FLOOD_WATER_SPREADING,	LIQUID,	0,		0,		0,	"you hear a heavy click, and the nearby water begins flooding the area!"},
 	{SHALLOW_WATER,				LIQUID,		0,		0,		0},
 	{MACHINE_FLOOD_WATER_SPREADING,LIQUID,	100,	100,	0,	"", 0,	0,	0,		FLOOR_FLOODABLE,			DF_SHALLOW_WATER},
-	{MACHINE_FLOOD_WATER_DORMANT,LIQUID,	250,	100,	(DFF_TREAT_AS_BLOCKING), "", 0, 0, 0, DF_SPREADABLE_DEEP_WATER_POOL},
+	{MACHINE_FLOOD_WATER_DORMANT,LIQUID,	250,	100,	(DFF_TREAT_AS_BLOCKING), "", 0, 0, 0, 0,            DF_SPREADABLE_DEEP_WATER_POOL},
 	{DEEP_WATER,				LIQUID,		90,		100,	(DFF_CLEAR_OTHER_TERRAIN | DFF_PERMIT_BLOCKING)},
 	
 	// unstable floor machine:
@@ -899,6 +901,7 @@ const lightSource lightCatalog[NUMBER_LIGHT_KINDS] = {
     {&genericFlashColor,    {300, 300, 1},			0,		true},		// generic flash flare
 	{&fireFlashColor,		{800, 800, 1},			0,		false},		// fallen torch flare
     {&summoningFlashColor,  {600, 600, 1},			0,		true},		// summoning flare
+    {&bloatExplosionLightColor, {5000, 5000},       0,      false},     // bloat explosion ^^
 	
 	// glowing terrain:
 	{&torchLightColor,		{1000, 1000, 1},		50,		false},		// torch

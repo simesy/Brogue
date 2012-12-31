@@ -1586,10 +1586,14 @@ void cleanUpLakeBoundaries() {
 					
 					x = y = 0;
 					if ((terrainFlags(i - 1, j) & T_LAKE_PATHING_BLOCKER & ~subjectFlags)
+                        && !cellHasTMFlag(i - 1, j, TM_IS_SECRET)
+                        && !cellHasTMFlag(i + 1, j, TM_IS_SECRET)
 						&& (terrainFlags(i - 1, j) & T_LAKE_PATHING_BLOCKER & ~subjectFlags) == (terrainFlags(i + 1, j) & T_LAKE_PATHING_BLOCKER & ~subjectFlags)) {
 						x = i + 1;
 						y = j;
 					} else if ((terrainFlags(i, j - 1) & T_LAKE_PATHING_BLOCKER & ~subjectFlags)
+                               && !cellHasTMFlag(i, j - 1, TM_IS_SECRET)
+                               && !cellHasTMFlag(i, j + 1, TM_IS_SECRET)
 							   && (terrainFlags(i, j - 1) & T_LAKE_PATHING_BLOCKER & ~subjectFlags) == (terrainFlags(i, j + 1) & T_LAKE_PATHING_BLOCKER & ~subjectFlags)) {
 						x = i;
 						y = j + 1;
