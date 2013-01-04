@@ -127,8 +127,8 @@
 #define ARMOR_DELAY_TO_AUTO_ID	1000
 #define RING_DELAY_TO_AUTO_ID	1500
 
-#define FALL_DAMAGE_MIN         6
-#define FALL_DAMAGE_MAX         12
+#define FALL_DAMAGE_MIN         8
+#define FALL_DAMAGE_MAX         10
 
 #define INPUT_RECORD_BUFFER		1000		// how many bytes of input data to keep in memory before saving it to disk
 #define DEFAULT_PLAYBACK_DELAY	50

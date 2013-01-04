@@ -1111,7 +1111,7 @@ const blueprint blueprintCatalog[NUMBER_BLUEPRINTS] = {
 		{DF_LUMINESCENT_FUNGUS,	ALTAR_INERT,DUNGEON,{1,1},	1,			0,			-1,			0,				0,				2,				HORDE_MACHINE_THIEF,0,			(MF_ADOPT_ITEM | MF_BUILD_AT_ORIGIN | MF_TREAT_AS_BLOCKING | MF_NOT_IN_HALLWAY | MF_GENERATE_HORDE | MF_MONSTER_TAKE_ITEM | MF_MONSTER_FLEEING)},
         {0,         STATUE_INERT,0,             {3, 5},     2,          0,          -1,         0,              0,              2,              0,          0,          (MF_FAR_FROM_ORIGIN | MF_TREAT_AS_BLOCKING | MF_NOT_IN_HALLWAY)}}},
 	// Collapsing floor area -- key on an altar in an area; take key to cause the floor of the area to collapse
-	{{1, AMULET_LEVEL},	{45, 65},	13,		3,			(BP_ADOPT_ITEM | BP_TREAT_AS_BLOCKING | BP_NO_INTERIOR_FLAG),	{
+	{{1, AMULET_LEVEL},	{45, 65},	13,		3,			(BP_ADOPT_ITEM | BP_TREAT_AS_BLOCKING),	{
 		{0,			FLOOR_FLOODABLE,DUNGEON,	{0,0},		0,			0,			-1,			0,				0,				0,				0,			0,			(MF_EVERYWHERE)},
 		{0,			ALTAR_SWITCH_RETRACTING,DUNGEON,{1,1},	1,			0,			-1,			0,				0,				3,				0,			0,			(MF_ADOPT_ITEM | MF_NEAR_ORIGIN | MF_TREAT_AS_BLOCKING | MF_NOT_IN_HALLWAY)},
 		{DF_ADD_MACHINE_COLLAPSE_EDGE_DORMANT,0,0,{3, 3},	2,			0,			-1,			0,				0,				3,				0,			0,			(MF_FAR_FROM_ORIGIN | MF_NOT_IN_HALLWAY)}}},
