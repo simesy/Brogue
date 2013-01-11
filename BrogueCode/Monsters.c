@@ -3355,7 +3355,7 @@ void makeMonsterDropItem(creature *monst) {
 	short x, y;
     getQualifyingPathLocNear(&x, &y, monst->xLoc, monst->yLoc, true,
                              T_DIVIDES_LEVEL | T_OBSTRUCTS_ITEMS, 0,
-                             0, (HAS_PLAYER | HAS_UP_STAIRS | HAS_DOWN_STAIRS), false);
+                             0, (HAS_PLAYER | HAS_UP_STAIRS | HAS_DOWN_STAIRS | HAS_ITEM), false);
 	//getQualifyingLocNear(loc, monst->xLoc, monst->yLoc, true, 0, (T_OBSTRUCTS_ITEMS), (HAS_ITEM), false, false);
 	placeItem(monst->carriedItem, x, y);
 	monst->carriedItem = NULL;
