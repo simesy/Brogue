@@ -1200,7 +1200,7 @@ enum itemFlags {
 	ITEM_EQUIPPED			= Fl(1),
 	ITEM_CURSED				= Fl(2),
 	ITEM_PROTECTED			= Fl(3),
-	ITEM_NO_PICKUP			= Fl(4),
+	// unused               = Fl(4),
 	ITEM_RUNIC				= Fl(5),
 	ITEM_RUNIC_HINTED		= Fl(6),
 	ITEM_RUNIC_IDENTIFIED	= Fl(7),

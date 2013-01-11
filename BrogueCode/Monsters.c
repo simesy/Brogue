@@ -664,6 +664,8 @@ boolean summonMinions(creature *summoner) {
 	if (hordeID < 0) {
 		return false;
 	}
+    
+    host = NULL;
 	
 	atLeastOneMinion = spawnMinions(hordeID, summoner, true);
 	

@@ -970,7 +970,7 @@ void decrementWeaponAutoIDTimer() {
 boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
 	short damage, transferenceAmount, poisonDamage;
 	char buf[COLS*2], buf2[COLS*2], attackerName[COLS], defenderName[COLS], verb[DCOLS], explicationClause[DCOLS] = "", armorRunicString[DCOLS*3];
-	boolean sneakAttack, defenderWasAsleep, defenderWasParalyzed, degradesAttackerWeapon, sightUnseen, creditWeaponKill;
+	boolean sneakAttack, defenderWasAsleep, defenderWasParalyzed, degradesAttackerWeapon, sightUnseen;
 	
 	if (attacker->info.abilityFlags & MA_KAMIKAZE) {
 		killCreature(attacker, false);
@@ -980,7 +980,6 @@ boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
 	armorRunicString[0] = '\0';
 	
 	poisonDamage = 0;
-    creditWeaponKill = false;
 	
 	degradesAttackerWeapon = (defender->info.flags & MONST_DEFEND_DEGRADE_WEAPON ? true : false);
 	

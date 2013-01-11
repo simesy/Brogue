@@ -692,19 +692,12 @@ void pickUpItemAt(short x, short y) {
 	}
 	
 	if ((theItem->flags & ITEM_KIND_AUTO_ID)
+        && tableForItemCategory(theItem->category)
 		&& !(tableForItemCategory(theItem->category)[theItem->kind].identified)) {
         identifyItemKind(theItem);
 	}
 	
 	if (numberOfItemsInPack() < MAX_PACK_ITEMS || theItem->category & GOLD || itemWillStackWithPack(theItem)) {
-		
-		if (theItem->flags & ITEM_NO_PICKUP) { // no longer used			
-			itemName(theItem, buf2, true, false, NULL); // include suffix but not article
-			sprintf(buf, "the %s is stuck to the ground.", buf2);
-			messageWithColor(buf, &itemMessageColor, false);
-			return;
-		}
-		
 		// remove from floor chain
 		pmap[x][y].flags &= ~ITEM_DETECTED;
 		
@@ -1016,7 +1009,9 @@ void call(item *theItem) {
 		}
 	}
 	
-	if (getInputTextString(itemText, "call them: \"", 29, "", "\"", TEXT_INPUT_NORMAL, false)) {
+	if (tableForItemCategory(theItem->category)
+        && getInputTextString(itemText, "call them: \"", 29, "", "\"", TEXT_INPUT_NORMAL, false)) {
+        
 		command[c++] = '\0';
 		strcat((char *) command, itemText);
 		recordKeystrokeSequence(command);
@@ -3565,7 +3560,7 @@ short reflectBolt(short targetX, short targetY, short listOfCoordinates[][2], sh
 			
 			newPathLength = getLineCoordinates(newPath, listOfCoordinates[kinkCell], target);
 			
-			if (!cellHasTerrainFlag(newPath[0][0], newPath[0][1], (T_OBSTRUCTS_VISION | T_OBSTRUCTS_PASSABILITY))) {
+			if (newPathLength > 0 && !cellHasTerrainFlag(newPath[0][0], newPath[0][1], (T_OBSTRUCTS_VISION | T_OBSTRUCTS_PASSABILITY))) {
 				needRandomTarget = false;
 			}
 			
@@ -4846,7 +4841,9 @@ void autoIdentify(item *theItem) {
 	short quantityBackup;
 	char buf[COLS * 3], oldName[COLS * 3], newName[COLS * 3];
 	
-    if (!tableForItemCategory(theItem->category)[theItem->kind].identified) {
+    if (tableForItemCategory(theItem->category)
+        && !tableForItemCategory(theItem->category)[theItem->kind].identified) {
+        
         identifyItemKind(theItem);
         quantityBackup = theItem->quantity;
         theItem->quantity = 1;
@@ -4865,7 +4862,6 @@ void autoIdentify(item *theItem) {
         itemName(theItem, oldName, false, false, NULL);
         theItem->flags |= ITEM_RUNIC_IDENTIFIED;
         itemName(theItem, newName, true, true, NULL);
-        theItem->quantity = quantityBackup;
         sprintf(buf, "(Your %s must be %s.)", oldName, newName);
         messageWithColor(buf, &itemMessageColor, false);
     }
@@ -6155,14 +6151,7 @@ void unequip(item *theItem) {
 }
 
 boolean canDrop() {
-	item *theItem;
-	
 	if (cellHasTerrainFlag(player.xLoc, player.yLoc, T_OBSTRUCTS_ITEMS)) {
-		return false;
-	}
-	
-	theItem = itemAtLoc(player.xLoc, player.yLoc);
-	if (theItem && (theItem->flags & ITEM_NO_PICKUP)) {
 		return false;
 	}
 	return true;
@@ -6279,9 +6268,6 @@ item *dropItem(item *theItem) {
 	}
 	
 	itemOnFloor = itemAtLoc(player.xLoc, player.yLoc);
-	if (itemOnFloor && (itemOnFloor->flags & ITEM_NO_PICKUP)) {
-		return NULL;
-	}
 	
 	if (theItem->quantity > 1 && !(theItem->category & WEAPON)) { // peel off the top item and drop it
 		itemFromTopOfStack = generateItem(ALL_ITEMS, -1);
