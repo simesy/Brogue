@@ -536,7 +536,7 @@ void initializeRogue(unsigned long seed) {
 		identify(theItem);
 		theItem = addItemToPack(theItem);
 		
-		theItem = generateItem(POTION, POTION_INCINERATION);
+		theItem = generateItem(POTION, POTION_DETECT_MAGIC);
         theItem->quantity = 3;
 		identify(theItem);
 		theItem = addItemToPack(theItem);

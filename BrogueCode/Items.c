@@ -694,10 +694,11 @@ void pickUpItemAt(short x, short y) {
 	if ((theItem->flags & ITEM_KIND_AUTO_ID)
         && tableForItemCategory(theItem->category)
 		&& !(tableForItemCategory(theItem->category)[theItem->kind].identified)) {
+        
         identifyItemKind(theItem);
 	}
 	
-	if (numberOfItemsInPack() < MAX_PACK_ITEMS || theItem->category & GOLD || itemWillStackWithPack(theItem)) {
+	if (numberOfItemsInPack() < MAX_PACK_ITEMS || (theItem->category & GOLD) || itemWillStackWithPack(theItem)) {
 		// remove from floor chain
 		pmap[x][y].flags &= ~ITEM_DETECTED;
 		
@@ -716,7 +717,7 @@ void pickUpItemAt(short x, short y) {
 			return;
 		}
 		
-		if (theItem->category & AMULET && numberOfMatchingPackItems(AMULET, 0, 0, false)) {
+		if ((theItem->category & AMULET) && numberOfMatchingPackItems(AMULET, 0, 0, false)) {
 			message("you already have the Amulet of Yendor.", false); 
 			deleteItem(theItem);
 			return;
