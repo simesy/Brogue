@@ -1326,6 +1326,7 @@ boolean playerMoves(short direction) {
 					}
 					monsterName(monstName, defender, true);
 					sprintf(buf, "you struggle but %s is holding your legs!", monstName);
+                    moveEntrancedMonsters(direction);
 					message(buf, false);
 					playerTurnEnded();
 					return true;

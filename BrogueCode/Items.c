@@ -4101,7 +4101,7 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 				message("the bolt hits you and you suddently feel disoriented.", true);
 				autoID = true;
 			} else if (monst && !(monst->info.flags & MONST_INANIMATE)) {
-				monst->status[STATUS_ENTRANCED] = monst->maxStatus[STATUS_ENTRANCED] = boltLevel * 2;
+				monst->status[STATUS_ENTRANCED] = monst->maxStatus[STATUS_ENTRANCED] = staffEntrancementDuration(boltLevel);
 				//refreshSideBar(-1, -1, false);
 				wakeUp(monst);
 				if (canSeeMonster(monst)) {

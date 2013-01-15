@@ -158,36 +158,36 @@ NSString *basicFontName = FONT_NAME;
 - (void)drawRect:(NSRect)rect
 {
 	int i, j, startX, startY, endX, endY;
-    @autoreleasepool {
-    //    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        
-        startX = (int) (kCOLS * rect.origin.x / hWindow);
-        startY = kROWS - (int) (kCOLS * (rect.origin.y + rect.size.height + vPixels - 1 ) / vWindow);
-        endX = (int) (kCOLS * (rect.origin.x + rect.size.width + hPixels - 1) / hWindow);
-        endY = kROWS - (int) (kROWS * rect.origin.y / vWindow);
-        
-        if (startX < 0) {
-            startX = 0;
+    //@autoreleasepool {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
+    startX = (int) (kCOLS * rect.origin.x / hWindow);
+    startY = kROWS - (int) (kCOLS * (rect.origin.y + rect.size.height + vPixels - 1 ) / vWindow);
+    endX = (int) (kCOLS * (rect.origin.x + rect.size.width + hPixels - 1) / hWindow);
+    endY = kROWS - (int) (kROWS * rect.origin.y / vWindow);
+    
+    if (startX < 0) {
+        startX = 0;
+    }
+    if (endX > kCOLS) {
+        endX = kCOLS;
+    }
+    if (startY < 0) {
+        startY = 0;
+    }
+    if (endY > kROWS) {
+        endY = kROWS;
+    }
+    for ( j = startY; j < endY; j++ ) {
+        for ( i = startX; i < endX; i++ ) {
+            [bgColorArray[i][j] set];
+            [NSBezierPath fillRect:rectArray[i][j]];
+            //NSLog(@"bgColorArray[%i][%i] is %@; letter is %@, letter color is %@", i, j, bgColorArray[i][j], letterArray[i][j], [attributes[i][j] objectForKey:NSForegroundColorAttributeName]);
+            [self drawTheString:letterArray[i][j] centeredIn:rectArray[i][j] withAttributes:attributes[i][j]];
         }
-        if (endX > kCOLS) {
-            endX = kCOLS;
-        }
-        if (startY < 0) {
-            startY = 0;
-        }
-        if (endY > kROWS) {
-            endY = kROWS;
-        }
-        for ( j = startY; j < endY; j++ ) {
-            for ( i = startX; i < endX; i++ ) {
-                [bgColorArray[i][j] set];
-                [NSBezierPath fillRect:rectArray[i][j]];
-                //NSLog(@"bgColorArray[%i][%i] is %@; letter is %@, letter color is %@", i, j, bgColorArray[i][j], letterArray[i][j], [attributes[i][j] objectForKey:NSForegroundColorAttributeName]);
-                [self drawTheString:letterArray[i][j] centeredIn:rectArray[i][j] withAttributes:attributes[i][j]];
-            }
-        }
-	}
-    //[pool drain];
+    }
+	//}
+    [pool drain];
 }
 
 - (void)drawTheString:(NSString *)theString centeredIn:(NSRect)rect withAttributes:(NSMutableDictionary *)theAttributes
