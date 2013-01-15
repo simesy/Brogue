@@ -3196,7 +3196,7 @@ boolean polymorph(creature *monst) {
 	
 	do {
 		monst->info = monsterCatalog[rand_range(1, NUMBER_MONSTER_KINDS - 1)]; // Presto change-o!
-	} while (monst->info.flags & MONST_INANIMATE); // Can't turn something into an inanimate object.
+	} while (monst->info.flags & (MONST_INANIMATE | MONST_NO_POLYMORPH)); // Can't turn something into an inanimate object or lich/phoenix.
 	
     monst->info.turnsBetweenRegen *= 1000;
 	monst->currentHP = max(1, max(healthFraction * monst->info.maxHP, monst->info.maxHP - previousDamageTaken));

@@ -158,7 +158,6 @@ NSString *basicFontName = FONT_NAME;
 - (void)drawRect:(NSRect)rect
 {
 	int i, j, startX, startY, endX, endY;
-    //@autoreleasepool {
     NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
     startX = (int) (kCOLS * rect.origin.x / hWindow);
@@ -186,7 +185,6 @@ NSString *basicFontName = FONT_NAME;
             [self drawTheString:letterArray[i][j] centeredIn:rectArray[i][j] withAttributes:attributes[i][j]];
         }
     }
-	//}
     [pool drain];
 }
 
@@ -249,30 +247,30 @@ NSString *basicFontName = FONT_NAME;
             vertWindow:(short)vPx
               fontSize:(short)size
 {
-	@autoreleasepool {//NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        int i, j;
-        hPixels = hPx / kCOLS;
-        vPixels = vPx / kROWS;
-        hWindow = hPx;
-        vWindow = vPx;
-        theFontSize = size;
-        [theSlowFont release]; theSlowFont = nil;
-        [theFastFont release]; theFastFont = nil;
-        
-        for (j = 0; j < kROWS; j++) {
-            for (i = 0; i < kCOLS; i++) {
-                [attributes[i][j] setObject:[self fontForString:letterArray[i][j]] forKey:NSFontAttributeName];
-                rectArray[i][j] = NSMakeRect((int) (hPx * i / kCOLS),
-                                             (int) (vPx - (vPx * (j+1) / kROWS)),
-                                             ((int) (hPx * (i+1) / kCOLS)) - ((int) (hPx * (i) / kCOLS)),//hPixels + 1,
-                                             ((int) (vPx * (j+1) / kROWS)) - ((int) (vPx * (j) / kROWS)));//vPixels + 1);
-            }
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    int i, j;
+    hPixels = hPx / kCOLS;
+    vPixels = vPx / kROWS;
+    hWindow = hPx;
+    vWindow = vPx;
+    theFontSize = size;
+    [theSlowFont release]; theSlowFont = nil;
+    [theFastFont release]; theFastFont = nil;
+    
+    for (j = 0; j < kROWS; j++) {
+        for (i = 0; i < kCOLS; i++) {
+            [attributes[i][j] setObject:[self fontForString:letterArray[i][j]] forKey:NSFontAttributeName];
+            rectArray[i][j] = NSMakeRect((int) (hPx * i / kCOLS),
+                                         (int) (vPx - (vPx * (j+1) / kROWS)),
+                                         ((int) (hPx * (i+1) / kCOLS)) - ((int) (hPx * (i) / kCOLS)),//hPixels + 1,
+                                         ((int) (vPx * (j+1) / kROWS)) - ((int) (vPx * (j) / kROWS)));//vPixels + 1);
         }
-        characterSize = [@"a" sizeWithAttributes:attributes[0][0]];
-        
-        [characterSizeDictionary removeAllObjects];
-        
-	}//[pool drain];
+    }
+    characterSize = [@"a" sizeWithAttributes:attributes[0][0]];
+    
+    [characterSizeDictionary removeAllObjects];
+    
+	[pool drain];
 }
 
 

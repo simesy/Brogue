@@ -141,20 +141,20 @@ void plotChar(uchar inputChar,
 			  short xLoc, short yLoc,
 			  short foreRed, short foreGreen, short foreBlue,
 			  short backRed, short backGreen, short backBlue) {
-	@autoreleasepool {//NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        
-        [theMainDisplay setString:[NSString stringWithCharacters:&inputChar length:1]
-                   withBackground:[NSColor colorWithDeviceRed:((float)backRed/100)
-                                                        green:((float)backGreen/100)
-                                                         blue:((float)backBlue/100)
-                                                        alpha:(float)1]
-                  withLetterColor:[NSColor colorWithDeviceRed:((float)foreRed/100)
-                                                        green:((float)foreGreen/100)
-                                                         blue:((float)foreBlue/100)
-                                                        alpha:(float)1]
-                      atLocationX:xLoc locationY:yLoc
-                    withFancyFont:(inputChar == FOLIAGE_CHAR)];
-	}//[pool drain];
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
+    [theMainDisplay setString:[NSString stringWithCharacters:&inputChar length:1]
+               withBackground:[NSColor colorWithDeviceRed:((float)backRed/100)
+                                                    green:((float)backGreen/100)
+                                                     blue:((float)backBlue/100)
+                                                    alpha:(float)1]
+              withLetterColor:[NSColor colorWithDeviceRed:((float)foreRed/100)
+                                                    green:((float)foreGreen/100)
+                                                     blue:((float)foreBlue/100)
+                                                    alpha:(float)1]
+                  atLocationX:xLoc locationY:yLoc
+                withFancyFont:(inputChar == FOLIAGE_CHAR)];
+	[pool drain];
 }
 
 void pausingTimerStartsNow() {
@@ -170,45 +170,45 @@ void pausingTimerStartsNow() {
 boolean pauseForMilliseconds(short milliseconds) {
 	NSEvent *theEvent;
 	NSDate *targetDate, *currentDate;
-//    NSComparisonResult theCompare;
+    //    NSComparisonResult theCompare;
     
-	@autoreleasepool {//NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        
-        currentDate = [NSDate date];
-        if (pauseStartDate) {
-//            NSLog(@"\nStarting a pause: previous date was %@.", pauseStartDate);
-            targetDate = [NSDate dateWithTimeInterval:((double) milliseconds) / 1000 sinceDate:pauseStartDate];
-            [pauseStartDate release];
-            pauseStartDate = NULL;
-        } else {
-            targetDate = [NSDate dateWithTimeIntervalSinceNow: ((double) milliseconds) / 1000];
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
+    currentDate = [NSDate date];
+    if (pauseStartDate) {
+        //            NSLog(@"\nStarting a pause: previous date was %@.", pauseStartDate);
+        targetDate = [NSDate dateWithTimeInterval:((double) milliseconds) / 1000 sinceDate:pauseStartDate];
+        [pauseStartDate release];
+        pauseStartDate = NULL;
+    } else {
+        targetDate = [NSDate dateWithTimeIntervalSinceNow: ((double) milliseconds) / 1000];
+    }
+    //        theCompare = [targetDate compare:currentDate];
+    
+    //        if (theCompare != NSOrderedAscending) {
+    do {
+        theEvent = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:targetDate
+                                         inMode:NSDefaultRunLoopMode dequeue:YES];
+        if (([theEvent type] == NSKeyDown && !([theEvent modifierFlags] & NSCommandKeyMask))
+            || [theEvent type] == NSLeftMouseUp
+            || [theEvent type] == NSLeftMouseDown
+            || [theEvent type] == NSRightMouseUp
+            || [theEvent type] == NSRightMouseDown
+            || [theEvent type] == NSMouseMoved
+            || [theEvent type] == NSLeftMouseDragged
+            || [theEvent type] == NSRightMouseDragged) {
+            [NSApp postEvent:theEvent atStart:TRUE]; // put the event back on the queue
+            return true;
+        } else if (theEvent != nil) {
+            [NSApp sendEvent:theEvent];
         }
-//        theCompare = [targetDate compare:currentDate];
-        
-//        if (theCompare != NSOrderedAscending) {
-        do {
-            theEvent = [NSApp nextEventMatchingMask:NSAnyEventMask untilDate:targetDate
-                                             inMode:NSDefaultRunLoopMode dequeue:YES];
-            if (([theEvent type] == NSKeyDown && !([theEvent modifierFlags] & NSCommandKeyMask))
-                || [theEvent type] == NSLeftMouseUp
-                || [theEvent type] == NSLeftMouseDown
-                || [theEvent type] == NSRightMouseUp
-                || [theEvent type] == NSRightMouseDown
-                || [theEvent type] == NSMouseMoved
-                || [theEvent type] == NSLeftMouseDragged
-                || [theEvent type] == NSRightMouseDragged) {
-                [NSApp postEvent:theEvent atStart:TRUE]; // put the event back on the queue
-                return true;
-            } else if (theEvent != nil) {
-                [NSApp sendEvent:theEvent];
-            }
-        } while (theEvent != nil);
-//        } else {
-//            [NSApp updateWindows];
-//            NSLog(@"\nSkipped a pause: target date was %@; current date was %@; comparison was %i.", targetDate, currentDate, theCompare);
-//        }
-        
-	}//[pool drain];
+    } while (theEvent != nil);
+    //        } else {
+    //            [NSApp updateWindows];
+    //            NSLog(@"\nSkipped a pause: target date was %@; current date was %@; comparison was %i.", targetDate, currentDate, theCompare);
+    //        }
+    
+	[pool drain];
 	return false;
 }
 
@@ -220,85 +220,85 @@ void nextKeyOrMouseEvent(rogueEvent *returnEvent, boolean textInput, boolean col
 	NSPoint local_point;
 	short x, y;
     
-	@autoreleasepool {//NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-        
-        for(;;) {
-            if (colorsDance) {
-                shuffleTerrainColors(3, true);
-                commitDraws();
-            }
-            
-            theEvent = [NSApp nextEventMatchingMask:NSAnyEventMask
-                                          untilDate:[NSDate dateWithTimeIntervalSinceNow: ((NSTimeInterval) ((double) 50) / ((double) 1000))]
-                                             inMode:NSDefaultRunLoopMode
-                                            dequeue:YES];
-            theEventType = [theEvent type];
-            if (theEventType == NSKeyDown && !([theEvent modifierFlags] & NSCommandKeyMask)) {
-                returnEvent->eventType = KEYSTROKE;
-                returnEvent->param1 = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
-                //printf("\nKey pressed: %i", returnEvent->param1);
-                returnEvent->param2 = 0;
-                returnEvent->controlKey = ([theEvent modifierFlags] & NSControlKeyMask ? 1 : 0);
-                returnEvent->shiftKey = ([theEvent modifierFlags] & NSShiftKeyMask ? 1 : 0);
-                break;
-            } else if (theEventType == NSLeftMouseDown
-                       || theEventType == NSLeftMouseUp
-                       || theEventType == NSRightMouseDown
-                       || theEventType == NSRightMouseUp
-                       || theEventType == NSMouseMoved
-                       || theEventType == NSLeftMouseDragged
-                       || theEventType == NSRightMouseDragged) {
-                [NSApp sendEvent:theEvent];
-                switch (theEventType) {
-                    case NSLeftMouseDown:
-                        returnEvent->eventType = MOUSE_DOWN;
-                        break;
-                    case NSLeftMouseUp:
-                        returnEvent->eventType = MOUSE_UP;
-                        break;
-                    case NSRightMouseDown:
-                        returnEvent->eventType = RIGHT_MOUSE_DOWN;
-                        break;
-                    case NSRightMouseUp:
-                        returnEvent->eventType = RIGHT_MOUSE_UP;
-                        break;
-                    case NSMouseMoved:
-                    case NSLeftMouseDragged:
-                    case NSRightMouseDragged:
-                        returnEvent->eventType = MOUSE_ENTERED_CELL;
-                        break;
-                    default:
-                        break;
-                }
-                event_location = [theEvent locationInWindow];
-                local_point = [theMainDisplay convertPoint:event_location fromView:nil];
-                x = COLS * local_point.x / [theMainDisplay horizWindow];
-                y = ROWS - (ROWS * local_point.y / [theMainDisplay vertWindow]);
-                // Correct for the fact that truncation occurs in a positive direction when we're below zero:
-                if (local_point.x < 0) {
-                    x--;
-                }
-                if ([theMainDisplay vertWindow] < local_point.y) {
-                    y--;
-                }
-                returnEvent->param1 = x;
-                returnEvent->param2 = y;
-                returnEvent->controlKey = ([theEvent modifierFlags] & NSControlKeyMask ? 1 : 0);
-                returnEvent->shiftKey = ([theEvent modifierFlags] & NSShiftKeyMask ? 1 : 0);
-                //			if (theEventType != NSMouseMoved || x != mouseX || y != mouseY) { // Don't send mouse_entered_cell events if the cell hasn't changed
-				mouseX = x;
-				mouseY = y;
-				break;
-                //			}
-            }
-            if (theEvent != nil) {
-                [NSApp sendEvent:theEvent]; // pass along any other events so, e.g., the menus work
-            }
+	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
+    for(;;) {
+        if (colorsDance) {
+            shuffleTerrainColors(3, true);
+            commitDraws();
         }
-        // printf("\nRogueEvent: eventType: %i, param1: %i, param2: %i, controlKey: %s, shiftKey: %s", returnEvent->eventType, returnEvent->param1,
-        //			 returnEvent->param2, returnEvent->controlKey ? "true" : "false", returnEvent->shiftKey ? "true" : "false");
         
-	}//[pool drain];
+        theEvent = [NSApp nextEventMatchingMask:NSAnyEventMask
+                                      untilDate:[NSDate dateWithTimeIntervalSinceNow: ((NSTimeInterval) ((double) 50) / ((double) 1000))]
+                                         inMode:NSDefaultRunLoopMode
+                                        dequeue:YES];
+        theEventType = [theEvent type];
+        if (theEventType == NSKeyDown && !([theEvent modifierFlags] & NSCommandKeyMask)) {
+            returnEvent->eventType = KEYSTROKE;
+            returnEvent->param1 = [[theEvent charactersIgnoringModifiers] characterAtIndex:0];
+            //printf("\nKey pressed: %i", returnEvent->param1);
+            returnEvent->param2 = 0;
+            returnEvent->controlKey = ([theEvent modifierFlags] & NSControlKeyMask ? 1 : 0);
+            returnEvent->shiftKey = ([theEvent modifierFlags] & NSShiftKeyMask ? 1 : 0);
+            break;
+        } else if (theEventType == NSLeftMouseDown
+                   || theEventType == NSLeftMouseUp
+                   || theEventType == NSRightMouseDown
+                   || theEventType == NSRightMouseUp
+                   || theEventType == NSMouseMoved
+                   || theEventType == NSLeftMouseDragged
+                   || theEventType == NSRightMouseDragged) {
+            [NSApp sendEvent:theEvent];
+            switch (theEventType) {
+                case NSLeftMouseDown:
+                    returnEvent->eventType = MOUSE_DOWN;
+                    break;
+                case NSLeftMouseUp:
+                    returnEvent->eventType = MOUSE_UP;
+                    break;
+                case NSRightMouseDown:
+                    returnEvent->eventType = RIGHT_MOUSE_DOWN;
+                    break;
+                case NSRightMouseUp:
+                    returnEvent->eventType = RIGHT_MOUSE_UP;
+                    break;
+                case NSMouseMoved:
+                case NSLeftMouseDragged:
+                case NSRightMouseDragged:
+                    returnEvent->eventType = MOUSE_ENTERED_CELL;
+                    break;
+                default:
+                    break;
+            }
+            event_location = [theEvent locationInWindow];
+            local_point = [theMainDisplay convertPoint:event_location fromView:nil];
+            x = COLS * local_point.x / [theMainDisplay horizWindow];
+            y = ROWS - (ROWS * local_point.y / [theMainDisplay vertWindow]);
+            // Correct for the fact that truncation occurs in a positive direction when we're below zero:
+            if (local_point.x < 0) {
+                x--;
+            }
+            if ([theMainDisplay vertWindow] < local_point.y) {
+                y--;
+            }
+            returnEvent->param1 = x;
+            returnEvent->param2 = y;
+            returnEvent->controlKey = ([theEvent modifierFlags] & NSControlKeyMask ? 1 : 0);
+            returnEvent->shiftKey = ([theEvent modifierFlags] & NSShiftKeyMask ? 1 : 0);
+            //			if (theEventType != NSMouseMoved || x != mouseX || y != mouseY) { // Don't send mouse_entered_cell events if the cell hasn't changed
+            mouseX = x;
+            mouseY = y;
+            break;
+            //			}
+        }
+        if (theEvent != nil) {
+            [NSApp sendEvent:theEvent]; // pass along any other events so, e.g., the menus work
+        }
+    }
+    // printf("\nRogueEvent: eventType: %i, param1: %i, param2: %i, controlKey: %s, shiftKey: %s", returnEvent->eventType, returnEvent->param1,
+    //			 returnEvent->param2, returnEvent->controlKey ? "true" : "false", returnEvent->shiftKey ? "true" : "false");
+    
+	[pool drain];
 }
 
 boolean controlKeyIsDown() {

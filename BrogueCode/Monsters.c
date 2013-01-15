@@ -1992,7 +1992,7 @@ boolean monstUseMagic(creature *monst) {
 				&& monst != target
 				&& !(monst->bookkeepingFlags & MONST_SUBMERGED)
 				&& !target->status[STATUS_INVISIBLE]
-                && !(target->info.flags & MONST_REFLECT_4)
+                && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
 				&& openPathBetween(monst->xLoc, monst->yLoc, target->xLoc, target->yLoc)) {
                 
 				targetLoc[0] = target->xLoc;
@@ -2088,7 +2088,7 @@ boolean monstUseMagic(creature *monst) {
 						|| ((target->status[STATUS_IMMUNE_TO_FIRE] || target->status[STATUS_LEVITATING])
 							&& cellHasTerrainFlag(target->xLoc, target->yLoc, (T_LAVA_INSTA_DEATH | T_IS_DEEP_WATER | T_AUTO_DESCENT))))
 					&& !(target == &player && rogue.armor && (rogue.armor->flags & ITEM_RUNIC) && rogue.armor->enchant2 == A_REFLECTION && netEnchant(rogue.armor) > 0)
-					&& !(target->info.flags & MONST_REFLECT_4)
+                    && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
 					&& (alwaysUse || rand_percent(50))) {
 					if (canDirectlySeeMonster(monst)) {
 						monsterName(monstName, monst, true);
@@ -2131,7 +2131,7 @@ boolean monstUseMagic(creature *monst) {
 				&& monstersAreTeammates(monst, target)
 				&& !(target->bookkeepingFlags & MONST_SUBMERGED)
 				&& !(target->info.flags & MONST_DIES_IF_NEGATED)
-                && !(target->info.flags & MONST_REFLECT_4)
+                && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
 				&& openPathBetween(monst->xLoc, monst->yLoc, target->xLoc, target->yLoc)) {
 				
 				if (canDirectlySeeMonster(monst)) {
@@ -2282,7 +2282,7 @@ boolean monstUseMagic(creature *monst) {
 				&& !(monst->bookkeepingFlags & MONST_SUBMERGED)
 				&& !target->status[STATUS_INVISIBLE]
                 && !target->status[STATUS_ENTRANCED]
-                && !(target->info.flags & MONST_REFLECT_4)
+                && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
 				&& openPathBetween(monst->xLoc, monst->yLoc, target->xLoc, target->yLoc)) {
                 
                 targetLoc[0] = target->xLoc;
