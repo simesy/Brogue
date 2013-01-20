@@ -607,7 +607,7 @@ void magicWeaponHit(creature *defender, item *theItem, boolean backstabbed) {
 				break;
 			case W_SLAYING:
 			case W_QUIETUS:
-				inflictLethalDamage(&player, defender);
+				inflictLethalDamage(defender);
 				sprintf(buf, "%s suddenly dies", monstName);
 				buf[DCOLS] = '\0';
 				combatMessage(buf, messageColorFromVictim(defender));
@@ -1339,7 +1339,7 @@ boolean anyoneWantABite(creature *decedent) {
 
 #define MIN_FLASH_STRENGTH	50
 
-void inflictLethalDamage(creature *attacker, creature *defender) {
+void inflictLethalDamage(creature *defender) {
     defender->status[STATUS_SHIELDED] = 0;
     inflictDamage(defender, defender->currentHP, NULL);
 }

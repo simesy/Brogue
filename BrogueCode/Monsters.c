@@ -1061,6 +1061,14 @@ boolean monsterAvoids(creature *monst, short x, short y) {
         
 		return true;
 	}
+    
+    // burning monsters avoid explosive terrain and steam-emitting terrain
+    if (monst != &player
+        && monst->status[STATUS_BURNING]
+        && (burnedTerrainFlagsAtLoc(x, y) & (T_CAUSES_EXPLOSIVE_DAMAGE | T_CAUSES_DAMAGE))) {
+        
+        return true;
+    }
 	
 	// fire
 	if (cellHasTerrainFlag(x, y, T_IS_FIRE & ~terrainImmunities)
