@@ -1009,8 +1009,6 @@ enum tileFlags {
 #define TRUE_COLORS_KEY		'\\'
 #define DROP_KEY			'd'
 #define CALL_KEY			'c'
-//#define FIGHT_KEY			'f'
-//#define FIGHT_TO_DEATH_KEY	'F'
 #define QUIT_KEY			'Q'
 #define MESSAGE_ARCHIVE_KEY	'M'
 #define HELP_KEY			'?'

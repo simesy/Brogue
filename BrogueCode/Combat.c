@@ -531,7 +531,7 @@ short runicWeaponChance(item *theItem, boolean customEnchantLevel, float enchant
 	}
 //    if (theItem->flags & ITEM_ATTACKS_QUICKLY) {
 //		adjustedBaseDamage *= 2; // Normalize as though they attacked once per turn instead of twice per turn.
-//	} // Testing disabling this for balance reasons... ^^
+//	} // Testing disabling this for balance reasons...
 	
     modifier = 1.0 - min(0.99, ((float) adjustedBaseDamage) / 18.0);
 	rootChance *= modifier;

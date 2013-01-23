@@ -272,7 +272,7 @@ const color potionStrengthColor =   {1000,  0,      400,	600,	0,			0,          0
 const color genericFlashColor =     {800,   800,    800,    0,      0,          0,          0,      false};
 const color summoningFlashColor =   {0,     0,      0,      600,    0,          1200,       0,      true};
 const color fireFlashColor =		{750,	225,	0,		100,	50,			0,			0,		true};
-const color explosionFlareColor =   {10000,6000, 1000,   0,      0,          0,          0,      false}; // ^^
+const color explosionFlareColor =   {10000, 6000,   1000,   0,      0,          0,          0,      false};
 
 // color multipliers
 const color colorDim25 =			{25,	25,		25,		25,		25,			25,			25,		false};
@@ -281,7 +281,6 @@ const color memoryColor =			{25,	25,		50,		20,		20,			20,			0,		false};
 const color memoryOverlay =			{25,	25,		50,		0,		0,			0,			0,		false};
 const color magicMapColor =			{60,	20,		60,		60,		20,			60,			0,		false};
 const color clairvoyanceColor =		{50,	90,		50,		50,		90,			50,			66,		false};
-//const color telepathyMultiplier =	{40,	40,		110,	40,		40,			110,		66,		false};
 const color telepathyMultiplier =	{30,	30,		130,	30,		30,			130,		66,		false};
 const color omniscienceColor =		{140,	100,	60,		140,	100,		60,			90,		false};
 const color basicLightColor =		{180,	180,	180,	180,	180,		180,		180,	false};
@@ -900,7 +899,7 @@ const lightSource lightCatalog[NUMBER_LIGHT_KINDS] = {
     {&genericFlashColor,    {300, 300, 1},			0,		true},		// generic flash flare
 	{&fireFlashColor,		{800, 800, 1},			0,		false},		// fallen torch flare
     {&summoningFlashColor,  {600, 600, 1},			0,		true},		// summoning flare
-    {&explosionFlareColor,  {5000, 5000},       0,      false},     // bloat explosion ^^
+    {&explosionFlareColor,  {5000, 5000, 1},        0,      false},     // explosion (explosive bloat or incineration potion)
 	
 	// glowing terrain:
 	{&torchLightColor,		{1000, 1000, 1},		50,		false},		// torch

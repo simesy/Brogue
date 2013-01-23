@@ -1838,7 +1838,7 @@ void travelMap(short **distanceMap) {
 				if (!playerMoves(dir)) {
 					rogue.disturbed = true;
 				}
-				if (pauseBrogue(500)) { // ^^
+				if (pauseBrogue(500)) {
 					rogue.disturbed = true;
 				}
 				currentX = newX;

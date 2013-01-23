@@ -330,23 +330,24 @@ boolean addTileToMachineInteriorAndIterate(char interior[DCOLS][DROWS], short st
 	for (dir = 0; dir < 4 && goodSoFar; dir++) {
 		newX = startX + nbDirs[dir][0];
 		newY = startY + nbDirs[dir][1];
-		if ((pmap[newX][newY].flags & HAS_ITEM)
-			|| ((pmap[newX][newY].flags & IS_IN_MACHINE) && !(pmap[newX][newY].flags & IS_GATE_SITE))) {
-			// Abort if there's an item in the room.
-			// Items haven't been populated yet, so the only way this could happen is if another machine
-			// previously placed an item here.
-			// Also abort if we're touching another machine at any point other than a gate tile.
-			return false;
-		}
-		if (coordinatesAreInMap(newX, newY)
-			&& !interior[newX][newY]
-			&& chokeMap[newX][newY] <= chokeMap[startX][startY] // don't have to worry about walls since they're all 30000
-			&& !(pmap[newX][newY].flags & IS_IN_MACHINE)) {
-			//goodSoFar = goodSoFar && addTileToMachineInteriorAndIterate(interior, newX, newY);
-            if (goodSoFar) {
-                goodSoFar = addTileToMachineInteriorAndIterate(interior, newX, newY);
+        if (coordinatesAreInMap(newX, newY)) {
+            if ((pmap[newX][newY].flags & HAS_ITEM)
+                || ((pmap[newX][newY].flags & IS_IN_MACHINE) && !(pmap[newX][newY].flags & IS_GATE_SITE))) {
+                // Abort if there's an item in the room.
+                // Items haven't been populated yet, so the only way this could happen is if another machine
+                // previously placed an item here.
+                // Also abort if we're touching another machine at any point other than a gate tile.
+                return false;
             }
-		}
+            if (!interior[newX][newY]
+                && chokeMap[newX][newY] <= chokeMap[startX][startY] // don't have to worry about walls since they're all 30000
+                && !(pmap[newX][newY].flags & IS_IN_MACHINE)) {
+                //goodSoFar = goodSoFar && addTileToMachineInteriorAndIterate(interior, newX, newY);
+                if (goodSoFar) {
+                    goodSoFar = addTileToMachineInteriorAndIterate(interior, newX, newY);
+                }
+            }
+        }
 	}
 	return goodSoFar;
 }
@@ -2258,7 +2259,8 @@ void lakeFloodFill(short x, short y, short **floodMap, short **grid, short **lak
     for (dir=0; dir<4; dir++) {
         newX = x + nbDirs[dir][0];
         newY = y + nbDirs[dir][1];
-        if (!floodMap[newX][newY]
+        if (coordinatesAreInMap(newX, newY)
+            && !floodMap[newX][newY]
             && !cellHasTerrainFlag(newX, newY, T_PATHING_BLOCKER)
             && !lakeMap[newX][newY]
             && (!coordinatesAreInMap(newX+dungeonToGridX, newY+dungeonToGridY) || !grid[newX+dungeonToGridX][newY+dungeonToGridY])) {
