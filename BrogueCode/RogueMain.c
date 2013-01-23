@@ -364,6 +364,7 @@ void initializeRogue(unsigned long seed) {
 	rogue.playerTurnNumber = 0;
     rogue.absoluteTurnNumber = 0;
 	rogue.foodSpawned = 0;
+    rogue.lifePotionsSpawned = 0;
 	rogue.gold = 0;
 	rogue.goldGenerated = 0;
 	rogue.disturbed = false;
@@ -507,6 +508,12 @@ void initializeRogue(unsigned long seed) {
 		theItem = addItemToPack(theItem);
 		
 		theItem = generateItem(STAFF, STAFF_CONJURATION);
+		theItem->enchant1 = 10;
+		theItem->charges = 300;
+		identify(theItem);
+		theItem = addItemToPack(theItem);
+		
+		theItem = generateItem(STAFF, STAFF_POISON);
 		theItem->enchant1 = 10;
 		theItem->charges = 300;
 		identify(theItem);
