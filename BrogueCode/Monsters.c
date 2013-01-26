@@ -804,6 +804,10 @@ void spawnPeriodicHorde() {
 void teleport(creature *monst, short x, short y, boolean respectTerrainAvoidancePreferences) {
 	short **grid, i, j;
 	char monstFOV[DCOLS][DROWS];
+    
+#ifdef BROGUE_ASSERTS
+    assert(coordinatesAreInMap(x, y));
+#endif
 	
 	zeroOutGrid(monstFOV);
 	getFOVMask(monstFOV, monst->xLoc, monst->yLoc, DCOLS, T_OBSTRUCTS_VISION, 0, false);
@@ -890,15 +894,20 @@ short closestWaypointIndex(creature *monst) {
 void chooseNewWanderDestination(creature *monst) {
     short i;
     
+#ifdef BROGUE_ASSERTS
+    assert(monst->targetWaypointIndex < MAX_WAYPOINT_COUNT);
+    assert(rogue.wpCount > 0 && rogue.wpCount <= MAX_WAYPOINT_COUNT);
+#endif
+    
     // Set two checkpoints at random to false (which equilibrates to 50% of checkpoints being active).
-    monst->waypointAlreadyVisited[rand_range(0, rogue.wpCount)] = false;
-    monst->waypointAlreadyVisited[rand_range(0, rogue.wpCount)] = false;
+    monst->waypointAlreadyVisited[rand_range(0, rogue.wpCount - 1)] = false;
+    monst->waypointAlreadyVisited[rand_range(0, rogue.wpCount - 1)] = false;
     // Set the targeted checkpoint to true.
     if (monst->targetWaypointIndex >= 0) {
         monst->waypointAlreadyVisited[monst->targetWaypointIndex] = true;
     }
     
-    monst->targetWaypointIndex = closestWaypointIndex(monst); // Will be NO_DIRECTION if no waypoints were available.
+    monst->targetWaypointIndex = closestWaypointIndex(monst); // Will be -1 if no waypoints were available.
     if (monst->targetWaypointIndex == -1) {
         for (i=0; i < rogue.wpCount; i++) {
             monst->waypointAlreadyVisited[i] = 0;
@@ -1974,9 +1983,11 @@ boolean monstUseMagic(creature *monst) {
                     }
                 }
             }
-            for (target = levels[rogue.depthLevel].monsters; target != NULL; target = target->nextCreature) {
-                if (target->creatureState == MONSTER_ALLY && !(target->info.flags & MONST_WILL_NOT_USE_STAIRS)) {
-                    minionCount++;
+            if (rogue.depthLevel < DEEPEST_LEVEL) {
+                for (target = levels[rogue.depthLevel].monsters; target != NULL; target = target->nextCreature) {
+                    if (target->creatureState == MONSTER_ALLY && !(target->info.flags & MONST_WILL_NOT_USE_STAIRS)) {
+                        minionCount++;
+                    }
                 }
             }
         }

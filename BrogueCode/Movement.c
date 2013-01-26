@@ -1721,6 +1721,10 @@ short nextStep(short **distanceMap, short x, short y, creature *monst, boolean p
     enum directions dir, bestDir;
     creature *blocker;
     boolean blocked;
+    
+#ifdef BROGUE_ASSERTS
+    assert(coordinatesAreInMap(x, y));
+#endif
 	
 	bestScore = 0;
 	bestDir = NO_DIRECTION;
@@ -1731,6 +1735,10 @@ short nextStep(short **distanceMap, short x, short y, creature *monst, boolean p
 		
 		newX = x + nbDirs[dir][0];
 		newY = y + nbDirs[dir][1];
+        
+#ifdef BROGUE_ASSERTS
+        assert(coordinatesAreInMap(newX, newY));
+#endif
         
         blocked = false;
         blocker = monsterAtLoc(newX, newY);
