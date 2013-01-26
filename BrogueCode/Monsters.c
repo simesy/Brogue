@@ -1731,7 +1731,7 @@ boolean creatureEligibleForSwarming(creature *monst) {
 // If you’re adjacent to an enemy and about to strike it, and you’re adjacent to a hunting-mode tribemate
 // who is not adjacent to another enemy, and there is no empty space adjacent to the tribemate AND the enemy,
 // and there is an empty space adjacent to you AND the enemy, then move into that last space.
-// (In each case, "adjacent" excludes tiles obstructed by corner walls.)
+// (In each case, "adjacent" excludes diagonal tiles obstructed by corner walls.)
 enum directions monsterSwarmDirection(creature *monst, creature *enemy) {
     short newX, newY, i;
     enum directions dir, targetDir;

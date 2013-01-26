@@ -663,7 +663,7 @@ boolean buildAMachine(enum machineTypes bp,
 	
 	creature *monst, *nextMonst, *torchBearer = NULL, *leader = NULL;
 	
-	item *theItem, *torch = NULL, *spawnedItems[MACHINES_BUFFER_LENGTH] = {0}, *spawnedItemsSub[MACHINES_BUFFER_LENGTH] = {0};
+	item *theItem = NULL, *torch = NULL, *spawnedItems[MACHINES_BUFFER_LENGTH] = {0}, *spawnedItemsSub[MACHINES_BUFFER_LENGTH] = {0};
 	creature *spawnedMonsters[MACHINES_BUFFER_LENGTH] = {0}, *spawnedMonstersSub[MACHINES_BUFFER_LENGTH] = {0};
 	
 	const machineFeature *feature;
