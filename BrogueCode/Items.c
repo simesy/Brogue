@@ -858,7 +858,7 @@ void updateFloorItems() {
             || (cellHasTerrainFlag(x, y, T_LAVA_INSTA_DEATH) && theItem->category != AMULET)) {
             
             burnItem(theItem);
-            return;
+            continue;
         }
         if (cellHasTerrainFlag(x, y, T_MOVES_ITEMS)) {
             getQualifyingLocNear(loc, x, y, true, 0, (T_OBSTRUCTS_ITEMS | T_OBSTRUCTS_PASSABILITY), (HAS_ITEM), false, false);
@@ -872,7 +872,7 @@ void updateFloorItems() {
             theItem->yLoc = loc[1];
             refreshDungeonCell(x, y);
             refreshDungeonCell(loc[0], loc[1]);
-            return;
+            continue;
         }
         if (cellHasTerrainFlag(x, y, T_AUTO_DESCENT)) {
             
@@ -897,7 +897,7 @@ void updateFloorItems() {
                 levels[rogue.depthLevel-1 + 1].items = theItem;
             }
             refreshDungeonCell(x, y);
-            return;
+            continue;
         }
         if (cellHasTMFlag(x, y, TM_PROMOTES_ON_STEP)) {
             for (layer = 0; layer < NUMBER_TERRAIN_LAYERS; layer++) {
@@ -905,7 +905,7 @@ void updateFloorItems() {
                     promoteTile(x, y, layer, false);
                 }
             }
-            return;
+            continue;
         }
         if (pmap[x][y].machineNumber
             && pmap[x][y].machineNumber == pmap[player.xLoc][player.yLoc].machineNumber
