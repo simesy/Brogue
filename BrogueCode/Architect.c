@@ -1217,6 +1217,8 @@ boolean buildAMachine(enum machineTypes bp,
 				}
 				
 				if (DFSucceeded && terrainSucceeded) { // Proceed only if the terrain stuff for this instance succeeded.
+                    
+                    theItem = NULL;
 					
 					// Mark the feature location as part of the machine, in case it is not already inside of it.
 					//if (!(blueprintCatalog[bp].flags & BP_NO_INTERIOR_FLAG)) {
