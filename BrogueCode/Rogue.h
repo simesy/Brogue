@@ -1646,6 +1646,7 @@ enum terrainMechanicalFlagCatalog {
     TM_STAND_IN_TILE                = Fl(13),		// earthbound creatures will be said to stand "in" the tile, not on it
     TM_LIST_IN_SIDEBAR              = Fl(14),       // terrain will be listed in the sidebar with a description of the terrain type
     TM_VISUALLY_DISTINCT            = Fl(15),       // terrain will be color-adjusted if necessary so the character stands out from the background
+    TM_EXPLOSIVE_PROMOTE            = Fl(16),       // when burned, will promote to promoteType instead of burningType if surrounded by tiles with T_IS_FIRE or TM_EXPLOSIVE_PROMOTE
 };
 
 enum statusEffects {

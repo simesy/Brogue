@@ -2575,8 +2575,10 @@ void promoteTile(short x, short y, enum dungeonLayers layer, boolean useFireDF) 
 
 boolean exposeTileToFire(short x, short y, boolean alwaysIgnite) {
 	enum dungeonLayers layer;
-	short ignitionChance = 0, bestExtinguishingPriority = 1000;
-	boolean fireIgnited = false;
+	short ignitionChance = 0, bestExtinguishingPriority = 1000, explosiveNeighborCount = 0;
+    short newX, newY;
+    enum directions dir;
+	boolean fireIgnited = false, explosivePromotion = false;
 	
 	if (!cellHasTerrainFlag(x, y, T_IS_FLAMMABLE)) {
 		return false;
@@ -2601,6 +2603,22 @@ boolean exposeTileToFire(short x, short y, boolean alwaysIgnite) {
 	
 	if (alwaysIgnite || (ignitionChance && rand_percent(ignitionChance))) {	// If it ignites...
 		fireIgnited = true;
+        
+        // Count explosive neighbors.
+        if (cellHasTMFlag(x, y, TM_EXPLOSIVE_PROMOTE)) {
+            for (dir = 0, explosiveNeighborCount = 0; dir < 8; dir++) {
+                newX = x + nbDirs[dir][0];
+                newY = y + nbDirs[dir][1];
+                if (coordinatesAreInMap(newX, newY)
+                    && (cellHasTerrainFlag(newX, newY, T_IS_FIRE | T_OBSTRUCTS_GAS) || cellHasTMFlag(newX, newY, TM_EXPLOSIVE_PROMOTE))) {
+                    
+                    explosiveNeighborCount++;
+                }
+            }
+            if (explosiveNeighborCount >= 8) {
+                explosivePromotion = true;
+            }
+        }
 		
 		// Flammable layers are consumed.
 		for (layer=0; layer < NUMBER_TERRAIN_LAYERS; layer++) {
@@ -2608,7 +2626,7 @@ boolean exposeTileToFire(short x, short y, boolean alwaysIgnite) {
 				if (layer == GAS) {
 					pmap[x][y].volume = 0; // Flammable gas burns its volume away.
 				}
-				promoteTile(x, y, layer, true);
+				promoteTile(x, y, layer, !explosivePromotion);
 			}
 		}
 		refreshDungeonCell(x, y);
