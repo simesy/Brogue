@@ -2233,11 +2233,11 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
                             charmRechargeDelay(theItem->kind, enchant),
                             charmRechargeDelay(theItem->kind, enchant + 1));
                     break;
-                case CHARM_CAUSE_FEAR:
-                    sprintf(buf2, "\n\nWhen used, the charm will terrify all visible creatures and recharge in %i turns. (If the charm is enchanted, it will recharge in %i turns.)",
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
-                    break;
+//                case CHARM_CAUSE_FEAR:
+//                    sprintf(buf2, "\n\nWhen used, the charm will terrify all visible creatures and recharge in %i turns. (If the charm is enchanted, it will recharge in %i turns.)",
+//                            charmRechargeDelay(theItem->kind, enchant),
+//                            charmRechargeDelay(theItem->kind, enchant + 1));
+//                    break;
                 case CHARM_TELEPORTATION:
                     sprintf(buf2, "\n\nWhen used, the charm will teleport you elsewhere in the dungeon and recharge in %i turns. (If the charm is enchanted, it will recharge in %i turns.)",
                             charmRechargeDelay(theItem->kind, enchant),
@@ -3349,34 +3349,34 @@ void rechargeItems(unsigned long categories) {
     }
 }
 
-void causeFear(const char *emitterName) {
-    creature *monst;
-    short numberOfMonsters = 0;
-    char buf[DCOLS*3], mName[DCOLS];
-    
-    for (monst = monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
-        if (pmap[monst->xLoc][monst->yLoc].flags & IN_FIELD_OF_VIEW
-            && monst->creatureState != MONSTER_FLEEING
-            && !(monst->info.flags & MONST_INANIMATE)) {
-            
-            monst->status[STATUS_MAGICAL_FEAR] = monst->maxStatus[STATUS_MAGICAL_FEAR] = rand_range(150, 225);
-            monst->creatureState = MONSTER_FLEEING;
-            if (canSeeMonster(monst)) {
-                numberOfMonsters++;
-                monsterName(mName, monst, true);
-            }
-        }
-    }
-    if (numberOfMonsters > 1) {
-        sprintf(buf, "%s emits a brilliant flash of red light, and the monsters flee!", emitterName);
-    } else if (numberOfMonsters == 1) {
-        sprintf(buf, "%s emits a brilliant flash of red light, and %s flees!", emitterName, mName);
-    } else {
-        sprintf(buf, "%s emits a brilliant flash of red light!", emitterName);
-    }
-    message(buf, false);
-    colorFlash(&redFlashColor, 0, IN_FIELD_OF_VIEW, 15, DCOLS, player.xLoc, player.yLoc);
-}
+//void causeFear(const char *emitterName) {
+//    creature *monst;
+//    short numberOfMonsters = 0;
+//    char buf[DCOLS*3], mName[DCOLS];
+//    
+//    for (monst = monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
+//        if (pmap[monst->xLoc][monst->yLoc].flags & IN_FIELD_OF_VIEW
+//            && monst->creatureState != MONSTER_FLEEING
+//            && !(monst->info.flags & MONST_INANIMATE)) {
+//            
+//            monst->status[STATUS_MAGICAL_FEAR] = monst->maxStatus[STATUS_MAGICAL_FEAR] = rand_range(150, 225);
+//            monst->creatureState = MONSTER_FLEEING;
+//            if (canSeeMonster(monst)) {
+//                numberOfMonsters++;
+//                monsterName(mName, monst, true);
+//            }
+//        }
+//    }
+//    if (numberOfMonsters > 1) {
+//        sprintf(buf, "%s emits a brilliant flash of red light, and the monsters flee!", emitterName);
+//    } else if (numberOfMonsters == 1) {
+//        sprintf(buf, "%s emits a brilliant flash of red light, and %s flees!", emitterName, mName);
+//    } else {
+//        sprintf(buf, "%s emits a brilliant flash of red light!", emitterName);
+//    }
+//    message(buf, false);
+//    colorFlash(&redFlashColor, 0, IN_FIELD_OF_VIEW, 15, DCOLS, player.xLoc, player.yLoc);
+//}
 
 void negationBlast(const char *emitterName) {
     creature *monst, *nextMonst;
@@ -5333,9 +5333,9 @@ void useCharm(item *theItem) {
             messageWithColor("your charm emits a wave of turquoise light that pierces the nearby walls!", &itemMessageColor, false);
             crystalize(charmShattering(theItem->enchant1));
             break;
-        case CHARM_CAUSE_FEAR:
-            causeFear("your charm");
-            break;
+//        case CHARM_CAUSE_FEAR:
+//            causeFear("your charm");
+//            break;
         case CHARM_TELEPORTATION:
             teleport(&player, -1, -1, true);
             break;
@@ -5784,9 +5784,9 @@ void readScroll(item *theItem) {
 				message("the fabric of space boils violently around you, but nothing happens.", false);
 			}
 			break;
-		case SCROLL_CAUSE_FEAR:
-            causeFear("the scroll");
-			break;
+//		case SCROLL_CAUSE_FEAR:
+//            causeFear("the scroll");
+//			break;
 		case SCROLL_NEGATION:
             negationBlast("the scroll");
 			break;
