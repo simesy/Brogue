@@ -3400,7 +3400,9 @@ void demoteMonsterFromLeadership(creature *monst) {
 			} else if (newLeader) {
 				follower->leader = newLeader;
                 follower->targetWaypointIndex = monst->targetWaypointIndex;
-                follower->waypointAlreadyVisited[follower->targetWaypointIndex] = false;
+                if (follower->targetWaypointIndex >= 0) {
+                    follower->waypointAlreadyVisited[follower->targetWaypointIndex] = false;
+                }
 			} else {
 				newLeader = follower;
 				follower->bookkeepingFlags |= MONST_LEADER;
