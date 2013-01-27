@@ -804,15 +804,11 @@ void spawnPeriodicHorde() {
 void teleport(creature *monst, short x, short y, boolean respectTerrainAvoidancePreferences) {
 	short **grid, i, j;
 	char monstFOV[DCOLS][DROWS];
-    
-#ifdef BROGUE_ASSERTS
-    assert(coordinatesAreInMap(x, y));
-#endif
 	
 	zeroOutGrid(monstFOV);
 	getFOVMask(monstFOV, monst->xLoc, monst->yLoc, DCOLS, T_OBSTRUCTS_VISION, 0, false);
 	
-    if (x <= 0 || y <= 0) {
+    if (!coordinatesAreInMap(x, y)) {
         grid = allocGrid();
         fillGrid(grid, 1);
         if (respectTerrainAvoidancePreferences) {
