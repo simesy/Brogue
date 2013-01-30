@@ -1248,7 +1248,7 @@ const blueprint blueprintCatalog[NUMBER_BLUEPRINTS] = {
 	// -- FLAVOR MACHINES --
 	
 	// Bloodwort -- bloodwort stalk, some pods, and surrounding grass
-	{{1,DEEPEST_LEVEL},	{5, 5},	0,          2,			(BP_TREAT_AS_BLOCKING), {
+	{{1,DEEPEST_LEVEL},	{5, 5},     0,          2,			(BP_TREAT_AS_BLOCKING), {
 		{DF_GRASS,	BLOODFLOWER_STALK, SURFACE,	{1, 1},		1,			0,			-1,			0,				0,				0,				0,			0,			(MF_BUILD_AT_ORIGIN | MF_NOT_IN_HALLWAY)},
 		{DF_BLOODFLOWER_PODS_GROW_INITIAL,0, 0, {1, 1},     1,			0,			-1,			0,				0,				1,				0,			0,          (MF_BUILD_AT_ORIGIN | MF_TREAT_AS_BLOCKING)}}},
     // Idyll -- ponds and some grass and forest

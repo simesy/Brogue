@@ -171,7 +171,7 @@ void antiAlias(unsigned char mask[COLS][ROWS]) {
 	}
 }
 
-#define MENU_TITLE_WIDTH	75
+#define MENU_TITLE_WIDTH	74
 #define MENU_TITLE_HEIGHT	19
 
 void initializeMenuFlames(boolean includeTitle,
@@ -180,7 +180,7 @@ void initializeMenuFlames(boolean includeTitle,
 						  signed short flames[COLS][(ROWS + MENU_FLAME_ROW_PADDING)][3],
 						  unsigned char mask[COLS][ROWS]) {
 	short i, j, k, colorSourceCount;
-	const char title[MENU_TITLE_HEIGHT][MENU_TITLE_WIDTH] = {
+	const char title[MENU_TITLE_HEIGHT][MENU_TITLE_WIDTH+1] = {
 		"########   ########       ######         #######   ####     ###  #########",
 		" ##   ###   ##   ###    ##     ###     ##      ##   ##       #    ##     #",
 		" ##    ##   ##    ##   ##       ###   ##        #   ##       #    ##     #",
