@@ -171,7 +171,7 @@ void antiAlias(unsigned char mask[COLS][ROWS]) {
 	}
 }
 
-#define MENU_TITLE_WIDTH	74
+#define MENU_TITLE_WIDTH	75
 #define MENU_TITLE_HEIGHT	19
 
 void initializeMenuFlames(boolean includeTitle,

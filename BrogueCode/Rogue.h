@@ -69,7 +69,7 @@
 #define Fl(N)					(1 << (N))
 
 #define PI 3.14159265
-#define FLOAT_FUDGE 0.000000001
+#define FLOAT_FUDGE 0.00001
 
 // recording and save filenames
 #define LAST_GAME_PATH			"LastGame.broguesave"
