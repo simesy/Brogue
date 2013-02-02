@@ -548,6 +548,11 @@ void initializeRogue(unsigned long seed) {
 		identify(theItem);
 		theItem = addItemToPack(theItem);
 		
+		theItem = generateItem(POTION, POTION_DESCENT);
+        theItem->quantity = 1;
+		identify(theItem);
+		theItem = addItemToPack(theItem);
+		
 //		short i;
 //		for (i=0; i < NUMBER_CHARM_KINDS && i < 4; i++) {
 //			theItem = generateItem(CHARM, i);
@@ -1092,17 +1097,17 @@ void victory(boolean superVictory) {
 	
 	deleteMessages();
     if (superVictory) {
-        message("Light streams through the portal, and you are teleported out of the dungeon.", false);
+        message(    "Light streams through the portal, and you are teleported out of the dungeon.", false);
         copyDisplayBuffer(dbuf, displayBuffer);
         funkyFade(dbuf, &superVictoryColor, 0, 120, mapToWindowX(player.xLoc), mapToWindowY(player.yLoc), false);
         displayMoreSign();
-        printString("Congratulations; you have transcended the Dungeons of Doom!               ", mapToWindowX(0), mapToWindowY(-1), &black, &white, 0);
+        printString("Congratulations; you have transcended the Dungeons of Doom!                 ", mapToWindowX(0), mapToWindowY(-1), &black, &white, 0);
         displayMoreSign();
         clearDisplayBuffer(dbuf);
         deleteMessages();
         strcpy(displayedMessage[0], "You retire in splendor, forever renowned for your remarkable triumph.     ");
     } else {
-        message("You are bathed in sunlight as you throw open the heavy doors.", false);
+        message(    "You are bathed in sunlight as you throw open the heavy doors.", false);
         copyDisplayBuffer(dbuf, displayBuffer);
         funkyFade(dbuf, &white, 0, 100, mapToWindowX(player.xLoc), mapToWindowY(player.yLoc), false);
         displayMoreSign();

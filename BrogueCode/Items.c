@@ -888,7 +888,7 @@ void updateFloorItems() {
             
             pmap[x][y].flags &= ~(HAS_ITEM | ITEM_DETECTED);
             
-            if (theItem->category == POTION) {
+            if (theItem->category == POTION || rogue.depthLevel == DEEPEST_LEVEL) {
                 // Potions don't survive the fall.
                 deleteItem(theItem);
             } else {
