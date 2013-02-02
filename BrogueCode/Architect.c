@@ -1243,7 +1243,8 @@ boolean buildAMachine(enum machineTypes bp,
 							theItem = generateItem(feature->itemCategory, feature->itemKind);
 							failsafe = 1000;
 							while ((feature->itemValueMinimum > 0 && (unsigned short) itemValue(theItem) < feature->itemValueMinimum) // must be at least as expensive as requested
-								   || ((feature->flags & MF_REQUIRE_GOOD_RUNIC) && (!(theItem->flags & ITEM_RUNIC) || (theItem->flags & ITEM_CURSED))) // runic and uncursed if requested
+                                   || (theItem->flags & ITEM_CURSED)
+								   || ((feature->flags & MF_REQUIRE_GOOD_RUNIC) && (!(theItem->flags & ITEM_RUNIC))) // runic if requested
 								   || ((feature->flags & MF_NO_THROWING_WEAPONS) && theItem->category == WEAPON && theItem->quantity > 1)) { // no throwing weapons if prohibited
 								deleteItem(theItem);
 								theItem = generateItem(feature->itemCategory, feature->itemKind);
