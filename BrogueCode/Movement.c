@@ -3883,7 +3883,7 @@ void playerTurnEnded() {
 						monsterName(buf2, monst, false);
 						sprintf(buf, "you %s a%s %s",
 								playerCanDirectlySee(monst->xLoc, monst->yLoc) ? "see" : "sense",
-								(isVowel(buf2) ? "n" : ""),
+								(isVowelish(buf2) ? "n" : ""),
 								buf2);
 						if (rogue.cautiousMode) {
 							strcat(buf, ".");

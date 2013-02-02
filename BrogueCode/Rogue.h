@@ -2718,7 +2718,7 @@ extern "C" {
 	item *itemAtLoc(short x, short y);
 	item *dropItem(item *theItem);
 	itemTable *tableForItemCategory(enum itemCategory theCat);
-	boolean isVowel(char *theChar);
+	boolean isVowelish(char *theChar);
     short charmEffectDuration(short charmKind, short enchant);
     short charmRechargeDelay(short charmKind, short enchant);
 	boolean itemIsCarried(item *theItem);

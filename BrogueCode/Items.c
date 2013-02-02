@@ -1320,7 +1320,7 @@ void itemName(item *theItem, char *root, boolean includeDetails, boolean include
 		} else if (!(theItem->category & ARMOR) && !(theItem->category & FOOD && theItem->kind == RATION)) {
 			// otherwise prepend a/an if the item is not armor and not a ration of food;
 			// armor gets no article, and "some food" was taken care of above.
-			sprintf(article, "a%s ", (isVowel(root) ? "n" : ""));
+			sprintf(article, "a%s ", (isVowelish(root) ? "n" : ""));
 		}
 	}
 	// strcat(buf, suffixID);
@@ -1365,7 +1365,7 @@ itemTable *tableForItemCategory(enum itemCategory theCat) {
 	}
 }
 
-boolean isVowel(char *theChar) {
+boolean isVowelish(char *theChar) {
 	while (*theChar == COLOR_ESCAPE) {
 		theChar += 4;
 	}
@@ -1762,7 +1762,7 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 						enchant = netEnchant(theItem);
 						if (theItem->enchant2 == W_SLAYING) {
 							sprintf(buf2, "It will never fail to slay a%s %s in a single stroke. ",
-                                    (isVowel(monsterCatalog[theItem->vorpalEnemy].monsterName) ? "n" : ""),
+                                    (isVowelish(monsterCatalog[theItem->vorpalEnemy].monsterName) ? "n" : ""),
 									monsterCatalog[theItem->vorpalEnemy].monsterName);
 							strcat(buf, buf2);
 						} else if (theItem->enchant2 == W_MULTIPLICITY) {

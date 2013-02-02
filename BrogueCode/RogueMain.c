@@ -1058,7 +1058,7 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
 		sprintf(buf, "%s on level %i%s.", killedBy, rogue.depthLevel,
 				(numberOfMatchingPackItems(AMULET, 0, 0, false) > 0 ? ", amulet in hand" : ""));
 	} else {
-		sprintf(buf, "Killed by a%s %s on level %i%s.", (isVowel(killedBy) ? "n" : ""), killedBy,
+		sprintf(buf, "Killed by a%s %s on level %i%s.", (isVowelish(killedBy) ? "n" : ""), killedBy,
 				rogue.depthLevel, (numberOfMatchingPackItems(AMULET, 0, 0, false) > 0 ? ", amulet in hand" : ""));
 	}
 	
