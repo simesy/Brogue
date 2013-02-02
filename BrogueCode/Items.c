@@ -3184,6 +3184,13 @@ boolean polymorph(creature *monst) {
 	if (monst == &player || (monst->info.flags & MONST_INANIMATE)) {
 		return false; // Sorry, this is not Nethack.
 	}
+    
+    if (monst->creatureState == MONSTER_FLEEING
+        && (monst->info.flags & (MONST_MAINTAINS_DISTANCE | MONST_FLEES_NEAR_DEATH)) || (monst->info.flags & MA_HIT_STEAL_FLEE)) {
+        
+        monst->creatureState = MONSTER_TRACKING_SCENT;
+        monst->creatureMode = MODE_NORMAL;
+    }
 	
 	unAlly(monst); // Sorry, no cheap dragon allies.
 	healthFraction = monst->currentHP / monst->info.maxHP;
