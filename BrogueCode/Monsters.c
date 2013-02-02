@@ -950,6 +950,9 @@ unsigned long burnedTerrainFlagsAtLoc(short x, short y) {
     for (layer = 0; layer < NUMBER_TERRAIN_LAYERS; layer++) {
         if (tileCatalog[pmap[x][y].layers[layer]].flags & T_IS_FLAMMABLE) {
             flags |= successorTerrainFlags(pmap[x][y].layers[layer], SUBSEQ_BURN);
+            if (tileCatalog[pmap[x][y].layers[layer]].mechFlags & TM_EXPLOSIVE_PROMOTE) {
+                flags |= successorTerrainFlags(pmap[x][y].layers[layer], SUBSEQ_PROMOTE);
+            }
         }
     }
     
