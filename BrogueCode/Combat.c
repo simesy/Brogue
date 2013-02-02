@@ -1036,10 +1036,6 @@ boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
 			damage *= 3; // Treble damage for sneak attacks!
 		}
 		
-		if (defender == &player && rogue.depthLevel == 1) {
-			damage = (damage + 1) /2; // player takes half damage on depth 1
-		}
-		
 		damage = min(damage, defender->currentHP); // Can't do more damage to a creature than it has remaining health.
 		
 		if (((attacker == &player && rogue.transference) || (attacker != &player && (attacker->info.abilityFlags & MA_TRANSFERENCE)))
