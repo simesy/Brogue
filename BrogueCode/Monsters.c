@@ -421,6 +421,9 @@ unsigned long avoidedFlagsForMonster(creatureType *monsterType) {
 	if (monsterType->flags & (MONST_IMMUNE_TO_FIRE)) {
 		flags &= ~T_IS_FIRE;
 	}
+	if (monsterType->flags & (MONST_FLIES)) {
+		flags &= ~(T_CAUSES_POISON);
+	}
 	return flags;
 }
 
