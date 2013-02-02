@@ -2425,7 +2425,8 @@ void finishDoors() {
     const short secretDoorChance = clamp((rogue.depthLevel - 1) * 67 / 25, 0, 67);
 	for (i=1; i<DCOLS-1; i++) {
 		for (j=1; j<DROWS-1; j++) {
-			if (pmap[i][j].layers[DUNGEON] == DOOR) {
+			if (pmap[i][j].layers[DUNGEON] == DOOR
+                && pmap[i][j].machineNumber == 0) {
 				if ((!cellHasTerrainFlag(i+1, j, T_OBSTRUCTS_PASSABILITY) || !cellHasTerrainFlag(i-1, j, T_OBSTRUCTS_PASSABILITY))
 					&& (!cellHasTerrainFlag(i, j+1, T_OBSTRUCTS_PASSABILITY) || !cellHasTerrainFlag(i, j-1, T_OBSTRUCTS_PASSABILITY))) {
 					// If there's passable terrain to the left or right, and there's passable terrain
