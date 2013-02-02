@@ -3594,6 +3594,7 @@ void playerFalls() {
     }
     createFlare(player.xLoc, player.yLoc, GENERIC_FLASH_LIGHT);
     animateFlares(rogue.flares, rogue.flareCount);
+    rogue.flareCount = 0;
 }
 
 void handleAllyHungerAlerts() {

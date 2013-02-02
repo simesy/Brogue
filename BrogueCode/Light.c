@@ -368,6 +368,10 @@ void animateFlares(flare **flares, short count) {
     boolean inView, fastForward, atLeastOneFlareStillActive;
     short i; // i iterates through the flare list
     
+#ifdef BROGUE_ASSERTS
+    assert(rogue.RNG = RNG_SUBSTANTIVE);
+#endif
+    
     backUpLighting(lights);
     fastForward = rogue.trueColorMode;
     
