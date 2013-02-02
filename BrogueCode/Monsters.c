@@ -2931,15 +2931,22 @@ void monstersTurn(creature *monst) {
 			}
 		}
 		
-		// if a captive leader is adjacent and captive and healthy enough to withstand an attack, then attack him.
-		if (monst->bookkeepingFlags & MONST_FOLLOWER && monst->leader->bookkeepingFlags & MONST_CAPTIVE
-			&& distanceBetween(monst->xLoc, monst->yLoc, monst->leader->xLoc, monst->leader->yLoc) == 1
+		// if a captive leader is captive and healthy enough to withstand an attack, then approach or attack him.
+		if ((monst->bookkeepingFlags & MONST_FOLLOWER)
+            && (monst->leader->bookkeepingFlags & MONST_CAPTIVE)
 			&& monst->leader->currentHP > monst->info.damage.upperBound * monsterDamageAdjustmentAmount(monst)
             && !diagonalBlocked(monst->xLoc, monst->yLoc, monst->leader->xLoc, monst->leader->yLoc)) {
             
-			attack(monst, monst->leader, false);
-			monst->ticksUntilTurn = monst->attackSpeed;
-			return;
+            if (distanceBetween(monst->xLoc, monst->yLoc, monst->leader->xLoc, monst->leader->yLoc) == 1) {
+                // Attack if adjacent.
+                attack(monst, monst->leader, false);
+                monst->ticksUntilTurn = monst->attackSpeed;
+                return;
+            } else {
+                // Otherwise, approach.
+                moveTowardLeader(monst);
+                return;
+            }
 		}
 		
 		// if the monster is adjacent to an ally and not fleeing, attack the ally
