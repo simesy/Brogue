@@ -3329,9 +3329,9 @@ void decrementPlayerStatus() {
 	}
 	
 	if (player.status[STATUS_SHIELDED]) {
-		player.status[STATUS_SHIELDED] = max(0, player.status[STATUS_SHIELDED] - 10);
-        if (!player.status[STATUS_SHIELDED]) {
-            player.maxStatus[STATUS_SHIELDED] = 0;
+		player.status[STATUS_SHIELDED] -= player.maxStatus[STATUS_SHIELDED] / 20;
+        if (player.status[STATUS_SHIELDED] <= 0) {
+            player.status[STATUS_SHIELDED] = player.maxStatus[STATUS_SHIELDED] = 0;
         }
 	}
     

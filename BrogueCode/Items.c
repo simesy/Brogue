@@ -461,10 +461,10 @@ void populateItems(short upstairsX, short upstairsY) {
 #endif
 	
 	if (rogue.depthLevel > AMULET_LEVEL) {
-        if (rogue.depthLevel - AMULET_LEVEL - 1 > 5) {
+        if (rogue.depthLevel - AMULET_LEVEL - 1 >= 8) {
             numberOfItems = 1;
         } else {
-            const short lumenstoneDistribution[6] = {3, 3, 3, 2, 2, 2};
+            const short lumenstoneDistribution[8] = {3, 3, 3, 2, 2, 2, 2, 2};
             numberOfItems = lumenstoneDistribution[rogue.depthLevel - AMULET_LEVEL - 1];
         }
 		numberOfGoldPiles = 0;
@@ -4183,8 +4183,10 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 			break;
 		case BOLT_SHIELDING:
 			if (monst) {
-				monst->status[STATUS_SHIELDED] = max(monst->status[STATUS_SHIELDED], staffProtection(boltLevel));
-				monst->maxStatus[STATUS_SHIELDED] = max(monst->status[STATUS_SHIELDED], monst->maxStatus[STATUS_SHIELDED]);
+                if (staffProtection(boltLevel) > monst->status[STATUS_SHIELDED]) {
+                    monst->status[STATUS_SHIELDED] = staffProtection(boltLevel);
+                }
+                monst->maxStatus[STATUS_SHIELDED] = monst->status[STATUS_SHIELDED];
 				flashMonster(monst, boltColors[BOLT_SHIELDING], 100);
 				autoID = true;
 			}
@@ -5304,8 +5306,10 @@ void useCharm(item *theItem) {
             message("You feel much healthier.", false);
             break;
         case CHARM_PROTECTION:
-            player.status[STATUS_SHIELDED] = max(player.status[STATUS_SHIELDED], charmProtection(theItem->enchant1));
-            player.maxStatus[STATUS_SHIELDED] = max(player.status[STATUS_SHIELDED], player.maxStatus[STATUS_SHIELDED]);
+            if (charmProtection(theItem->enchant1) > player.status[STATUS_SHIELDED]) {
+                player.status[STATUS_SHIELDED] = charmProtection(theItem->enchant1);
+            }
+            player.maxStatus[STATUS_SHIELDED] = player.status[STATUS_SHIELDED];
             flashMonster(&player, boltColors[BOLT_SHIELDING], 100);
             message("A shimmering shield coalesces around you.", false);
             break;
