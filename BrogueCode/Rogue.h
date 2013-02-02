@@ -2061,7 +2061,7 @@ enum machineFeatureFlags {
 	MF_NO_THROWING_WEAPONS			= Fl(4),	// the generated item cannot be a throwing weapon
 	MF_GENERATE_HORDE				= Fl(5),	// generate a monster horde that has all of the horde flags
 	MF_BUILD_AT_ORIGIN				= Fl(6),	// generate this feature at the room entrance
-	MF_WIRE_TO_MACHINE				= Fl(7),	// wire it up to the machine
+	// unused                       = Fl(7),	// 
 	MF_PERMIT_BLOCKING				= Fl(8),	// permit the feature to block the map's passability (e.g. to add a locked door)
 	MF_TREAT_AS_BLOCKING			= Fl(9),	// treat this terrain as though it blocks, for purposes of deciding whether it can be placed there
 	MF_NEAR_ORIGIN					= Fl(10),	// feature must spawn in the rough quarter of tiles closest to the door

@@ -1369,8 +1369,23 @@ boolean isVowel(char *theChar) {
 	while (*theChar == COLOR_ESCAPE) {
 		theChar += 4;
 	}
-	return (*theChar == 'a' || *theChar == 'e' || *theChar == 'i' || *theChar == 'o' || *theChar == 'u' ||
-			*theChar == 'A' || *theChar == 'E' || *theChar == 'I' || *theChar == 'O' || *theChar == 'U');
+    char str[3] = {'\0', '\0', '\0'};
+    str[0] = theChar[0];
+    upperCase(str);
+    if (str[0]) {
+        str[1] = theChar[1];
+        upperCase(&(str[1]));
+    }
+    if (str[0] == 'A'
+        || (str[0] == 'E' && str[1] != 'U') // Words that start with "eu" aren't treated like vowels; e.g., "a" eucalpytus staff.
+        || str[0] == 'I'
+        || str[0] == 'O'
+        || str[0] == 'U') {
+        
+        return true;
+    } else {
+        return false;
+    }
 }
 
 short charmEffectDuration(short charmKind, short enchant) {
