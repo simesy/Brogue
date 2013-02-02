@@ -373,7 +373,7 @@ void animateFlares(flare **flares, short count) {
 #endif
     
     backUpLighting(lights);
-    fastForward = rogue.trueColorMode;
+    fastForward = rogue.trueColorMode || rogue.playbackFastForward;
     
     do {
         inView = false;
@@ -394,7 +394,7 @@ void animateFlares(flare **flares, short count) {
         demoteVisibility();
         updateFieldOfViewDisplay(false, true);
         if (!fastForward && (inView || rogue.playbackOmniscience) && atLeastOneFlareStillActive) {
-            fastForward = rogue.playbackFastForward || pauseBrogue(10);
+            fastForward = pauseBrogue(10);
         }
         recordOldLights();
         restoreLighting(lights);
