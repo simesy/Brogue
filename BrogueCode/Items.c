@@ -1376,15 +1376,16 @@ boolean isVowel(char *theChar) {
         str[1] = theChar[1];
         upperCase(&(str[1]));
     }
-    if (str[0] == 'A'
-        || (str[0] == 'E' && str[1] != 'U') // Words that start with "eu" aren't treated like vowels; e.g., "a" eucalpytus staff.
-        || str[0] == 'I'
-        || str[0] == 'O'
-        || str[0] == 'U') {
+    if (!strcmp(str, "UN")          // Words that start with "un" aren't treated like vowels; e.g., "a" unicorn.
+        || !strcmp(str, "EU")) {    // Words that start with "eu" aren't treated like vowels; e.g., "a" eucalpytus staff.
         
-        return true;
-    } else {
         return false;
+    } else {
+        return (str[0] == 'A'
+                || str[0] == 'E'
+                || str[0] == 'I'
+                || str[0] == 'O'
+                || str[0] == 'U');
     }
 }
 
