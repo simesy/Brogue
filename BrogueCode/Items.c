@@ -1383,7 +1383,6 @@ short charmEffectDuration(short charmKind, short enchant) {
         25, // Telepathy
         10, // Levitation
         0,  // Shattering
-        0,  // Cause fear
         0,  // Teleportation
         0,  // Recharging
         0,  // Negation
@@ -1397,7 +1396,6 @@ short charmEffectDuration(short charmKind, short enchant) {
         25, // Telepathy
         25, // Levitation
         0,  // Shattering
-        0,  // Cause fear
         0,  // Teleportation
         0,  // Recharging
         0,  // Negation
@@ -1416,7 +1414,6 @@ short charmRechargeDelay(short charmKind, short enchant) {
         800,    // Telepathy
         800,    // Levitation
         2500,   // Shattering
-        3000,   // Cause fear
         1000,   // Teleportation
         10000,  // Recharging
         2500,   // Negation
@@ -1430,7 +1427,6 @@ short charmRechargeDelay(short charmKind, short enchant) {
 //        30, // Telepathy
 //        25, // Levitation
 //        40, // Shattering
-//        20, // Cause fear
 //        20, // Teleportation
 //        30, // Recharging
 //        25, // Negation
@@ -1442,7 +1438,6 @@ short charmRechargeDelay(short charmKind, short enchant) {
         35, // Telepathy
         35, // Levitation
         40, // Shattering
-        35, // Cause fear
         45, // Teleportation
         40, // Recharging
         40, // Negation
