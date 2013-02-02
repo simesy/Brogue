@@ -31,7 +31,7 @@
 #define USE_UNICODE
 
 // version string -- no more than 16 bytes:
-#define BROGUE_VERSION_STRING "1.7.1"
+#define BROGUE_VERSION_STRING "1.7.1d"
 
 // debug macros -- define DEBUGGING as 1 to enable debugging.
 
