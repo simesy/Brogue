@@ -3914,6 +3914,7 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 				monst = NULL;
 			}
 		}
+		shootingMonst->bookkeepingFlags &= ~MONST_SUBMERGED;
 		pmap[x][y].flags |= (shootingMonst == &player ? HAS_PLAYER : HAS_MONSTER);
 		shootingMonst->xLoc = x;
 		shootingMonst->yLoc = y;
