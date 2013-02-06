@@ -953,7 +953,7 @@ enum tileFlags {
 #define MAX_EXP								100000000L
 
 #define XPXP_NEEDED_FOR_ABSORB				4000 // XPXP required for your allies to be eligible to absorb an enemy ability/behavior
-#define XPXP_NEEDED_FOR_LEVELUP				1300 // XPXP required per increase in your allies' stats
+#define XPXP_NEEDED_FOR_LEVELUP				1400 // XPXP required per increase in your allies' stats
 
 #define ROOM_MIN_WIDTH						4
 #define ROOM_MAX_WIDTH						20
