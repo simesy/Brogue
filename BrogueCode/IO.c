@@ -938,14 +938,15 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 		} else if ((pmap[x][y].flags & HAS_MONSTER)
 				   && (playerCanSeeOrSense(x, y) || ((monst->info.flags & MONST_IMMOBILE) && (pmap[x][y].flags & DISCOVERED)))
 				   && (!monst->status[STATUS_INVISIBLE] || monst->creatureState == MONSTER_ALLY || rogue.playbackOmniscience)
-				   && (!(monst->bookkeepingFlags & MONST_SUBMERGED) || rogue.inWater)) {
+				   && (!(monst->bookkeepingFlags & MONST_SUBMERGED) || rogue.inWater || rogue.playbackOmniscience)) {
 			needDistinctness = true;
 			if (player.status[STATUS_HALLUCINATING] > 0 && !(monst->info.flags & MONST_INANIMATE) && !rogue.playbackOmniscience) {
 				cellChar = rand_range('a', 'z') + (rand_range(0, 1) ? 'A' - 'a' : 0);
 				cellForeColor = *(monsterCatalog[rand_range(1, NUMBER_MONSTER_KINDS - 1)].foreColor);
 			} else {
 				cellChar = monst->info.displayChar;
-				if (monst->status[STATUS_INVISIBLE]) { // Invisible allies show up on the screen with a transparency effect.
+				if (monst->status[STATUS_INVISIBLE] || (monst->bookkeepingFlags & MONST_SUBMERGED)) {
+                    // Invisible allies show up on the screen with a transparency effect.
 					cellForeColor = cellBackColor;
 				} else {
 					cellForeColor = *(monst->info.foreColor);
