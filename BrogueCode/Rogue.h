@@ -885,6 +885,8 @@ enum monsterTypes {
 	NUMBER_MONSTER_KINDS
 };
 
+#define NUMBER_MUTATORS             7
+
 #define	NUMBER_HORDES				160
 
 // flavors
@@ -1303,6 +1305,9 @@ enum dungeonFeatureTypes {
 	DF_BLOAT_EXPLOSION,
 	DF_BLOOD_EXPLOSION,
 	DF_FLAMEDANCER_CORONA,
+    
+	DF_MUTATION_EXPLOSION,
+    DF_MUTATION_LICHEN,
 	
 	DF_REPEL_CREATURES,
 	DF_ROT_GAS_PUFF,
@@ -1742,6 +1747,7 @@ enum monsterBehaviorFlags {
 									   MONST_ALWAYS_HUNTING | MONST_ATTACKABLE_THRU_WALLS | MONST_WILL_NOT_USE_STAIRS),
 	LEARNABLE_BEHAVIORS				= (MONST_INVISIBLE | MONST_FLIES | MONST_IMMUNE_TO_FIRE | MONST_REFLECT_4),
 	MONST_NEVER_VORPAL_ENEMY		= (MONST_INANIMATE | MONST_IMMOBILE | MONST_RESTRICTED_TO_LIQUID | MONST_GETS_TURN_ON_ACTIVATION | MONST_MAINTAINS_DISTANCE),
+    MONST_NEVER_MUTATED             = (MONST_INVISIBLE | MONST_INANIMATE | MONST_IMMOBILE),
 };
 
 enum monsterAbilityFlags {
@@ -1777,6 +1783,7 @@ enum monsterAbilityFlags {
 	LEARNABLE_ABILITIES				= (MA_CAST_HEAL | MA_CAST_HASTE | MA_CAST_PROTECTION | MA_CAST_BLINK | MA_CAST_NEGATION | MA_CAST_SPARK | MA_CAST_FIRE
 									   | MA_CAST_SLOW | MA_CAST_DISCORD | MA_TRANSFERENCE | MA_CAUSES_WEAKNESS),
     MA_NEVER_VORPAL_ENEMY           = (MA_KAMIKAZE),
+    MA_NEVER_MUTATED                = (MA_KAMIKAZE),
 };
 
 enum monsterBookkeepingFlags {
@@ -1833,8 +1840,8 @@ typedef struct monsterWords {
 	char absorbing[40];
 	char absorbStatus[40];
 	char attack[5][30];
-	char DFMessage[DCOLS];
-	char summonMessage[DCOLS];
+	char DFMessage[DCOLS * 2];
+	char summonMessage[DCOLS * 2];
 } monsterWords;
 
 enum creatureStates {
@@ -1849,6 +1856,23 @@ enum creatureModes {
 	MODE_NORMAL,
 	MODE_PERM_FLEEING
 };
+
+typedef struct mutation {
+    char title[100];
+    const color *textColor;
+    short healthFactor;
+    short moveSpeedFactor;
+    short attackSpeedFactor;
+    short defenseFactor;
+    short damageFactor;
+    short DFChance;
+    enum dungeonFeatureTypes DFType;
+    unsigned long monsterFlags;
+    unsigned long monsterAbilityFlags;
+    unsigned long forbiddenFlags;
+    unsigned long forbiddenAbilityFlags;
+    char description[1000];
+} mutation;
 
 typedef struct hordeType {
 	enum monsterTypes leaderType;
@@ -1879,6 +1903,8 @@ typedef struct creature {
 	short weaknessAmount;				// number of points of weakness that are inflicted by the weakness status
 	enum creatureStates creatureState;	// current behavioral state
 	enum creatureModes creatureMode;	// current behavioral mode (higher-level than state)
+    
+    short mutationIndex;                // what mutation the monster has (or -1 for none)
     
     // Waypoints:
     short targetWaypointIndex;          // the index number of the waypoint we're pathing toward
@@ -2526,7 +2552,7 @@ extern "C" {
 					   short columnsRightFromOrigin, long startSlope, long endSlope, unsigned long forbiddenTerrain,
 					   unsigned long forbiddenFlags, boolean cautiousOnWalls);
 	
-	creature *generateMonster(short monsterID, boolean itemPossible);
+    creature *generateMonster(short monsterID, boolean itemPossible, boolean mutationPossible);
 	short chooseMonster(short forLevel);
 	creature *spawnHorde(short hordeID, short x, short y, unsigned long forbiddenFlags, unsigned long requiredFlags);
 	void fadeInMonster(creature *monst);
@@ -2534,6 +2560,7 @@ extern "C" {
 	boolean monstersAreTeammates(creature *monst1, creature *monst2);
 	boolean monstersAreEnemies(creature *monst1, creature *monst2);
 	void initializeGender(creature *monst);
+    boolean stringsMatch(const char *str1, const char *str2);
 	void resolvePronounEscapes(char *text, creature *monst);
 	short pickHordeType(short depth, enum monsterTypes summonerType, unsigned long forbiddenFlags, unsigned long requiredFlags);
 	creature *cloneMonster(creature *monst, boolean announce, boolean placeClone);

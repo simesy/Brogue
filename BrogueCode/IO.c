@@ -3714,7 +3714,7 @@ void highlightScreenCell(short x, short y, color *highlightColor, short strength
 
 // returns the y-coordinate after the last line printed
 short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight) {
-	char buf[COLS], monstName[COLS], redColorEscape[5], grayColorEscape[5];
+	char buf[COLS], buf2[COLS], monstName[COLS], redColorEscape[5], grayColorEscape[5];
 	uchar monstChar;
 	color monstForeColor, monstBackColor, healthBarColor, tempColor;
 	short initialY, i, j, highlightStrength, displayedArmor;
@@ -3815,6 +3815,25 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 		printString("                   ", 1, y, &white, &black, 0);
 		printString(buf, 1, y++, (dim ? &gray : &white), &black, 0);
 	}
+    
+    // mutation, if any
+    if (y < ROWS - 1
+        && monst->mutationIndex >= 0) {
+        
+        strcpy(buf, "                    ");
+        sprintf(buf2, "xxxx(%s)", mutationCatalog[monst->mutationIndex].title);
+        tempColor = *mutationCatalog[monst->mutationIndex].textColor;
+        if (dim) {
+            applyColorAverage(&tempColor, &black, 50);
+        }
+        encodeMessageColor(buf2, 0, &tempColor);
+        strcpy(buf + ((strLenWithoutEscapes(buf) - strLenWithoutEscapes(buf2)) / 2), buf2);
+        for (i = strlen(buf); i < 20 + 4; i++) {
+            buf[i] = ' ';
+        }
+        buf[24] = '\0';
+		printString(buf, 0, y++, (dim ? &gray : &white), &black, 0);
+    }
 	
 	// hit points
 	if (monst->info.maxHP > 1) {
@@ -3828,7 +3847,6 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 	}
 	
 	if (monst == &player) {
-		
 		// nutrition
 		if (player.status[STATUS_NUTRITION] > HUNGER_THRESHOLD) {
 			printProgressBar(0, y++, "Nutrition", player.status[STATUS_NUTRITION], STOMACH_SIZE, &blueBar, dim);
@@ -3838,7 +3856,7 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 			printProgressBar(0, y++, "Nutrition (Weak)", player.status[STATUS_NUTRITION], STOMACH_SIZE, &blueBar, dim);
 		} else if (player.status[STATUS_NUTRITION] > 0) {
 			printProgressBar(0, y++, "Nutrition (Faint)", player.status[STATUS_NUTRITION], STOMACH_SIZE, &blueBar, dim);
-		} else {
+		} else if (y < ROWS - 1) {
 			printString("      STARVING      ", 0, y++, &badMessageColor, &black, NULL);
 		}
 	}
@@ -3944,7 +3962,7 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 	if (highlight) {
 		for (i=0; i<20; i++) {
 			highlightStrength = (short) (10 * sin(PI * i / (20-1)));
-			for (j=initialY; j < (y == ROWS - 1 ? y : y - 1); j++) {
+			for (j=initialY; j < (y == ROWS - 1 ? y : min(y - 1, ROWS - 1)); j++) {
 				highlightScreenCell(i, j, &white, highlightStrength);
 			}
 		}

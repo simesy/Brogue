@@ -84,6 +84,12 @@ short hitProbability(creature *attacker, creature *defender) {
 	if (defender->status[STATUS_STUCK] || (defender->bookkeepingFlags & MONST_CAPTIVE)) {
 		return 100;
 	}
+    
+    if ((defender->bookkeepingFlags & MONST_SEIZED)
+        && (attacker->bookkeepingFlags & MONST_SEIZING)) {
+        
+        return 100;
+    }
 	
 	if (attacker == &player && rogue.weapon) {
         if ((rogue.weapon->flags & ITEM_RUNIC) && rogue.weapon->enchant2 == W_SLAYING && rogue.weapon->vorpalEnemy == defender->info.monsterID) {
@@ -633,7 +639,7 @@ void magicWeaponHit(creature *defender, item *theItem, boolean backstabbed) {
 //					getQualifyingLocNear(newLoc, defender->xLoc, defender->yLoc, true, 0,
 //										 T_PATHING_BLOCKER & ~(T_LAVA_INSTA_DEATH | T_IS_DEEP_WATER | T_AUTO_DESCENT),
 //										 (HAS_PLAYER | HAS_MONSTER), false, false);
-					newMonst = generateMonster(MK_SPECTRAL_IMAGE, true);
+					newMonst = generateMonster(MK_SPECTRAL_IMAGE, true, false);
                     getQualifyingPathLocNear(&(newMonst->xLoc), &(newMonst->yLoc), defender->xLoc, defender->yLoc, true,
                                              T_DIVIDES_LEVEL & avoidedFlagsForMonster(&(newMonst->info)), HAS_PLAYER,
                                              avoidedFlagsForMonster(&(newMonst->info)), (HAS_PLAYER | HAS_MONSTER | HAS_UP_STAIRS | HAS_DOWN_STAIRS), false);

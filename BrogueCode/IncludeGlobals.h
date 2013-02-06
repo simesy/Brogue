@@ -191,6 +191,7 @@ extern const blueprint blueprintCatalog[NUMBER_BLUEPRINTS];
 extern creatureType monsterCatalog[NUMBER_MONSTER_KINDS];
 extern monsterWords monsterText[NUMBER_MONSTER_KINDS];
 extern hordeType hordeCatalog[NUMBER_HORDES];
+extern const mutation mutationCatalog[NUMBER_MUTATORS];
 
 extern color *boltColors[NUMBER_BOLT_KINDS];
 

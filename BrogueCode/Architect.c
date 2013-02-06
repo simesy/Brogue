@@ -1343,7 +1343,7 @@ boolean buildAMachine(enum machineTypes bp,
 						}
 						
 						if (feature->flags & MF_GENERATE_MONSTER) {
-							monst = generateMonster(feature->monsterID, true);
+							monst = generateMonster(feature->monsterID, true, true);
 							if (monst) {
 								monst->xLoc = featX;
 								monst->yLoc = featY;

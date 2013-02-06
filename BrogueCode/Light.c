@@ -369,7 +369,7 @@ void animateFlares(flare **flares, short count) {
     short i; // i iterates through the flare list
     
 #ifdef BROGUE_ASSERTS
-    assert(rogue.RNG = RNG_SUBSTANTIVE);
+    assert(rogue.RNG == RNG_SUBSTANTIVE);
 #endif
     
     backUpLighting(lights);

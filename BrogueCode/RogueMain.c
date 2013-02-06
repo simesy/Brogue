@@ -357,6 +357,7 @@ void initializeRogue(unsigned long seed) {
 	rogue.previousHealthPercent = 100;
 	player.creatureState = MONSTER_ALLY;
 	player.ticksUntilTurn = 0;
+    player.mutationIndex = -1;
 	
 	rogue.depthLevel = 1;
     rogue.deepestLevel = 1;

@@ -1366,18 +1366,18 @@ itemTable *tableForItemCategory(enum itemCategory theCat) {
 }
 
 boolean isVowelish(char *theChar) {
+    short i;
+    
 	while (*theChar == COLOR_ESCAPE) {
 		theChar += 4;
 	}
-    char str[3] = {'\0', '\0', '\0'};
-    str[0] = theChar[0];
-    upperCase(str);
-    if (str[0]) {
-        str[1] = theChar[1];
+    char str[30];
+    strncpy(str, theChar, 29);
+    for (i = 0; i < 30; i++) {
         upperCase(&(str[1]));
     }
-    if (!strcmp(str, "UN")          // Words that start with "un" aren't treated like vowels; e.g., "a" unicorn.
-        || !strcmp(str, "EU")) {    // Words that start with "eu" aren't treated like vowels; e.g., "a" eucalpytus staff.
+    if (stringsMatch(str, "UNI")        // Words that start with "uni" aren't treated like vowels; e.g., "a" unicorn.
+        || stringsMatch(str, "EU")) {   // Words that start with "eu" aren't treated like vowels; e.g., "a" eucalpytus staff.
         
         return false;
     } else {
@@ -4175,7 +4175,7 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 		case BOLT_CONJURATION:
 			
 			for (j = 0; j < (staffBladeCount(boltLevel)); j++) {
-				monst = generateMonster(MK_SPECTRAL_BLADE, true);
+				monst = generateMonster(MK_SPECTRAL_BLADE, true, false);
 //				getQualifyingLocNear(newLoc, x, y, true, 0,
 //									 T_PATHING_BLOCKER & ~(T_LAVA_INSTA_DEATH | T_IS_DEEP_WATER | T_AUTO_DESCENT),
 //									 (HAS_PLAYER | HAS_MONSTER), false, false);

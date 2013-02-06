@@ -648,6 +648,10 @@ dungeonFeature dungeonFeatureCatalog[NUMBER_DUNGEON_FEATURES] = {
     {GAS_EXPLOSION,				SURFACE,	350,	100,	0,	"", EXPLOSION_FLARE_LIGHT},
 	{RED_BLOOD,					SURFACE,	150,	30,		0},
 	{FLAMEDANCER_FIRE,			SURFACE,	200,	75,		0},
+    
+    // mutation effects
+    {GAS_EXPLOSION,				SURFACE,	350,	100,	0,	"The corpse detonates with terrifying force!", EXPLOSION_FLARE_LIGHT},
+	{LICHEN,					SURFACE,	70,		60,		0,  "Poisonous spores burst from the corpse!"},
 	
 	// misc
 	{NOTHING,					GAS,		0,		0,		DFF_EVACUATE_CREATURES_FIRST},
@@ -1300,7 +1304,7 @@ const blueprint blueprintCatalog[NUMBER_BLUEPRINTS] = {
 		{0,			MACHINE_TRIGGER_FLOOR,DUNGEON,{0,0},	2,			0,			-1,			0,				0,				0,				0,			0,			(MF_EVERYWHERE)}}},	
 	// Sentinels
 	{{1,DEEPEST_LEVEL},	{40, 40},	0,		2,			(BP_NO_INTERIOR_FLAG), {
-		{0,			STATUE_INERT,DUNGEON,		{3, 3},		3,			0,			-1,			0,				MK_SENTINEL,	2,				0,			0,			(MF_GENERATE_MONSTER | MF_NOT_IN_HALLWAY | MF_TREAT_AS_BLOCKING | MF_IN_VIEW_OF_ORIGIN)},
+		{0,			STATUE_DORMANT,DUNGEON,		{3, 3},		3,			0,			-1,			0,				MK_SENTINEL,	2,				0,			0,			(MF_GENERATE_MONSTER | MF_NOT_IN_HALLWAY | MF_TREAT_AS_BLOCKING | MF_IN_VIEW_OF_ORIGIN)},
 		{DF_ASH,	0,			0,				{2, 3},		0,			0,			-1,			0,				0,				0,				0,			0,			0}}},
 };
 
@@ -1668,6 +1672,26 @@ const monsterWords monsterText[NUMBER_MONSTER_KINDS] = {
 		{"touches", {0}},
 		{0},
 		"bursts as a newborn phoenix rises from the ashes!"},
+};
+
+#pragma mark Mutation definitions
+
+const mutation mutationCatalog[NUMBER_MUTATORS] = {
+    //Title         textColor       healthFactor    moveSpdMult attackSpdMult   defMult damMult DF% DFtype  monstFlags  abilityFlags    forbiddenFlags      forbiddenAbilities
+    {"explosive",   &orange,        50,             100,        100,            50,     100,    0,  DF_MUTATION_EXPLOSION, 0,      MA_DF_ON_DEATH, 0,          0,
+        "A rare mutation will cause $HIMHER to explode violently when $HESHE dies."},
+    {"infested",    &lichenColor,   50,             100,        100,            50,     100,    0,  DF_MUTATION_LICHEN, 0,      MA_DF_ON_DEATH, 0,          0,
+        "$HESHE has been infested by deadly lichen spores; poisonous fungus will spread from $HISHER corpse when $HESHE dies."},
+    {"agile",       &lightBlue,     100,            50,         100,            150,    100,    -1, 0,      MONST_FLEES_NEAR_DEATH, MA_CAST_BLINK, MONST_FLEES_NEAR_DEATH, MA_CAST_BLINK,
+        "A rare mutation greatly enhances $HISHER mobility."},
+    {"juggernaut",  &brown,         300,            200,        200,            75,     200,    -1, 0,      0,          0,              MONST_MAINTAINS_DISTANCE, 0,
+        "A rare mutation has hardened $HISHER body, increasing $HISHER strength and health but compromising $HISHER speed."},
+    {"tentacled",   &tanColor,      100,            100,        100,            50,     100,    -1, 0,      0,          MA_SEIZES,      0,                  MA_SEIZES,
+        "A rare mutation has caused tentacles to sprout from $HISHER frame, increasing $HISHER health and allowing $HIMHER to grapple with $HISHER prey."},
+    {"vampiric",    &red,           100,            100,        100,            100,    100,    -1, 0,      0,          MA_TRANSFERENCE, MONST_MAINTAINS_DISTANCE, MA_TRANSFERENCE,
+        "A rare mutation allows $HIMHER to heal $HIMSELFHERSELF with every attack."},
+    {"toxic",       &green,         100,            100,        100,            100,    100,    -1, 0,      0,          (MA_CAUSES_WEAKNESS | MA_POISONS), 0, (MA_CAUSES_WEAKNESS | MA_POISONS),
+        "A rare mutation causes $HIMHER to poison $HISHER victims and sap their strength with every attack."},
 };
 
 #pragma mark Horde definitions

@@ -25,17 +25,54 @@
 #include "Rogue.h"
 #include "IncludeGlobals.h"
 
+void mutateMonster(creature *monst, short mutationIndex) {
+    monst->mutationIndex = mutationIndex;
+    const mutation *theMut = &(mutationCatalog[mutationIndex]);
+    monst->info.maxHP = monst->info.maxHP * theMut->healthFactor / 100;
+    monst->info.movementSpeed = monst->info.movementSpeed * theMut->moveSpeedFactor / 100;
+    monst->info.attackSpeed = monst->info.attackSpeed * theMut->attackSpeedFactor / 100;
+    monst->info.defense = monst->info.defense * theMut->defenseFactor / 100;
+    monst->info.damage.lowerBound = monst->info.damage.lowerBound * theMut->damageFactor / 100;
+    monst->info.damage.upperBound = monst->info.damage.upperBound * theMut->damageFactor / 100;
+    if (theMut->DFChance >= 0) {
+        monst->info.DFChance = theMut->DFChance;
+    }
+    if (theMut->DFType > 0) {
+        monst->info.DFType = theMut->DFType;
+    }
+    monst->info.flags |= theMut->monsterFlags;
+    monst->info.abilityFlags |= theMut->monsterAbilityFlags;
+}
+
 // Allocates space, generates a creature of the given type,
 // prepends it to the list of creatures, and returns a pointer to that creature. Note that the creature
 // is not given a map location here!
-creature *generateMonster(short monsterID, boolean itemPossible) {
-	short itemChance, i;
+creature *generateMonster(short monsterID, boolean itemPossible, boolean mutationPossible) {
+	short itemChance, mutationChance, i, mutationAttempt;
 	creature *monst;
 	
 	monst = (creature *) malloc(sizeof(creature));
 	memset(monst, '\0', sizeof(creature));
 	clearStatus(monst);
 	monst->info = monsterCatalog[monsterID];
+    
+    monst->mutationIndex = -1;
+    if (mutationPossible
+        && !(monst->info.flags & MONST_NEVER_MUTATED)
+        && !(monst->info.abilityFlags & MA_NEVER_MUTATED)
+        && rogue.depthLevel > 10) {
+        
+        mutationChance = clamp(rogue.depthLevel - 10, 1, 10);
+        if (rand_percent(mutationChance)) {
+            mutationAttempt = rand_range(0, NUMBER_MUTATORS - 1);
+            if (!(monst->info.flags & mutationCatalog[mutationAttempt].forbiddenFlags)
+                && !(monst->info.abilityFlags & mutationCatalog[mutationAttempt].forbiddenAbilityFlags)) {
+                
+                mutateMonster(monst, mutationAttempt);
+            }
+        }
+    }
+    
 	monst->nextCreature = monsters->nextCreature;
 	monsters->nextCreature = monst;
 	monst->xLoc = monst->yLoc = 0;
@@ -65,6 +102,7 @@ creature *generateMonster(short monsterID, boolean itemPossible) {
     for (i=0; i < MAX_WAYPOINT_COUNT; i++) {
         monst->waypointAlreadyVisited[i] = rand_range(0, 1);
     }
+    
 	if (monst->info.flags & MONST_FIERY) {
 		monst->status[STATUS_BURNING] = monst->maxStatus[STATUS_BURNING] = 1000; // won't decrease
 	}
@@ -330,7 +368,7 @@ creature *cloneMonster(creature *monst, boolean announce, boolean placeClone) {
 	creature *newMonst, *nextMonst, *parentMonst;
 	char buf[DCOLS], monstName[DCOLS];
 	
-	newMonst = generateMonster(monst->info.monsterID, false);
+	newMonst = generateMonster(monst->info.monsterID, false, false);
 	nextMonst = newMonst->nextCreature;
 	*newMonst = *monst; // boink!
 	newMonst->nextCreature = nextMonst;
@@ -461,7 +499,7 @@ boolean spawnMinions(short hordeID, creature *leader, boolean summoned) {
 		}
 		
 		for (iMember = 0; iMember < count; iMember++) {
-			monst = generateMonster(theHorde->memberType[iSpecies], true);
+			monst = generateMonster(theHorde->memberType[iSpecies], true, !summoned);
 			failsafe = 0;
 			do {
                 getQualifyingPathLocNear(&(monst->xLoc), &(monst->yLoc), x, y, summoned,
@@ -604,7 +642,7 @@ creature *spawnHorde(short hordeID, short x, short y, unsigned long forbiddenFla
 		buildAMachine(theHorde->machine, x, y, 0, NULL, NULL, NULL);
 	}
 	
-	leader = generateMonster(theHorde->leaderType, true);
+	leader = generateMonster(theHorde->leaderType, true, true);
 	leader->xLoc = x;
 	leader->yLoc = y;
 	
@@ -3503,6 +3541,18 @@ void monsterDetails(char buf[], creature *monst) {
 		sprintf(newText, "     %s\n     ", monsterText[monst->info.monsterID].flavorText);
 		strcat(buf, newText);
 	}
+    
+    if (monst->mutationIndex >= 0) {
+        i = strlen(buf);
+        i = encodeMessageColor(buf, i, mutationCatalog[monst->mutationIndex].textColor);
+        strcpy(newText, mutationCatalog[monst->mutationIndex].description);
+        resolvePronounEscapes(newText, monst);
+        upperCase(newText);
+        strcat(newText, "\n     ");
+        strcat(buf, newText);
+        i = strlen(buf);
+        i = encodeMessageColor(buf, i, &white);
+    }
 	
 	if (!(monst->info.flags & MONST_ATTACKABLE_THRU_WALLS)
 		&& cellHasTerrainFlag(monst->xLoc, monst->yLoc, T_OBSTRUCTS_PASSABILITY)) {
