@@ -353,8 +353,8 @@ boolean drawFlareFrame(flare *theFlare) {
     
     lightSource tempLight = *(theFlare->light);
     color tempColor = *(tempLight.lightColor);
-    tempLight.lightRadius.lowerBound = ((short) ((float) tempLight.lightRadius.lowerBound) * (theFlare->coeff / 100.0 + FLOAT_FUDGE));
-    tempLight.lightRadius.upperBound = ((short) ((float) tempLight.lightRadius.upperBound) * (theFlare->coeff / 100.0 + FLOAT_FUDGE));
+    tempLight.lightRadius.lowerBound = ((short) (((float) tempLight.lightRadius.lowerBound + FLOAT_FUDGE) * (theFlare->coeff / 100.0 + FLOAT_FUDGE)));
+    tempLight.lightRadius.upperBound = ((short) (((float) tempLight.lightRadius.upperBound + FLOAT_FUDGE) * (theFlare->coeff / 100.0 + FLOAT_FUDGE)));
     applyColorScalar(&tempColor, (short) (theFlare->coeff + FLOAT_FUDGE));
     tempLight.lightColor = &tempColor;
     inView = paintLight(&tempLight, theFlare->xLoc, theFlare->yLoc, false, true);
