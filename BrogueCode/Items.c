@@ -3322,7 +3322,7 @@ void rechargeItems(unsigned long categories) {
         if (tempItem->category & categories & STAFF) {
             x++;
             tempItem->charges = tempItem->enchant1;
-            tempItem->enchant2 = 5000;
+            tempItem->enchant2 = (tempItem->kind == STAFF_BLINKING || tempItem->kind == STAFF_OBSTRUCTION ? 10000 : 5000) / tempItem->enchant1;
         }
         if (tempItem->category & categories & WAND) {
             y++;
