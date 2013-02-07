@@ -5519,18 +5519,18 @@ void identify(item *theItem) {
 enum monsterTypes chooseVorpalEnemy() {
 	short i, index, possCount = 0, deepestLevel = 0, deepestHorde, chosenHorde, failsafe = 25;
 	enum monsterTypes candidate;
+    
+    for (i=0; i<NUMBER_HORDES; i++) {
+        if (hordeCatalog[i].minLevel >= rogue.depthLevel && !hordeCatalog[i].flags) {
+            possCount += hordeCatalog[i].frequency;
+        }
+        if (hordeCatalog[i].minLevel > deepestLevel) {
+            deepestHorde = i;
+            deepestLevel = hordeCatalog[i].minLevel;
+        }
+    }
 	
 	do {
-		for (i=0; i<NUMBER_HORDES; i++) {
-			if (hordeCatalog[i].minLevel >= rogue.depthLevel && !hordeCatalog[i].flags) {
-				possCount += hordeCatalog[i].frequency;
-			}
-			if (hordeCatalog[i].minLevel > deepestLevel) {
-				deepestHorde = i;
-				deepestLevel = hordeCatalog[i].minLevel;
-			}
-		}
-		
 		if (possCount == 0) {
 			chosenHorde = deepestHorde;
 		} else {
