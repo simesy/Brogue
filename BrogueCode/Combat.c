@@ -95,7 +95,7 @@ short hitProbability(creature *attacker, creature *defender) {
         if ((rogue.weapon->flags & ITEM_RUNIC) && rogue.weapon->enchant2 == W_SLAYING && rogue.weapon->vorpalEnemy == defender->info.monsterID) {
             return 100;
         }
-		accuracy *= (pow(WEAPON_ENCHANT_ACCURACY_FACTOR, netEnchant(rogue.weapon)) + FLOAT_FUDGE);
+		accuracy = (double) player.info.accuracy * pow(WEAPON_ENCHANT_ACCURACY_FACTOR, netEnchant(rogue.weapon) + FLOAT_FUDGE);
 	}
 	
 	hitProbability = accuracy * pow(DEFENSE_FACTOR, defense);
