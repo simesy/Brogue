@@ -1466,7 +1466,9 @@ boolean playerMoves(short direction) {
 		}
 	} else if (cellHasTerrainFlag(newX, newY, T_OBSTRUCTS_PASSABILITY)) {
 		i = pmap[newX][newY].layers[layerWithFlag(newX, newY, T_OBSTRUCTS_PASSABILITY)];
-		if ((tileCatalog[i].flags & T_OBSTRUCTS_PASSABILITY) && !cellHasTMFlag(newX, newY, TM_PROMOTES_WITH_KEY)) {
+		if ((tileCatalog[i].flags & T_OBSTRUCTS_PASSABILITY)
+            && (!diagonalBlocked(x, y, newX, newY) || !cellHasTMFlag(newX, newY, TM_PROMOTES_WITH_KEY))) {
+            
 			messageWithColor(tileCatalog[i].flavorText, &backgroundMessageColor, false);
 		}
 	}
