@@ -1632,7 +1632,7 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 				}
 				strcat(buf, buf2);
 				if (strengthModifier(theItem)) {
-					sprintf(buf2, ", %s %s %s %s%s%.1f%s because of your %s strength. ",
+					sprintf(buf2, ", %s %s %s %s%s%.2f%s because of your %s strength. ",
 							(theItem->enchant1 ? "and" : "but"),
 							(singular ? "carries" : "carry"),
 							(theItem->enchant1 && (theItem->enchant1 > 0) == (strengthModifier(theItem) > 0) ? "an additional" : "a"),
@@ -1654,7 +1654,7 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 					strcat(buf, buf2);
 				}
 				if (strengthModifier(theItem)) {
-					sprintf(buf2, "\n\nThe %s %s%s a %s%s%.1f%s because of your %s strength. ",
+					sprintf(buf2, "\n\nThe %s %s%s a %s%s%.2f%s because of your %s strength. ",
 							theName,
 							((theItem->enchant1 > 0) && (theItem->flags & ITEM_MAGIC_DETECTED) ? "also " : ""),
 							(singular ? "carries" : "carry"),
