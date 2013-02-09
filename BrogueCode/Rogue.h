@@ -2523,6 +2523,7 @@ extern "C" {
 	void autoRest();
 	void startFighting(enum directions dir, boolean tillDeath);
 	void autoFight(boolean tillDeath);
+    void synchronizePlayerTimeState();
 	void playerTurnEnded();
 	void resetScentTurnNumber();
 	void displayMonsterFlashes(boolean flashingEnabled);

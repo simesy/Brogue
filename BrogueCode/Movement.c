@@ -3298,12 +3298,14 @@ void decrementPlayerStatus() {
 	if (player.status[STATUS_HASTED] > 0 && !--player.status[STATUS_HASTED]) {
 		player.movementSpeed = player.info.movementSpeed;
 		player.attackSpeed = player.info.attackSpeed;
+        synchronizePlayerTimeState();
 		message("your supernatural speed fades.", false);
 	}
 	
 	if (player.status[STATUS_SLOWED] > 0 && !--player.status[STATUS_SLOWED]) {
 		player.movementSpeed = player.info.movementSpeed;
 		player.attackSpeed = player.info.attackSpeed;
+        synchronizePlayerTimeState();
 		message("your normal speed resumes.", false);
 	}
 	
@@ -3648,6 +3650,12 @@ void handleHealthAlerts() {
 		}
 	}
 	rogue.previousHealthPercent = currentPercent;
+}
+
+// Call this periodically (when haste/slow wears off and when moving between depths)
+// to keep environmental updates in sync with player turns.
+void synchronizePlayerTimeState() {
+    rogue.ticksTillUpdateEnvironment = player.ticksUntilTurn;
 }
 
 void playerTurnEnded() {

@@ -589,6 +589,8 @@ void startLevel(short oldLevelNumber, short stairDirection) {
     if (oldLevelNumber == DEEPEST_LEVEL && stairDirection != -1) {
         return;
     }
+    
+    synchronizePlayerTimeState();
 	
 	rogue.cursorLoc[0] = -1;
 	rogue.cursorLoc[1] = -1;
