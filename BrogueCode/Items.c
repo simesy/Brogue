@@ -560,7 +560,7 @@ void populateItems(short upstairsX, short upstairsY) {
 		
 		// Adjust the desired item category if necessary.
 		if ((rogue.foodSpawned + foodTable[RATION].strengthRequired / 2) * 3
-			<= pow(rogue.depthLevel, 1.3) * foodTable[RATION].strengthRequired * 0.5) {
+			<= pow(rogue.depthLevel, 1.3) * foodTable[RATION].strengthRequired * 0.45) {
 			// guarantee a certain nutrition minimum of the equivalent of one ration every three levels,
 			// with more food on deeper levels since they generally take more turns to complete
 			theCategory = FOOD;
