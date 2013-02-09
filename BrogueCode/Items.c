@@ -1609,7 +1609,7 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 		case FOOD:
 			sprintf(buf2, "\n\nYou are %shungry enough to fully enjoy a %s.",
 					((STOMACH_SIZE - player.status[STATUS_NUTRITION]) >= foodTable[theItem->kind].strengthRequired ? "" : "not yet "),
-					(theItem->kind == RATION ? "ration of food" : theName));
+					foodTable[theItem->kind].name);
 			strcat(buf, buf2);
 			break;
 			
