@@ -1319,16 +1319,22 @@ boolean playerMoves(short direction) {
 					&& distanceBetween(player.xLoc, player.yLoc, defender->xLoc, defender->yLoc) == 1
 					&& !player.status[STATUS_LEVITATING]) {
 					
-					if (!alreadyRecorded) {
-						recordKeystroke(directionKeys[initialDirection], false, false);
-						alreadyRecorded = true;
-					}
-					monsterName(monstName, defender, true);
-					sprintf(buf, "you struggle but %s is holding your legs!", monstName);
-                    moveEntrancedMonsters(direction);
-					message(buf, false);
-					playerTurnEnded();
-					return true;
+                    monsterName(monstName, defender, true);
+                    if (alreadyRecorded || !canSeeMonster(defender)) {
+                        if (!alreadyRecorded) {
+                            recordKeystroke(directionKeys[initialDirection], false, false);
+                            alreadyRecorded = true;
+                        }
+                        sprintf(buf, "you struggle but %s is holding your legs!", monstName);
+                        moveEntrancedMonsters(direction);
+                        message(buf, false);
+                        playerTurnEnded();
+                        return true;
+                    } else {
+                        sprintf(buf, "you cannot move; %s is holding your legs!", monstName);
+                        message(buf, false);
+                        return false;
+                    }
 				}
 			}
 			player.bookkeepingFlags &= ~MONST_SEIZED; // failsafe
