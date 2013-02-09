@@ -3805,13 +3805,13 @@ void playerTurnEnded() {
 				rechargeItemsIncrementally(); // staffs recharge every so often
 				rogue.monsterSpawnFuse--; // monsters spawn in the level every so often
 				
-				for(monst = monsters->nextCreature; monst != NULL;) {
+				for (monst = monsters->nextCreature; monst != NULL;) {
 					nextMonst = monst->nextCreature;
 					applyInstantTileEffectsToCreature(monst);
 					monst = nextMonst; // this weirdness is in case the monster dies in the previous step
 				}
 				
-				for(monst = monsters->nextCreature; monst != NULL;) {
+				for (monst = monsters->nextCreature; monst != NULL;) {
 					nextMonst = monst->nextCreature;
 					decrementMonsterStatus(monst);
 					monst = nextMonst;
@@ -3845,7 +3845,7 @@ void playerTurnEnded() {
                 refreshWaypoint(rogue.wpRefreshTicker);
 			}
 			
-			for(monst = monsters->nextCreature; (monst != NULL) && (rogue.gameHasEnded == false); monst = monst->nextCreature) {
+			for (monst = monsters->nextCreature; (monst != NULL) && (rogue.gameHasEnded == false); monst = monst->nextCreature) {
 				if (monst->ticksUntilTurn <= 0) {
                     if (monst->currentHP > monst->info.maxHP) {
                         monst->info.maxHP = monst->currentHP;
