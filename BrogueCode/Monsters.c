@@ -1452,6 +1452,11 @@ void updateMonsterState(creature *monst) {
 		// if tracking scent, but the scent is weaker than the scent detection threshold, begin wandering.
 		monst->creatureState = MONSTER_WANDERING;
 		chooseNewWanderDestination(monst);
+	} else if (monst->creatureState == MONSTER_TRACKING_SCENT
+			   && (monst->info.flags & MONST_MAINTAINS_DISTANCE)
+			   && distanceBetween(x, y, player.xLoc, player.yLoc) < 3
+			   && (pmap[x][y].flags & IN_FIELD_OF_VIEW)) {
+		monst->creatureState = MONSTER_FLEEING;
 	} else if (monst->creatureMode == MODE_NORMAL
 			   && monst->creatureState == MONSTER_FLEEING
 			   && (monst->info.flags & MONST_MAINTAINS_DISTANCE)
