@@ -35,7 +35,7 @@
 
 // debug macros -- define DEBUGGING as 1 to enable debugging.
 
-#define DEBUGGING						0
+#define DEBUGGING						1
 
 #define DEBUG							if (DEBUGGING)
 #define MONSTERS_ENABLED				(!DEBUGGING || 1) // Quest room monsters can be generated regardless.
@@ -536,8 +536,9 @@ enum tileType {
     WORM_TUNNEL_MARKER_ACTIVE,
     WORM_TUNNEL_OUTER_WALL,
     
+    BRAZIER,
+    
 	NUMBER_TILETYPES,
-	UNFILLED_LAKE = 120	// used to mark lakes not yet assigned a liquid type
 };
 
 enum lightType {
@@ -2212,6 +2213,7 @@ enum machineTypes {
     MT_KEY_BECKONING_OBSTACLE_ROOM,
 	MT_KEY_WORM_TRAP_AREA,
 	MT_KEY_MUD_TRAP_ROOM,
+	MT_KEY_ZOMBIE_TRAP_ROOM,
 	MT_KEY_PHANTOM_TRAP_ROOM,
     MT_KEY_WORM_TUNNEL_ROOM,
 	MT_KEY_TURRET_TRAP_ROOM,
