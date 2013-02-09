@@ -152,6 +152,8 @@ boolean monsterRevealed(creature *monst) {
         return false;
     } else if (monst->bookkeepingFlags & MONST_TELEPATHICALLY_REVEALED) {
         return true;
+    } else if (monst->status[STATUS_ENTRANCED]) {
+        return true;
     } else if (player.status[STATUS_TELEPATHIC] && !(monst->info.flags & MONST_INANIMATE)) {
         return true;
     }
