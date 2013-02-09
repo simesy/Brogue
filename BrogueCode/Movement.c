@@ -1317,7 +1317,8 @@ boolean playerMoves(short direction) {
 				if ((defender->bookkeepingFlags & MONST_SEIZING)
 					&& monstersAreEnemies(&player, defender)
 					&& distanceBetween(player.xLoc, player.yLoc, defender->xLoc, defender->yLoc) == 1
-					&& !player.status[STATUS_LEVITATING]) {
+					&& !player.status[STATUS_LEVITATING]
+                    && !defender->status[STATUS_ENTRANCED]) {
 					
                     monsterName(monstName, defender, true);
                     if (alreadyRecorded || !canSeeMonster(defender)) {
