@@ -549,7 +549,7 @@ void initializeRogue(unsigned long seed) {
 		identify(theItem);
 		theItem = addItemToPack(theItem);
 		
-		theItem = generateItem(CHARM, CHARM_PROTECTION);
+		theItem = generateItem(CHARM, CHARM_TELEPORTATION);
         theItem->enchant1 = 15;
 		identify(theItem);
 		theItem = addItemToPack(theItem);

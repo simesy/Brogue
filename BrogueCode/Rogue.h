@@ -2705,6 +2705,7 @@ extern "C" {
     void drawCircleOnGrid(short **grid, short x, short y, short radius, short value);
     void getTerrainGrid(short **grid, short value, unsigned long terrainFlags, unsigned long mapFlags);
     void getTMGrid(short **grid, short value, unsigned long TMflags);
+    short validLocationCount(short **grid, short validValue);
     void randomLocationInGrid(short **grid, short *x, short *y, short validValue);
     boolean getQualifyingPathLocNear(short *retValX, short *retValY,
                                      short x, short y,
