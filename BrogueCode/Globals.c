@@ -89,6 +89,7 @@ const color orange =				{100,	50,		0,		0,		0,			0,			0,		false};
 const color darkOrange =			{50,	25,		0,		0,		0,			0,			0,		false};
 const color blue =					{0,		0,		100,	0,		0,			0,			0,		false};
 const color darkBlue =				{0,		0,		50,		0,		0,			0,			0,		false};
+const color darkTurquoise =         {0,		40,		65,		0,		0,			0,			0,		false};
 const color lightBlue =				{40,	40,		100,	0,		0,			0,			0,		false};
 const color pink =					{100,	60,		66,		0,		0,			0,			0,		false};
 const color red  =					{100,	0,		0,		0,		0,			0,			0,		false};
@@ -1691,9 +1692,9 @@ const monsterWords monsterText[NUMBER_MONSTER_KINDS] = {
 
 const mutation mutationCatalog[NUMBER_MUTATORS] = {
     //Title         textColor       healthFactor    moveSpdMult attackSpdMult   defMult damMult DF% DFtype  monstFlags  abilityFlags    forbiddenFlags      forbiddenAbilities
-    {"explosive",   &orange,        50,             100,        100,            50,     100,    0,  DF_MUTATION_EXPLOSION, 0,      MA_DF_ON_DEATH, 0,          0,
+    {"explosive",   &orange,        50,             100,        100,            50,     100,    0,  DF_MUTATION_EXPLOSION, 0, MA_DF_ON_DEATH, 0,            0,
         "A rare mutation will cause $HIMHER to explode violently when $HESHE dies."},
-    {"infested",    &lichenColor,   50,             100,        100,            50,     100,    0,  DF_MUTATION_LICHEN, 0,      MA_DF_ON_DEATH, 0,          0,
+    {"infested",    &lichenColor,   50,             100,        100,            50,     100,    0,  DF_MUTATION_LICHEN, 0, MA_DF_ON_DEATH, 0,               0,
         "$HESHE has been infested by deadly lichen spores; poisonous fungus will spread from $HISHER corpse when $HESHE dies."},
     {"agile",       &lightBlue,     100,            50,         100,            150,    100,    -1, 0,      MONST_FLEES_NEAR_DEATH, MA_CAST_BLINK, MONST_FLEES_NEAR_DEATH, MA_CAST_BLINK,
         "A rare mutation greatly enhances $HISHER mobility."},
@@ -1705,6 +1706,8 @@ const mutation mutationCatalog[NUMBER_MUTATORS] = {
         "A rare mutation allows $HIMHER to heal $HIMSELFHERSELF with every attack."},
     {"toxic",       &green,         100,            100,        100,            100,    100,    -1, 0,      0,          (MA_CAUSES_WEAKNESS | MA_POISONS), 0, (MA_CAUSES_WEAKNESS | MA_POISONS),
         "A rare mutation causes $HIMHER to poison $HISHER victims and sap their strength with every attack."},
+    {"reflective",  &darkTurquoise, 100,            100,        100,            100,    100,    -1, 0,      MONST_REFLECT_4, 0,         (MONST_REFLECT_4 | MONST_ALWAYS_USE_ABILITY), 0,
+        "A rare mutation has coated $HISHER flesh with a strange reflective material."},
 };
 
 #pragma mark Horde definitions
