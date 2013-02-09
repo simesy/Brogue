@@ -946,8 +946,8 @@ enum tileFlags {
 };
 
 #define TURNS_FOR_FULL_REGEN				300
-#define STOMACH_SIZE						2100
-#define HUNGER_THRESHOLD					(STOMACH_SIZE - 1700)
+#define STOMACH_SIZE						2150
+#define HUNGER_THRESHOLD					(STOMACH_SIZE - 1800)
 #define WEAK_THRESHOLD						150
 #define FAINT_THRESHOLD						50
 #define MAX_EXP_LEVEL						20
