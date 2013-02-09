@@ -248,19 +248,17 @@ void updateLighting() {
 			paintLight(&lightCatalog[BURNING_CREATURE_LIGHT], monst->xLoc, monst->yLoc, false, false);
 		}
 		
-		if (player.status[STATUS_TELEPATHIC] && &player != monst && !(monst->info.flags & MONST_INANIMATE)) {
+		if (monsterRevealed(monst)) {
 			paintLight(&lightCatalog[TELEPATHY_LIGHT], monst->xLoc, monst->yLoc, false, true);
 		}
 	}
 	
 	// Also paint telepathy lights for dormant monsters.
-	if (player.status[STATUS_TELEPATHIC]) {
-		for (monst = dormantMonsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
-			if (!(monst->info.flags & MONST_INANIMATE)) {
-				paintLight(&lightCatalog[TELEPATHY_LIGHT], monst->xLoc, monst->yLoc, false, true);
-			}
-		}
-	}
+    for (monst = dormantMonsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
+        if (monsterRevealed(monst)) {
+            paintLight(&lightCatalog[TELEPATHY_LIGHT], monst->xLoc, monst->yLoc, false, true);
+        }
+    }
 	
 	updateDisplayDetail();
 	

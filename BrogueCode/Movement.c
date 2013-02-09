@@ -252,8 +252,7 @@ void describeLocation(char *buf, short x, short y) {
 	// telepathy
 	if (monst
         && !canSeeMonster(monst)
-        && !(monst->info.flags & MONST_INANIMATE)
-        && player.status[STATUS_TELEPATHIC]) {
+        && monsterRevealed(monst)) {
         
 		strcpy(adjective, (((!player.status[STATUS_HALLUCINATING] || rogue.playbackOmniscience) && monst->info.displayChar >= 'a' && monst->info.displayChar <= 'z')
 						   || (player.status[STATUS_HALLUCINATING] && !rogue.playbackOmniscience && rand_range(0, 1)) ? "small" : "large"));
@@ -1156,7 +1155,7 @@ boolean playerMoves(short direction) {
 	}
     
     // If there's no enemy at the movement location that the player is aware of, consider terrain promotions.
-    if (!(defender && (canSeeMonster(defender) || player.status[STATUS_TELEPATHIC]) && monstersAreEnemies(&player, defender))) {
+    if (!(defender && (canSeeMonster(defender) || monsterRevealed(defender)) && monstersAreEnemies(&player, defender))) {
         
         if (cellHasTerrainFlag(newX, newY, T_OBSTRUCTS_PASSABILITY) && cellHasTMFlag(newX, newY, TM_PROMOTES_ON_PLAYER_ENTRY)) {
             layer = layerWithTMFlag(newX, newY, TM_PROMOTES_ON_PLAYER_ENTRY);
@@ -2290,28 +2289,26 @@ void updateTelepathy() {
 		}
 	}
 	
-	if (player.status[STATUS_TELEPATHIC]) {
-		zeroOutGrid(grid);
-		for (monst = monsters->nextCreature; monst; monst = monst->nextCreature) {
-			if (!(monst->info.flags & MONST_INANIMATE)) {
-				getFOVMask(grid, monst->xLoc, monst->yLoc, 1.5, T_OBSTRUCTS_VISION, 0, false);
-				pmap[monst->xLoc][monst->yLoc].flags |= (TELEPATHIC_VISIBLE | DISCOVERED);
-			}
-		}
-		for (monst = dormantMonsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
-			if (!(monst->info.flags & MONST_INANIMATE)) {
-				getFOVMask(grid, monst->xLoc, monst->yLoc, 1.5, T_OBSTRUCTS_VISION, 0, false);
-				pmap[monst->xLoc][monst->yLoc].flags |= (TELEPATHIC_VISIBLE | DISCOVERED);
-			}
-		}
-		for (i = 0; i < DCOLS; i++) {
-			for (j = 0; j < DROWS; j++) {
-				if (grid[i][j]) {
-					pmap[i][j].flags |= (TELEPATHIC_VISIBLE | DISCOVERED);
-				}
-			}
-		}
-	}
+    zeroOutGrid(grid);
+    for (monst = monsters->nextCreature; monst; monst = monst->nextCreature) {
+        if (monsterRevealed(monst)) {
+            getFOVMask(grid, monst->xLoc, monst->yLoc, 1.5, T_OBSTRUCTS_VISION, 0, false);
+            pmap[monst->xLoc][monst->yLoc].flags |= (TELEPATHIC_VISIBLE | DISCOVERED);
+        }
+    }
+    for (monst = dormantMonsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
+        if (monsterRevealed(monst)) {
+            getFOVMask(grid, monst->xLoc, monst->yLoc, 1.5, T_OBSTRUCTS_VISION, 0, false);
+            pmap[monst->xLoc][monst->yLoc].flags |= (TELEPATHIC_VISIBLE | DISCOVERED);
+        }
+    }
+    for (i = 0; i < DCOLS; i++) {
+        for (j = 0; j < DROWS; j++) {
+            if (grid[i][j]) {
+                pmap[i][j].flags |= (TELEPATHIC_VISIBLE | DISCOVERED);
+            }
+        }
+    }
 }
 
 void updateScent() {
@@ -2384,12 +2381,8 @@ void updateVision(boolean refreshDisplay) {
 		updateClairvoyance();
 	}
 	
-	if (player.status[STATUS_TELEPATHIC] > 0) {
-		updateTelepathy();
-	}
-	
+    updateTelepathy();
 	updateLighting();
-	
 	updateFieldOfViewDisplay(true, refreshDisplay);
 	
 //	for (i=0; i<DCOLS; i++) {
@@ -3516,6 +3509,7 @@ void startFighting(enum directions dir, boolean tillDeath) {
 //}
 
 void addXPXPToAlly(short XPXP, creature *monst) {
+    char theMonsterName[100], buf[200];
     monst->xpxp += XPXP;
     monst->absorbXPXP += XPXP;
     //printf("\n%i xpxp added to your %s this turn.", rogue.xpxpThisTurn, monst->info.monsterName);
@@ -3527,6 +3521,12 @@ void addXPXPToAlly(short XPXP, creature *monst) {
         monst->info.accuracy += 5;
         monst->info.damage.lowerBound += max(1, monst->info.damage.lowerBound / 20);
         monst->info.damage.upperBound += max(1, monst->info.damage.upperBound / 20);
+        if (!(monst->bookkeepingFlags & MONST_TELEPATHICALLY_REVEALED)) {
+            monst->bookkeepingFlags |= MONST_TELEPATHICALLY_REVEALED;
+            monsterName(theMonsterName, monst, false);
+            sprintf(buf, "you have developed a bond with your %s.", theMonsterName);
+            messageWithColor(buf, &advancementMessageColor, false);
+        }
         //				if (canSeeMonster(monst)) {
         //					monsterName(theMonsterName, monst, false);
         //					sprintf(buf, "your %s looks stronger", theMonsterName);
@@ -4041,7 +4041,7 @@ boolean isDisturbed(short x, short y) {
 		}
 		if (monst
 			&& !(monst->creatureState == MONSTER_ALLY)
-			&& (canSeeMonster(monst) || player.status[STATUS_TELEPATHIC])) {
+			&& (canSeeMonster(monst) || monsterRevealed(monst))) {
 			// Do not trigger for submerged or invisible or unseen monsters.
 			return true;
 		}

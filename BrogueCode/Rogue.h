@@ -1788,7 +1788,7 @@ enum monsterAbilityFlags {
 
 enum monsterBookkeepingFlags {
 	MONST_WAS_VISIBLE				= Fl(0),	// monster was visible to player last turn
-	// unused						= Fl(1),
+	MONST_TELEPATHICALLY_REVEALED   = Fl(1),    // player can magically see monster and adjacent cells
 	MONST_PREPLACED					= Fl(2),	// monster dropped onto the level and requires post-processing
 	MONST_APPROACHING_UPSTAIRS		= Fl(3),	// following the player up the stairs
 	MONST_APPROACHING_DOWNSTAIRS	= Fl(4),	// following the player down the stairs
@@ -2597,6 +2597,7 @@ extern "C" {
 	boolean monsterAvoids(creature *monst, short x, short y);
 	short distanceBetween(short x1, short y1, short x2, short y2);
 	void wakeUp(creature *monst);
+    boolean monsterRevealed(creature *monst);
 	boolean canSeeMonster(creature *monst);
 	boolean canDirectlySeeMonster(creature *monst);
 	void monsterName(char *buf, creature *monst, boolean includeArticle);

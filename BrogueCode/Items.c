@@ -3306,7 +3306,7 @@ void makePlayerTelepathic(short duration) {
         refreshDungeonCell(monst->xLoc, monst->yLoc);
     }
     if (monsters->nextCreature == NULL) {
-        message("you can somehow tell that you are alone on this level at the moment.", false);
+        message("you can somehow tell that you are alone on this depth at the moment.", false);
     } else {
         message("you can somehow feel the presence of other creatures' minds!", false);
     }
@@ -3815,6 +3815,7 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 				if (monst->creatureMode != MODE_PERM_FLEEING
 					&& monst->creatureState != MONSTER_ALLY
 					&& (monst->creatureState != MONSTER_FLEEING || monst->status[STATUS_MAGICAL_FEAR])) {
+                    
 					monst->creatureState = MONSTER_TRACKING_SCENT;
 					monst->status[STATUS_MAGICAL_FEAR] = 0;
 				}
@@ -4084,6 +4085,7 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 					if (monst->creatureMode != MODE_PERM_FLEEING
 						&& monst->creatureState != MONSTER_ALLY
 						&& (monst->creatureState != MONSTER_FLEEING || monst->status[STATUS_MAGICAL_FEAR])) {
+                        
 						monst->creatureState = MONSTER_TRACKING_SCENT;
 					}
 					if (boltInView) {
@@ -4185,7 +4187,7 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
                 getQualifyingPathLocNear(&(monst->xLoc), &(monst->yLoc), x, y, true,
                                          T_DIVIDES_LEVEL & avoidedFlagsForMonster(&(monst->info)), HAS_PLAYER,
                                          avoidedFlagsForMonster(&(monst->info)), (HAS_PLAYER | HAS_MONSTER | HAS_UP_STAIRS | HAS_DOWN_STAIRS), false);
-				monst->bookkeepingFlags |= (MONST_FOLLOWER | MONST_BOUND_TO_LEADER | MONST_DOES_NOT_TRACK_LEADER);
+				monst->bookkeepingFlags |= (MONST_FOLLOWER | MONST_BOUND_TO_LEADER | MONST_DOES_NOT_TRACK_LEADER | MONST_TELEPATHICALLY_REVEALED);
 				monst->bookkeepingFlags &= ~MONST_JUST_SUMMONED;
 				monst->leader = &player;
 				monst->creatureState = MONSTER_ALLY;
@@ -4910,7 +4912,9 @@ boolean hitMonsterWithProjectileWeapon(creature *thrower, creature *monst, item 
 	if (monst != &player
 		&& monst->creatureMode != MODE_PERM_FLEEING
 		&& (monst->creatureState != MONSTER_FLEEING || monst->status[STATUS_MAGICAL_FEAR])
-		&& !(monst->bookkeepingFlags & MONST_CAPTIVE)) {
+		&& !(monst->bookkeepingFlags & MONST_CAPTIVE)
+        && monst->creatureState != MONSTER_ALLY) {
+        
 		monst->creatureState = MONSTER_TRACKING_SCENT;
 		if (monst->status[STATUS_MAGICAL_FEAR]) {
 			monst->status[STATUS_MAGICAL_FEAR] = 1;

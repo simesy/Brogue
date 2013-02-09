@@ -846,7 +846,7 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 	
 	if (!playerCanSeeOrSense(x, y)
 		&& !(pmap[x][y].flags & (ITEM_DETECTED | HAS_PLAYER))
-		&& (!player.status[STATUS_TELEPATHIC] || !monst || (monst->info.flags & MONST_INANIMATE))
+		&& (!monst || !monsterRevealed(monst))
 		&& !monsterWithDetectedItem
 		&& (pmap[x][y].flags & (DISCOVERED | MAGIC_MAPPED))
 		&& (pmap[x][y].flags & STABLE_MEMORY)) {
@@ -958,9 +958,8 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 				}
 				//DEBUG if (monst->bookkeepingFlags & MONST_LEADER) applyColorAverage(&cellBackColor, &purple, 50);
 			}
-		} else if (player.status[STATUS_TELEPATHIC] > 0
-				   && (pmap[x][y].flags & (HAS_MONSTER | HAS_DORMANT_MONSTER))
-				   && !(monst->info.flags & MONST_INANIMATE)
+		} else if (monst
+                   && monsterRevealed(monst)
 				   && !canSeeMonster(monst)) {
 			if (player.status[STATUS_HALLUCINATING] && !rogue.playbackOmniscience) {
 				cellChar = (rand_range(0, 1) ? 'X' : 'x');
@@ -1001,7 +1000,7 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 			// phantoms create sillhouettes in gas clouds
 			if ((pmap[x][y].flags & HAS_MONSTER)
 				&& monst->status[STATUS_INVISIBLE]
-				&& (playerCanSeeOrSense(x, y) || !player.status[STATUS_TELEPATHIC] || (monst->info.flags & MONST_INANIMATE))) {
+				&& (playerCanSeeOrSense(x, y) || !monsterRevealed(monst))) {
 				
 				if (player.status[STATUS_HALLUCINATING] && !rogue.playbackOmniscience) {
 					cellChar = monsterCatalog[rand_range(1, NUMBER_MONSTER_KINDS - 1)].displayChar;
@@ -1015,7 +1014,7 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 		
 		if (!(pmap[x][y].flags & (ANY_KIND_OF_VISIBLE | ITEM_DETECTED | HAS_PLAYER))
 			&& !playerCanSeeOrSense(x, y)
-			&& (!player.status[STATUS_TELEPATHIC] || !monst || (monst->info.flags & MONST_INANIMATE)) && !monsterWithDetectedItem) {
+			&& (!monst || monsterRevealed(monst)) && !monsterWithDetectedItem) {
 			
 			bakeTerrainColors(&cellForeColor, &cellBackColor, x, y);
 			
@@ -1048,8 +1047,7 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 	}
 	
 	if (((pmap[x][y].flags & ITEM_DETECTED) || monsterWithDetectedItem
-		 || (player.status[STATUS_TELEPATHIC] > 0 && (pmap[x][y].flags & (HAS_MONSTER | HAS_DORMANT_MONSTER))
-			 && monst && !(monst->info.flags & MONST_INANIMATE)))
+		 || (monst && monsterRevealed(monst)))
 		&& !playerCanSeeOrSense(x, y)) {
 		// do nothing
 	} else if (!(pmap[x][y].flags & VISIBLE) && (pmap[x][y].flags & CLAIRVOYANT_VISIBLE)) {

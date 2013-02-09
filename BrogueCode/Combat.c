@@ -645,7 +645,7 @@ void magicWeaponHit(creature *defender, item *theItem, boolean backstabbed) {
                                              avoidedFlagsForMonster(&(newMonst->info)), (HAS_PLAYER | HAS_MONSTER | HAS_UP_STAIRS | HAS_DOWN_STAIRS), false);
 //					newMonst->xLoc = newLoc[0];
 //					newMonst->yLoc = newLoc[1];
-					newMonst->bookkeepingFlags |= (MONST_FOLLOWER | MONST_BOUND_TO_LEADER | MONST_DOES_NOT_TRACK_LEADER);
+					newMonst->bookkeepingFlags |= (MONST_FOLLOWER | MONST_BOUND_TO_LEADER | MONST_DOES_NOT_TRACK_LEADER | MONST_TELEPATHICALLY_REVEALED);
 					newMonst->bookkeepingFlags &= ~MONST_JUST_SUMMONED;
 					newMonst->leader = &player;
 					newMonst->creatureState = MONSTER_ALLY;
@@ -810,7 +810,7 @@ void applyArmorRunicEffect(char returnString[DCOLS], creature *attacker, short *
 			if (melee && !(attacker->info.flags & MONST_INANIMATE) && rand_percent(33)) {
 				for (i = 0; i < armorImageCount(enchant); i++) {
 					monst = cloneMonster(attacker, false, true);
-					monst->bookkeepingFlags |= (MONST_FOLLOWER | MONST_BOUND_TO_LEADER | MONST_DOES_NOT_TRACK_LEADER);
+					monst->bookkeepingFlags |= (MONST_FOLLOWER | MONST_BOUND_TO_LEADER | MONST_DOES_NOT_TRACK_LEADER | MONST_TELEPATHICALLY_REVEALED);
 					monst->info.flags |= MONST_DIES_IF_NEGATED;
 					monst->bookkeepingFlags &= ~(MONST_JUST_SUMMONED | MONST_SEIZED | MONST_SEIZING);
 					monst->info.abilityFlags &= ~MA_CAST_SUMMON; // No summoning by spectral images. Gotta draw the line!

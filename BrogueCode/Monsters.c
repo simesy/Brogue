@@ -147,6 +147,18 @@ creature *generateMonster(short monsterID, boolean itemPossible, boolean mutatio
 	return monst;
 }
 
+boolean monsterRevealed(creature *monst) {
+    if (monst == &player) {
+        return false;
+    } else if (monst->bookkeepingFlags & MONST_TELEPATHICALLY_REVEALED) {
+        return true;
+    } else if (player.status[STATUS_TELEPATHIC] && !(monst->info.flags & MONST_INANIMATE)) {
+        return true;
+    }
+    
+    return false;
+}
+
 boolean monsterIsHidden(creature *monst) {
 	return ((monst->status[STATUS_INVISIBLE] && monst->creatureState != MONSTER_ALLY && !pmap[monst->xLoc][monst->yLoc].layers[GAS]) // invisible and not ally
 			|| ((monst->bookkeepingFlags & MONST_SUBMERGED) && !rogue.inWater)				// or submerged and player is not underwater
@@ -389,6 +401,9 @@ creature *cloneMonster(creature *monst, boolean announce, boolean placeClone) {
 	newMonst->carriedItem = NULL;
 	newMonst->carriedMonster = parentMonst;
 	newMonst->ticksUntilTurn = 101;
+    if (!(monst->creatureState == MONSTER_ALLY)) {
+        newMonst->bookkeepingFlags &= MONST_TELEPATHICALLY_REVEALED;
+    }
 	if (monst->leader) {
 		newMonst->leader = monst->leader;
 	} else {
@@ -1368,7 +1383,9 @@ void updateMonsterState(creature *monst) {
 	//char buf[DCOLS*3], monstName[DCOLS];
     creature *monst2;
 	
-	if (monst->info.flags & MONST_ALWAYS_HUNTING) {
+	if ((monst->info.flags & MONST_ALWAYS_HUNTING)
+        && monst->creatureState != MONSTER_ALLY) {
+        
 		monst->creatureState = MONSTER_TRACKING_SCENT;
 		return;
 	}
@@ -1401,6 +1418,7 @@ void updateMonsterState(creature *monst) {
 	
 	if (monst->creatureMode == MODE_PERM_FLEEING
 		&& (monst->creatureState == MONSTER_WANDERING || monst->creatureState == MONSTER_TRACKING_SCENT)) {
+        
 		monst->creatureState = MONSTER_FLEEING;
 	}
 	
@@ -1600,8 +1618,10 @@ void decrementMonsterStatus(creature *monst) {
 	if (monsterCanSubmergeNow(monst) && !(monst->bookkeepingFlags & MONST_SUBMERGED)) {
 		if (rand_percent(20)) {
 			monst->bookkeepingFlags |= MONST_SUBMERGED;
-			if (!monst->status[STATUS_MAGICAL_FEAR] && monst->creatureState == MONSTER_FLEEING
+			if (!monst->status[STATUS_MAGICAL_FEAR]
+                && monst->creatureState == MONSTER_FLEEING
 				&& (!(monst->info.flags & MONST_FLEES_NEAR_DEATH) || monst->currentHP >= monst->info.maxHP * 3 / 4)) {
+                
 				monst->creatureState = MONSTER_TRACKING_SCENT;
 			}
 			refreshDungeonCell(monst->xLoc, monst->yLoc);
@@ -2472,7 +2492,7 @@ enum directions scentDirection(creature *monst) {
 void unAlly(creature *monst) {
 	if (monst->creatureState == MONSTER_ALLY) {
 		monst->creatureState = MONSTER_TRACKING_SCENT;
-		monst->bookkeepingFlags &= ~MONST_FOLLOWER;
+		monst->bookkeepingFlags &= ~(MONST_FOLLOWER | MONST_TELEPATHICALLY_REVEALED);
 		monst->leader = NULL;
 	}
 }
