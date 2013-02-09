@@ -867,7 +867,8 @@ void teleport(creature *monst, short x, short y, boolean respectTerrainAvoidance
         zeroOutGrid(monstFOV);
         getFOVMask(monstFOV, monst->xLoc, monst->yLoc, DCOLS, T_OBSTRUCTS_VISION, 0, false);
         grid = allocGrid();
-        calculateDistances(grid, monst->xLoc, monst->yLoc, forbiddenFlagsForMonster(&(monst->info)) & T_DIVIDES_LEVEL, monst, true, false);
+        fillGrid(grid, 0);
+        calculateDistances(grid, monst->xLoc, monst->yLoc, forbiddenFlagsForMonster(&(monst->info)) & T_DIVIDES_LEVEL, NULL, true, false);
         findReplaceGrid(grid, -30000, DCOLS/2, 0);
         findReplaceGrid(grid, 2, 30000, 1);
         if (validLocationCount(grid, 1) < 1) {
