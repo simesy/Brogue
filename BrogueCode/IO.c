@@ -470,7 +470,7 @@ void mainInputLoop() {
 					rogue.playbackMode = false;
 					
 					focusedOnMonster = true;
-					if (monst != &player && (!player.status[STATUS_HALLUCINATING] || playingBack)) {
+					if (monst != &player && (!player.status[STATUS_HALLUCINATING] || rogue.playbackOmniscience)) {
 						printMonsterDetails(monst, rbuf);
 						textDisplayed = true;
 					}
@@ -480,7 +480,7 @@ void mainInputLoop() {
 					rogue.playbackMode = false;
 					
 					focusedOnItem = true;
-					if (!player.status[STATUS_HALLUCINATING] || playingBack) {
+					if (!player.status[STATUS_HALLUCINATING] || rogue.playbackOmniscience) {
 						printFloorItemDetails(theItem, rbuf);
 						textDisplayed = true;
 					}
