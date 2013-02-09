@@ -490,7 +490,7 @@ void specialHit(creature *attacker, creature *defender, short damage) {
 		if (!defender->status[STATUS_POISONED]) {
 			defender->maxStatus[STATUS_POISONED] = 0;
 		}
-		defender->status[STATUS_POISONED] = max(defender->status[STATUS_POISONED], damage);
+		defender->status[STATUS_POISONED] += damage;
 		defender->maxStatus[STATUS_POISONED] = defender->info.maxHP;
 	}
 	if ((attacker->info.abilityFlags & MA_CAUSES_WEAKNESS)

@@ -1771,7 +1771,7 @@ enum monsterAbilityFlags {
 	MA_SHOOTS_WEBS					= Fl(16),	// monster shoots webs at the player
 	MA_ATTACKS_FROM_DISTANCE		= Fl(17),	// monster shoots from a distance for its attack
 	MA_SEIZES						= Fl(18),	// monster seizes enemies before attacking and cannot attack flying enemies
-	MA_POISONS						= Fl(19),	// monster's damage is dealt in the form of poison, and it flees a poisoned player
+	MA_POISONS						= Fl(19),	// monster's damage is dealt in the form of poison
 	MA_DF_ON_DEATH					= Fl(20),	// monster spawns its DF when it dies
 	MA_CLONE_SELF_ON_DEFEND			= Fl(21),	// monster splits in two when struck
 	MA_KAMIKAZE						= Fl(22),	// monster dies instead of attacking
