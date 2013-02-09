@@ -2535,6 +2535,20 @@ void activateMachine(short machineNumber) {
     }
 }
 
+boolean circuitBreakersPreventActivation(short machineNumber) {
+    short i, j;
+	for (i=0; i<DCOLS; i++) {
+		for (j=0; j<DROWS; j++) {
+            if (pmap[i][j].machineNumber == machineNumber
+                && cellHasTMFlag(i, j, TM_IS_CIRCUIT_BREAKER)) {
+                
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
 void promoteTile(short x, short y, enum dungeonLayers layer, boolean useFireDF) {
 	short i, j;
 	enum dungeonFeatureTypes DFType;
@@ -2543,21 +2557,6 @@ void promoteTile(short x, short y, enum dungeonLayers layer, boolean useFireDF) 
 	tile = &(tileCatalog[pmap[x][y].layers[layer]]);
 	
 	DFType = (useFireDF ? tile->fireType : tile->promoteType);
-	
-	if (!useFireDF && (tile->mechFlags & TM_IS_WIRED) && !(pmap[x][y].flags & IS_POWERED)) {
-		// Send power through all cells in the same machine that are not IS_POWERED,
-		// and on any such cell, promote each terrain layer that is T_IS_WIRED.
-		// Note that machines need not be contiguous.
-		pmap[x][y].flags |= IS_POWERED;
-		activateMachine(pmap[x][y].machineNumber); // It lives!!!
-		
-		// Power fades from the map immediately after we finish.
-		for (i=0; i<DCOLS; i++) {
-			for (j=0; j<DROWS; j++) {
-				pmap[i][j].flags &= ~IS_POWERED;
-			}
-		}
-	}
 	
 	if ((tile->mechFlags & TM_VANISHES_UPON_PROMOTION)) {
 		if (tileCatalog[pmap[x][y].layers[layer]].flags & T_PATHING_BLOCKER) {
@@ -2571,6 +2570,23 @@ void promoteTile(short x, short y, enum dungeonLayers layer, boolean useFireDF) 
 	}
 	if (DFType) {
 		spawnDungeonFeature(x, y, &dungeonFeatureCatalog[DFType], true, false);
+	}
+	
+	if (!useFireDF && (tile->mechFlags & TM_IS_WIRED)
+        && !(pmap[x][y].flags & IS_POWERED)
+        && !circuitBreakersPreventActivation(pmap[x][y].machineNumber)) {
+		// Send power through all cells in the same machine that are not IS_POWERED,
+		// and on any such cell, promote each terrain layer that is T_IS_WIRED.
+		// Note that machines need not be contiguous.
+		pmap[x][y].flags |= IS_POWERED;
+		activateMachine(pmap[x][y].machineNumber); // It lives!!!
+		
+		// Power fades from the map immediately after we finish.
+		for (i=0; i<DCOLS; i++) {
+			for (j=0; j<DROWS; j++) {
+				pmap[i][j].flags &= ~IS_POWERED;
+			}
+		}
 	}
 }
 

@@ -1644,15 +1644,16 @@ enum terrainMechanicalFlagCatalog {
 	TM_PROMOTES_ON_PLAYER_ENTRY		= Fl(5),		// promotes when the player enters the tile (whether or not levitating)
 	TM_ALLOWS_SUBMERGING			= Fl(6),		// allows submersible monsters to submerge in this terrain
 	TM_IS_WIRED						= Fl(7),		// if wired, promotes when powered, and sends power when promoting
-	TM_GAS_DISSIPATES				= Fl(8),		// does not just hang in the air forever
-	TM_GAS_DISSIPATES_QUICKLY		= Fl(9),		// dissipates quickly
-	TM_EXTINGUISHES_FIRE			= Fl(10),		// extinguishes burning terrain or creatures
-	TM_VANISHES_UPON_PROMOTION		= Fl(11),		// vanishes when creating promotion dungeon feature, even if the replacement terrain priority doesn't require it
-    TM_REFLECTS_BOLTS               = Fl(12),       // magic bolts reflect off of its surface randomly (similar to pmap flag IMPREGNABLE)
-    TM_STAND_IN_TILE                = Fl(13),		// earthbound creatures will be said to stand "in" the tile, not on it
-    TM_LIST_IN_SIDEBAR              = Fl(14),       // terrain will be listed in the sidebar with a description of the terrain type
-    TM_VISUALLY_DISTINCT            = Fl(15),       // terrain will be color-adjusted if necessary so the character stands out from the background
-    TM_EXPLOSIVE_PROMOTE            = Fl(16),       // when burned, will promote to promoteType instead of burningType if surrounded by tiles with T_IS_FIRE or TM_EXPLOSIVE_PROMOTE
+    TM_IS_CIRCUIT_BREAKER           = Fl(8),        // prevents power from circulating in its machine
+	TM_GAS_DISSIPATES				= Fl(9),		// does not just hang in the air forever
+	TM_GAS_DISSIPATES_QUICKLY		= Fl(10),		// dissipates quickly
+	TM_EXTINGUISHES_FIRE			= Fl(11),		// extinguishes burning terrain or creatures
+	TM_VANISHES_UPON_PROMOTION		= Fl(12),		// vanishes when creating promotion dungeon feature, even if the replacement terrain priority doesn't require it
+    TM_REFLECTS_BOLTS               = Fl(13),       // magic bolts reflect off of its surface randomly (similar to pmap flag IMPREGNABLE)
+    TM_STAND_IN_TILE                = Fl(14),		// earthbound creatures will be said to stand "in" the tile, not on it
+    TM_LIST_IN_SIDEBAR              = Fl(15),       // terrain will be listed in the sidebar with a description of the terrain type
+    TM_VISUALLY_DISTINCT            = Fl(16),       // terrain will be color-adjusted if necessary so the character stands out from the background
+    TM_EXPLOSIVE_PROMOTE            = Fl(17),       // when burned, will promote to promoteType instead of burningType if surrounded by tiles with T_IS_FIRE or TM_EXPLOSIVE_PROMOTE
 };
 
 enum statusEffects {

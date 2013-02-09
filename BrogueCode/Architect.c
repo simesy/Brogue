@@ -1436,7 +1436,7 @@ boolean buildAMachine(enum machineTypes bp,
         for(i=0; i<DCOLS; i++) {
             for(j=0; j<DROWS; j++) {
                 if (pmap[i][j].machineNumber == machineNumber
-                    && !cellHasTMFlag(i, j, TM_IS_WIRED)) {
+                    && !cellHasTMFlag(i, j, (TM_IS_WIRED | TM_IS_CIRCUIT_BREAKER))) {
                     
                     pmap[i][j].flags &= ~IS_IN_MACHINE;
                     pmap[i][j].machineNumber = 0;
