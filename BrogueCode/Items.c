@@ -3800,14 +3800,14 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 					}
 					return false;
 				}
-				if (boltInView) {
+				if (boltInView || canSeeMonster(monst)) {
 					sprintf(buf, "%s lightning bolt %s %s",
 							canSeeMonster(shootingMonst) ? "the" : "a",
 							((monst->info.flags & MONST_INANIMATE) ? "destroys" : "kills"),
 							monstName);
 					combatMessage(buf, messageColorFromVictim(monst));
 				} else {
-					sprintf(buf, "you hear %s %s", monstName, ((monst->info.flags & MONST_INANIMATE) ? "be destroyed" : "die"));
+					sprintf(buf, "you hear %s %s", monstName, ((monst->info.flags & MONST_INANIMATE) ? "get destroyed" : "die"));
 					combatMessage(buf, messageColorFromVictim(monst));
 				}
 			} else {
@@ -4069,14 +4069,14 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 						return false;
 					}
 					
-					if (boltInView) {
+					if (boltInView || canSeeMonster(monst)) {
 						sprintf(buf, "%s firebolt %s %s",
 								canSeeMonster(shootingMonst) ? "the" : "a",
 								((monst->info.flags & MONST_INANIMATE) ? "destroys" : "kills"),
 								monstName);
 						combatMessage(buf, messageColorFromVictim(monst));
 					} else {
-						sprintf(buf, "you hear %s %s", monstName, ((monst->info.flags & MONST_INANIMATE) ? "be destroyed" : "die"));
+						sprintf(buf, "you hear %s %s", monstName, ((monst->info.flags & MONST_INANIMATE) ? "get destroyed" : "die"));
 						combatMessage(buf, messageColorFromVictim(monst));
 					}
 
@@ -4179,23 +4179,19 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 			
 			for (j = 0; j < (staffBladeCount(boltLevel)); j++) {
 				monst = generateMonster(MK_SPECTRAL_BLADE, true, false);
-//				getQualifyingLocNear(newLoc, x, y, true, 0,
-//									 T_PATHING_BLOCKER & ~(T_LAVA_INSTA_DEATH | T_IS_DEEP_WATER | T_AUTO_DESCENT),
-//									 (HAS_PLAYER | HAS_MONSTER), false, false);
-//				monst->xLoc = newLoc[0];
-//				monst->yLoc = newLoc[1];
                 getQualifyingPathLocNear(&(monst->xLoc), &(monst->yLoc), x, y, true,
-                                         T_DIVIDES_LEVEL & avoidedFlagsForMonster(&(monst->info)), HAS_PLAYER,
-                                         avoidedFlagsForMonster(&(monst->info)), (HAS_PLAYER | HAS_MONSTER | HAS_UP_STAIRS | HAS_DOWN_STAIRS), false);
+                                         T_DIVIDES_LEVEL & avoidedFlagsForMonster(&(monst->info)) & ~T_SPONTANEOUSLY_IGNITES, HAS_PLAYER,
+                                         avoidedFlagsForMonster(&(monst->info)) & ~T_SPONTANEOUSLY_IGNITES, (HAS_PLAYER | HAS_MONSTER | HAS_UP_STAIRS | HAS_DOWN_STAIRS), false);
 				monst->bookkeepingFlags |= (MONST_FOLLOWER | MONST_BOUND_TO_LEADER | MONST_DOES_NOT_TRACK_LEADER | MONST_TELEPATHICALLY_REVEALED);
 				monst->bookkeepingFlags &= ~MONST_JUST_SUMMONED;
 				monst->leader = &player;
 				monst->creatureState = MONSTER_ALLY;
 				monst->ticksUntilTurn = monst->info.attackSpeed + 1; // So they don't move before the player's next turn.
 				pmap[monst->xLoc][monst->yLoc].flags |= HAS_MONSTER;
-				refreshDungeonCell(monst->xLoc, monst->yLoc);
-				//fadeInMonster(monst);
+				//refreshDungeonCell(monst->xLoc, monst->yLoc);
+				fadeInMonster(monst);
 			}
+            updateVision(true);
 			//refreshSideBar(-1, -1, false);
 			monst = NULL;
 			autoID = true;

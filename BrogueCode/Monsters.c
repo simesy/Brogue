@@ -171,7 +171,8 @@ boolean canSeeMonster(creature *monst) {
 	if (monst == &player) {
 		return true;
 	}
-	if (playerCanSee(monst->xLoc, monst->yLoc) && !monsterIsHidden(monst)) {
+	if (!monsterIsHidden(monst)
+        && (playerCanSee(monst->xLoc, monst->yLoc) || monsterRevealed(monst))) {
 		return true;
 	}
 	return false;

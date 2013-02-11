@@ -406,8 +406,7 @@ void specialHit(creature *attacker, creature *defender, short damage) {
 	
 	// Special hits that can affect only the player:
 	if (defender == &player) {
-		
-		if (playerImmuneToMonster(attacker)) {
+        if (playerImmuneToMonster(attacker)) {
 			return;
 		}
 		
@@ -682,6 +681,7 @@ void magicWeaponHit(creature *defender, item *theItem, boolean backstabbed) {
 					pmap[newMonst->xLoc][newMonst->yLoc].flags |= HAS_MONSTER;
 					fadeInMonster(newMonst);
 				}
+                updateVision(true);
 				
 				message(buf, false);
 				break;
@@ -841,6 +841,7 @@ void applyArmorRunicEffect(char returnString[DCOLS], creature *attacker, short *
 					}
 					fadeInMonster(monst);
 				}
+                updateVision(true);
 				
 				runicDiscovered = true;
 				sprintf(returnString, "Your %s flashes, and spectral images of %s appear!", armorName, attackerName);
@@ -989,7 +990,7 @@ boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
 	
 	degradesAttackerWeapon = (defender->info.flags & MONST_DEFEND_DEGRADE_WEAPON ? true : false);
 	
-	sightUnseen = !(canSeeMonster(attacker) || canSeeMonster(defender));
+	sightUnseen = !canSeeMonster(attacker) && !canSeeMonster(defender);
 	
 	if (defender->status[STATUS_LEVITATING] && (attacker->info.flags & MONST_RESTRICTED_TO_LIQUID)) {
 		return false; // aquatic or other liquid-bound monsters cannot attack flying opponents

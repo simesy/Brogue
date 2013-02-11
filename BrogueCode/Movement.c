@@ -3533,28 +3533,34 @@ void startFighting(enum directions dir, boolean tillDeath) {
 
 void addXPXPToAlly(short XPXP, creature *monst) {
     char theMonsterName[100], buf[200];
-    monst->xpxp += XPXP;
-    monst->absorbXPXP += XPXP;
-    //printf("\n%i xpxp added to your %s this turn.", rogue.xpxpThisTurn, monst->info.monsterName);
-    while (monst->xpxp >= XPXP_NEEDED_FOR_LEVELUP) {
-        monst->xpxp -= XPXP_NEEDED_FOR_LEVELUP;
-        monst->info.maxHP += 5;
-        monst->currentHP += (5 * monst->currentHP / (monst->info.maxHP - 5));
-        monst->info.defense += 5;
-        monst->info.accuracy += 5;
-        monst->info.damage.lowerBound += max(1, monst->info.damage.lowerBound / 20);
-        monst->info.damage.upperBound += max(1, monst->info.damage.upperBound / 20);
-        if (!(monst->bookkeepingFlags & MONST_TELEPATHICALLY_REVEALED)) {
-            monst->bookkeepingFlags |= MONST_TELEPATHICALLY_REVEALED;
-            monsterName(theMonsterName, monst, false);
-            sprintf(buf, "you have developed a bond with your %s.", theMonsterName);
-            messageWithColor(buf, &advancementMessageColor, false);
+    if (!(monst->info.flags & (MONST_INANIMATE | MONST_IMMOBILE))
+        && monst->creatureState == MONSTER_ALLY
+        && monst->spawnDepth <= rogue.depthLevel) {
+        
+        monst->xpxp += XPXP;
+        monst->absorbXPXP += XPXP;
+        //printf("\n%i xpxp added to your %s this turn.", rogue.xpxpThisTurn, monst->info.monsterName);
+        while (monst->xpxp >= XPXP_NEEDED_FOR_LEVELUP) {
+            monst->xpxp -= XPXP_NEEDED_FOR_LEVELUP;
+            monst->info.maxHP += 5;
+            monst->currentHP += (5 * monst->currentHP / (monst->info.maxHP - 5));
+            monst->info.defense += 5;
+            monst->info.accuracy += 5;
+            monst->info.damage.lowerBound += max(1, monst->info.damage.lowerBound / 20);
+            monst->info.damage.upperBound += max(1, monst->info.damage.upperBound / 20);
+            if (!(monst->bookkeepingFlags & MONST_TELEPATHICALLY_REVEALED)) {
+                monst->bookkeepingFlags |= MONST_TELEPATHICALLY_REVEALED;
+                updateVision(true);
+                monsterName(theMonsterName, monst, false);
+                sprintf(buf, "you have developed a bond with your %s.", theMonsterName);
+                messageWithColor(buf, &advancementMessageColor, false);
+            }
+            //				if (canSeeMonster(monst)) {
+            //					monsterName(theMonsterName, monst, false);
+            //					sprintf(buf, "your %s looks stronger", theMonsterName);
+            //					combatMessage(buf, &advancementMessageColor);
+            //				}
         }
-        //				if (canSeeMonster(monst)) {
-        //					monsterName(theMonsterName, monst, false);
-        //					sprintf(buf, "your %s looks stronger", theMonsterName);
-        //					combatMessage(buf, &advancementMessageColor);
-        //				}
     }
 }
 
@@ -3563,19 +3569,15 @@ void handleXPXP() {
 	//char buf[DCOLS*2], theMonsterName[50];
 	
 	for (monst = monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
-		if (monst->creatureState == MONSTER_ALLY && monst->spawnDepth <= rogue.depthLevel) {
-            addXPXPToAlly(rogue.xpxpThisTurn, monst);
-        }
+        addXPXPToAlly(rogue.xpxpThisTurn, monst);
 	}
     if (rogue.depthLevel > 1) {
         for (monst = levels[rogue.depthLevel - 2].monsters; monst != NULL; monst = monst->nextCreature) {
-            if (monst->creatureState == MONSTER_ALLY && monst->spawnDepth <= rogue.depthLevel) {
-                addXPXPToAlly(rogue.xpxpThisTurn, monst);
-            }
+            addXPXPToAlly(rogue.xpxpThisTurn, monst);
         }
     }
-    for (monst = levels[rogue.depthLevel].monsters; monst != NULL; monst = monst->nextCreature) {
-        if (monst->creatureState == MONSTER_ALLY && monst->spawnDepth <= rogue.depthLevel) {
+    if (rogue.depthLevel < DEEPEST_LEVEL) {
+        for (monst = levels[rogue.depthLevel].monsters; monst != NULL; monst = monst->nextCreature) {
             addXPXPToAlly(rogue.xpxpThisTurn, monst);
         }
     }
