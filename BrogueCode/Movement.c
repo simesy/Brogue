@@ -3266,8 +3266,6 @@ void monstersApproachStairs() {
 }
 
 void decrementPlayerStatus() {
-	creature *monst;
-	
 	if (player.status[STATUS_NUTRITION] > 0) {
 		if (!numberOfMatchingPackItems(AMULET, 0, 0, false) || rand_percent(20)) {
 			player.status[STATUS_NUTRITION]--;
@@ -3276,10 +3274,6 @@ void decrementPlayerStatus() {
     checkNutrition();
 	
 	if (player.status[STATUS_TELEPATHIC] > 0 && !--player.status[STATUS_TELEPATHIC]) {
-		for (monst=monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
-			refreshDungeonCell(monst->xLoc, monst->yLoc);
-		}
-		updateTelepathy();
 		updateVision(true);
 		message("your preternatural mental sensitivity fades.", false);
 	}
