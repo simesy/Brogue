@@ -5524,6 +5524,10 @@ void identify(item *theItem) {
 		theItem->flags |= (ITEM_RUNIC_IDENTIFIED | ITEM_RUNIC_HINTED);
 	}
     
+    if (theItem->category & RING) {
+        updateRingBonuses();
+    }
+    
 	identifyItemKind(theItem);
 }
 
