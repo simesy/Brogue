@@ -2124,7 +2124,6 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 			break;
 			
 		case RING:
-			// RING_CLAIRVOYANCE, RING_STEALTH, RING_REGENERATION, RING_TRANSFERENCE, RING_LIGHT, RING_AWARENESS, RING_WISDOM
 			if (((theItem->flags & ITEM_IDENTIFIED) && ringTable[theItem->kind].identified) || rogue.playbackOmniscience) {
                 if (theItem->enchant1) {
                     switch (theItem->kind) {
@@ -2166,10 +2165,11 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
                     }
                 }
 			} else {
-				sprintf(buf2, " It will reveal its secrets to you if you wear it for %i%s turn%s.",
+				sprintf(buf2, "\n\nIt will reveal its secrets to you if you wear it for %i%s turn%s%s.",
 						theItem->charges,
 						(theItem->charges == RING_DELAY_TO_AUTO_ID ? "" : " more"),
-						(theItem->charges == 1 ? "" : "s"));
+						(theItem->charges == 1 ? "" : "s"),
+                        (theItem->enchant1 > 0 ? ", and until you understand its secrets, it will function as a +1 ring" : ""));
 				strcat(buf, buf2);
 			}
 			
@@ -6427,6 +6427,18 @@ void unequipItem(item *theItem, boolean force) {
 	return;
 }
 
+short ringEnchant(item *theItem) {
+    if (theItem->category != RING) {
+        return 0;
+    }
+    if (!(theItem->flags & ITEM_IDENTIFIED)
+        && theItem->enchant1 > 0) {
+        
+        return 1; // Unidentified positive rings act as +1 until identified.
+    }
+    return theItem->enchant1;
+}
+
 void updateRingBonuses() {
 	short i;
 	item *rings[2] = {rogue.ringLeft, rogue.ringRight};
@@ -6439,25 +6451,25 @@ void updateRingBonuses() {
 		if (rings[i]) {
 			switch (rings[i]->kind) {
 				case RING_CLAIRVOYANCE:
-					rogue.clairvoyance += rings[i]->enchant1;
+					rogue.clairvoyance += ringEnchant(rings[i]);
 					break;
 				case RING_STEALTH:
-					rogue.stealthBonus += rings[i]->enchant1;
+					rogue.stealthBonus += ringEnchant(rings[i]);
 					break;
 				case RING_REGENERATION:
-					rogue.regenerationBonus += rings[i]->enchant1;
+					rogue.regenerationBonus += ringEnchant(rings[i]);
 					break;
 				case RING_TRANSFERENCE:
-					rogue.transference += rings[i]->enchant1;
+					rogue.transference += ringEnchant(rings[i]);
 					break;
 				case RING_LIGHT:
-					rogue.lightMultiplier += rings[i]->enchant1;
+					rogue.lightMultiplier += ringEnchant(rings[i]);
 					break;
 				case RING_AWARENESS:
-					rogue.awarenessBonus += 20 * rings[i]->enchant1;
+					rogue.awarenessBonus += 20 * ringEnchant(rings[i]);
 					break;
 				case RING_WISDOM:
-					rogue.wisdomBonus += rings[i]->enchant1;
+					rogue.wisdomBonus += ringEnchant(rings[i]);
 					break;
 			}
 		}

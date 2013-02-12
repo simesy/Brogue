@@ -3163,6 +3163,7 @@ void rechargeItemsIncrementally() {
 					theItem->flags |= ITEM_IDENTIFIED;
 				} else if (theItem->category & RING) {
 					identify(theItem);
+                    updateRingBonuses();
 				}
 				updateIdentifiableItems();
 				
