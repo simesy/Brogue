@@ -68,7 +68,7 @@ item *generateItem(unsigned short theCategory, short theKind) {
 
 unsigned long pickItemCategory(unsigned long theCategory) {
 	short i, sum, randIndex;
-	short probabilities[13] =						{50,	42,		52,		3,		3,		10,		8,		5,		3,      2,        0,		0,		0};
+	short probabilities[13] =						{50,	42,		52,		3,		3,		10,		8,		2,		3,      2,        0,		0,		0};
 	unsigned short correspondingCategories[13] =	{GOLD,	SCROLL,	POTION,	STAFF,	WAND,	WEAPON,	ARMOR,	FOOD,	RING,   CHARM,    AMULET,	GEM,	KEY};
 	
 	sum = 0;
@@ -559,10 +559,10 @@ void populateItems(short upstairsX, short upstairsY) {
         potionTable[POTION_LIFE].frequency = rogue.lifePotionFrequency;
 		
 		// Adjust the desired item category if necessary.
-		if ((rogue.foodSpawned + foodTable[RATION].strengthRequired / 2) * 3
+		if ((rogue.foodSpawned + foodTable[RATION].strengthRequired / 2) * 4
 			<= pow(rogue.depthLevel, 1.3) * foodTable[RATION].strengthRequired * 0.45) {
-			// guarantee a certain nutrition minimum of the equivalent of one ration every three levels,
-			// with more food on deeper levels since they generally take more turns to complete
+			// Guarantee a certain nutrition minimum of the approximate equivalent of one ration every four levels,
+			// with more food on deeper levels since they generally take more turns to complete.
 			theCategory = FOOD;
 			if (rogue.depthLevel > AMULET_LEVEL) {
 				numberOfItems++; // Food isn't at the expense of gems.
@@ -579,6 +579,7 @@ void populateItems(short upstairsX, short upstairsY) {
 		
 		if (theItem->category & FOOD) {
 			rogue.foodSpawned += foodTable[theItem->kind].strengthRequired;
+            printf("\n *** Depth %i: generated food!", rogue.depthLevel);
 		}
 		
 		// Choose a placement location not in a hallway.
