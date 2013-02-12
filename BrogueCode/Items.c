@@ -262,6 +262,7 @@ item *makeItemInto(item *theItem, unsigned long itemCategory, short itemKind) {
 				theItem->enchant1 *= -1;
 				theItem->flags |= ITEM_CURSED;
 			}
+            theItem->enchant2 = 1;
 			break;
         case CHARM:
 			if (itemKind < 0) {
@@ -2175,12 +2176,18 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
                     }
                 }
 			} else {
-				sprintf(buf2, "\n\nIt will reveal its secrets to you if you wear it for %i%s turn%s%s.",
+				sprintf(buf2, "\n\nIt will reveal its secrets to you if you wear it for %i%s turn%s",
 						theItem->charges,
 						(theItem->charges == RING_DELAY_TO_AUTO_ID ? "" : " more"),
-						(theItem->charges == 1 ? "" : "s"),
-                        (theItem->enchant1 > 0 ? ", and until you understand its secrets, it will function as a +1 ring" : ""));
+						(theItem->charges == 1 ? "" : "s"));
 				strcat(buf, buf2);
+                
+                if (theItem->enchant1 > 0) {
+                    sprintf(buf2, ", and until you understand its secrets, it will function as a +%i ring.", theItem->enchant2);
+                    strcat(buf, buf2);
+                } else {
+                    strcat(buf, ".");
+                }
 			}
 			
 			// equipped? cursed?
@@ -4850,6 +4857,11 @@ void identifyItemKind(item *theItem) {
             default:
                 break;
         }
+        if ((theItem->category & RING)
+            && theItem->enchant1 <= 0) {
+            
+            theItem->flags |= ITEM_IDENTIFIED;
+        }
         if (tableCount) {
             theTable[theItem->kind].identified = true;
             for (i=0; i<tableCount; i++) {
@@ -5688,6 +5700,7 @@ void readScroll(item *theItem) {
 					break;
 				case RING:
 					theItem->enchant1++;
+                    theItem->enchant2++;
 					updateRingBonuses();
 					if (theItem->kind == RING_CLAIRVOYANCE) {
 						updateClairvoyance();
@@ -6448,7 +6461,7 @@ short ringEnchant(item *theItem) {
     if (!(theItem->flags & ITEM_IDENTIFIED)
         && theItem->enchant1 > 0) {
         
-        return 1; // Unidentified positive rings act as +1 until identified.
+        return theItem->enchant2; // Unidentified positive rings act as +1 until identified.
     }
     return theItem->enchant1;
 }
