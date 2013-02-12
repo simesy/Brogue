@@ -926,7 +926,7 @@ boolean inscribeItem(item *theItem) {
 	strcpy(theItem->inscription, oldInscription);
 	
 	sprintf(buf, "inscribe: %s \"", nameOfItem);
-	if (getInputTextString(itemText, buf, 29, "", "\"", TEXT_INPUT_NORMAL, false)) {
+	if (getInputTextString(itemText, buf, min(29, DCOLS - strLenWithoutEscapes(buf) - 1), "", "\"", TEXT_INPUT_NORMAL, false)) {
 		strcpy(theItem->inscription, itemText);
 		confirmMessages();
 		itemName(theItem, nameOfItem, true, true, NULL);
@@ -941,20 +941,15 @@ boolean inscribeItem(item *theItem) {
 }
 
 boolean itemCanBeCalled(item *theItem) {
-	
-	updateIdentifiableItem(theItem); // Just in case.
-	
 	if ((theItem->flags & ITEM_IDENTIFIED) || theItem->category & (WEAPON|ARMOR|CHARM|FOOD|GOLD|AMULET|GEM)) {
-		if (theItem->category & (WEAPON | ARMOR | CHARM | STAFF | WAND | RING)
-			&& (theItem->flags & ITEM_CAN_BE_IDENTIFIED)) {
-			
+		if (theItem->category & (WEAPON | ARMOR | CHARM | STAFF | WAND | RING)) {
 			return true;
 		} else {
 			return false;
 		}
 	}
 	if ((theItem->category & (POTION|SCROLL|WAND|STAFF|RING))
-		&& !tableForItemCategory(theItem->category)->identified) {
+		&& !(tableForItemCategory(theItem->category)[theItem->kind].identified)) {
 		return true;
 	}
 	return false;
@@ -964,12 +959,26 @@ void call(item *theItem) {
 	char itemText[30], buf[COLS];
 	short c;
 	unsigned char command[100];
-	
+    item *tempItem;
+    
 	c = 0;
 	command[c++] = CALL_KEY;
 	if (theItem == NULL) {
-		theItem = promptForItemOfType((WEAPON|ARMOR|SCROLL|RING|POTION|STAFF|WAND), 0, 0,
+        // Need to gray out known potions and scrolls from inventory selection.
+        // Hijack the "item can be identified" flag for this purpose,
+        // and then reset it immediately afterward.
+        for (tempItem = packItems->nextItem; tempItem != NULL; tempItem = tempItem->nextItem) {
+            if ((tempItem->category & (POTION | SCROLL))
+                && tableForItemCategory(tempItem->category)[tempItem->kind].identified) {
+                
+                tempItem->flags &= ~ITEM_CAN_BE_IDENTIFIED;
+            } else {
+                tempItem->flags |= ITEM_CAN_BE_IDENTIFIED;
+            }
+        }
+		theItem = promptForItemOfType((WEAPON|ARMOR|SCROLL|RING|POTION|STAFF|WAND), ITEM_CAN_BE_IDENTIFIED, 0,
 									  "Call what? (a-z, shift for more info; or <esc> to cancel)", true);
+        updateIdentifiableItems(); // Reset the flags.
 	}
 	if (theItem == NULL) {
 		return;
@@ -980,9 +989,7 @@ void call(item *theItem) {
 	confirmMessages();
 	
 	if ((theItem->flags & ITEM_IDENTIFIED) || theItem->category & (WEAPON|ARMOR|CHARM|FOOD|GOLD|AMULET|GEM)) {
-		if (theItem->category & (WEAPON | ARMOR | CHARM | STAFF | WAND | RING)
-			&& (theItem->flags & ITEM_CAN_BE_IDENTIFIED)) {
-			
+		if (theItem->category & (WEAPON | ARMOR | CHARM | STAFF | WAND | RING)) {
 			if (inscribeItem(theItem)) {
 				command[c++] = '\0';
 				strcat((char *) command, theItem->inscription);
@@ -995,10 +1002,16 @@ void call(item *theItem) {
 		return;
 	}
 	
-	if ((theItem->flags & ITEM_CAN_BE_IDENTIFIED)
-		&& (theItem->category & (WEAPON | ARMOR | STAFF | WAND | RING))) {
-		if (confirm("Inscribe this particular item instead of all similar items?", true)) {
-			command[c++] = 'y';
+	if (theItem->category & (WEAPON | ARMOR | STAFF | WAND | RING)) {
+        if (tableForItemCategory(theItem->category)[theItem->kind].identified) {
+			if (inscribeItem(theItem)) {
+				command[c++] = '\0';
+				strcat((char *) command, theItem->inscription);
+				recordKeystrokeSequence(command);
+				recordKeystroke(RETURN_KEY, false, false);
+			}
+        } else if (confirm("Inscribe this particular item instead of all similar items?", true)) {
+			command[c++] = 'y'; // y means yes, since the recording also needs to negotiate the above confirmation prompt.
 			if (inscribeItem(theItem)) {
 				command[c++] = '\0';
 				strcat((char *) command, theItem->inscription);
@@ -1012,6 +1025,7 @@ void call(item *theItem) {
 	}
 	
 	if (tableForItemCategory(theItem->category)
+        && !(tableForItemCategory(theItem->category)[theItem->kind].identified)
         && getInputTextString(itemText, "call them: \"", 29, "", "\"", TEXT_INPUT_NORMAL, false)) {
         
 		command[c++] = '\0';
@@ -1029,7 +1043,7 @@ void call(item *theItem) {
 		itemName(theItem, buf, false, true, NULL);
 		messageWithColor(buf, &itemMessageColor, false);
 	} else {
-		confirmMessages();
+        message("you already know what that is.", false);
 	}
 }
 
@@ -1331,12 +1345,8 @@ void itemName(item *theItem, char *root, boolean includeDetails, boolean include
 	}
 	
 	if (includeDetails && theItem->inscription[0]) {
-		if (theItem->flags & ITEM_CAN_BE_IDENTIFIED) {
-			sprintf(buf, "%s \"%s\"", root, theItem->inscription);
-			strcpy(root, buf);
-		} else {
-			theItem->inscription[0] = '\0';
-		}
+        sprintf(buf, "%s \"%s\"", root, theItem->inscription);
+        strcpy(root, buf);
 	}
 	return;
 }
@@ -5560,9 +5570,9 @@ enum monsterTypes chooseVorpalEnemy() {
 }
 
 void updateIdentifiableItem(item *theItem) {
-	if (((theItem->category & SCROLL) && scrollTable[theItem->kind].identified == true)
-		|| ((theItem->category & POTION) && potionTable[theItem->kind].identified == true)) {
-		
+	if ((theItem->category & SCROLL) && scrollTable[theItem->kind].identified) {
+        theItem->flags &= ~ITEM_CAN_BE_IDENTIFIED;
+    } else if ((theItem->category & POTION) && potionTable[theItem->kind].identified) {
 		theItem->flags &= ~ITEM_CAN_BE_IDENTIFIED;
 	} else if ((theItem->category & (RING | STAFF | WAND))
 			   && (theItem->flags & ITEM_IDENTIFIED)
