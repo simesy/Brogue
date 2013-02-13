@@ -2182,7 +2182,9 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 						(theItem->charges == 1 ? "" : "s"));
 				strcat(buf, buf2);
                 
-                if (theItem->enchant1 > 0) {
+                if ((theItem->charges < RING_DELAY_TO_AUTO_ID || (theItem->flags & (ITEM_MAGIC_DETECTED | ITEM_IDENTIFIED)))
+                    && theItem->enchant1 > 0) { // Mention the unknown-positive-ring footnote only if it's good magic and you know it.
+                    
                     sprintf(buf2, ", and until you understand its secrets, it will function as a +%i ring.", theItem->enchant2);
                     strcat(buf, buf2);
                 } else {
