@@ -3116,7 +3116,7 @@ void updateSafeTerrainMap() {
 void rechargeItemsIncrementally() {
 	item *theItem, *autoIdentifyItems[3] = {rogue.armor, rogue.ringLeft, rogue.ringRight};
 	char buf[DCOLS*3], theItemName[DCOLS*3];
-	short rechargeIncrement, i;
+	short rechargeIncrement, staffRechargeAmount, i;
 	
 	if (rogue.wisdomBonus) {
 		rechargeIncrement = (int) (10 * pow(1.3, min(27, rogue.wisdomBonus)) + FLOAT_FUDGE); // at level 27, you recharge anything to full in one turn
@@ -3132,7 +3132,8 @@ void rechargeItemsIncrementally() {
                     theItem->charges++;
                 }
 				// staffs of blinking and obstruction recharge half as fast so they're less powerful
-				theItem->enchant2 = (theItem->kind == STAFF_BLINKING || theItem->kind == STAFF_OBSTRUCTION ? 10000 : 5000) / theItem->enchant1;
+				staffRechargeAmount = (theItem->kind == STAFF_BLINKING || theItem->kind == STAFF_OBSTRUCTION ? 10000 : 5000) / theItem->enchant1;
+                theItem->enchant2 = randClumpedRange(max(staffRechargeAmount / 3, 1), staffRechargeAmount * 5 / 3, 3);
 			} else if (theItem->charges < theItem->enchant1) {
 				theItem->enchant2 -= rechargeIncrement;
 			}
