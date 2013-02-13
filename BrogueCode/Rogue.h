@@ -2576,6 +2576,7 @@ extern "C" {
 	void decrementMonsterStatus(creature *monst);
 	boolean specifiedPathBetween(short x1, short y1, short x2, short y2,
 								 unsigned long blockingTerrain, unsigned long blockingFlags);
+    boolean traversiblePathBetween(creature *monst, short x2, short y2);
 	boolean openPathBetween(short x1, short y1, short x2, short y2);
 	creature *monsterAtLoc(short x, short y);
 	creature *dormantMonsterAtLoc(short x, short y);

@@ -1386,7 +1386,7 @@ boolean awareOfTarget(creature *observer, creature *target) {
 }
 
 void updateMonsterState(creature *monst) {
-	short x, y, maximumInvisibilityDetectionRadius;
+	short x, y, maximumInvisibilityDetectionRadius, shortestDistanceToEnemy;
 	boolean awareOfPlayer, lostToInvisibility;
 	//char buf[DCOLS*3], monstName[DCOLS];
     creature *monst2;
@@ -1429,6 +1429,19 @@ void updateMonsterState(creature *monst) {
         
 		monst->creatureState = MONSTER_FLEEING;
 	}
+    
+    if (monst->info.flags & MONST_MAINTAINS_DISTANCE) {
+        shortestDistanceToEnemy = DCOLS+DROWS;
+        CYCLE_MONSTERS_AND_PLAYERS(monst2) {
+            if (monstersAreEnemies(monst, monst2)
+                && distanceBetween(x, y, monst2->xLoc, monst2->yLoc) < shortestDistanceToEnemy
+                && traversiblePathBetween(monst2, x, y)
+                && openPathBetween(x, y, monst2->xLoc, monst2->yLoc)) {
+                
+                shortestDistanceToEnemy = distanceBetween(x, y, monst2->xLoc, monst2->yLoc);
+            }
+        }
+    }
 	
 	if ((monst->creatureState == MONSTER_WANDERING)
         && awareOfPlayer
@@ -1455,14 +1468,13 @@ void updateMonsterState(creature *monst) {
 		chooseNewWanderDestination(monst);
 	} else if (monst->creatureState == MONSTER_TRACKING_SCENT
 			   && (monst->info.flags & MONST_MAINTAINS_DISTANCE)
-			   && distanceBetween(x, y, player.xLoc, player.yLoc) < 3
-			   && (pmap[x][y].flags & IN_FIELD_OF_VIEW)) {
+			   && shortestDistanceToEnemy < 3) {
 		monst->creatureState = MONSTER_FLEEING;
 	} else if (monst->creatureMode == MODE_NORMAL
 			   && monst->creatureState == MONSTER_FLEEING
 			   && (monst->info.flags & MONST_MAINTAINS_DISTANCE)
 			   && !(monst->status[STATUS_MAGICAL_FEAR])
-			   && distanceBetween(x, y, player.xLoc, player.yLoc) >= 3) {
+			   && shortestDistanceToEnemy >= 3) {
 		monst->creatureState = MONSTER_TRACKING_SCENT;
 	} else if (monst->creatureMode == MODE_PERM_FLEEING
 			   && monst->creatureState == MONSTER_FLEEING
