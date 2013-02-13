@@ -3621,6 +3621,9 @@ void monsterDetails(char buf[], creature *monst) {
 		i = strlen(buf);
 		i = encodeMessageColor(buf, i, &badMessageColor);
 		combatMath = (player.currentHP + monst->info.damage.upperBound * monsterDamageAdjustmentAmount(monst) - 1) / (monst->info.damage.upperBound * monsterDamageAdjustmentAmount(monst));
+        if (combatMath < 1) {
+            combatMath = 1;
+        }
 		sprintf(newText, "%s has a %i%% chance to hit you, typically hits for %i%% of your current health, and at worst, could defeat you in %i hit%s.\n     ",
 				capMonstName,
 				combatMath2,
@@ -3671,6 +3674,9 @@ void monsterDetails(char buf[], creature *monst) {
 			i = encodeMessageColor(buf, i, &goodMessageColor);
 			
 			combatMath = (monst->currentHP + playerKnownMaxDamage - 1) / playerKnownMaxDamage;
+            if (combatMath < 1) {
+                combatMath = 1;
+            }
 			if (rogue.weapon && !(rogue.weapon->flags & ITEM_IDENTIFIED)) {
 				realArmorValue = rogue.weapon->enchant1;
 				rogue.weapon->enchant1 = 0;
