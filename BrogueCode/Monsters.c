@@ -2498,8 +2498,8 @@ void unAlly(creature *monst) {
 }
 
 boolean allyFlees(creature *ally, creature *closestEnemy) {
-    short x = ally->xLoc;
-    short y = ally->yLoc;
+    const short x = ally->xLoc;
+    const short y = ally->yLoc;
     
     if (!closestEnemy) {
         return false; // No one to flee from.
@@ -2565,14 +2565,6 @@ void moveAlly(creature *monst) {
 		}
 	}
 	
-	// Magic users sometimes cast spells.
-	if (monst->info.abilityFlags & MAGIC_ATTACK) {
-		if (monstUseMagic(monst)) { // if he actually cast a spell
-			monst->ticksUntilTurn = monst->attackSpeed * (monst->info.flags & MONST_CAST_SPELLS_SLOWLY ? 2 : 1);
-			return;
-		}
-	}
-	
 	// Look around for enemies; shortestDistance will be the distance to the nearest.
 	shortestDistance = max(DROWS, DCOLS);
 	for (target = monsters->nextCreature; target != NULL; target = target->nextCreature) {
@@ -2612,6 +2604,14 @@ void moveAlly(creature *monst) {
 			|| (!moveMonster(monst, nbDirs[dir][0], nbDirs[dir][1]) && !moveMonsterPassivelyTowards(monst, targetLoc, true))) {
 			// ally can't flee; continue below
 		} else {
+			return;
+		}
+	}
+	
+	// Magic users sometimes cast spells.
+	if (monst->info.abilityFlags & MAGIC_ATTACK) {
+		if (monstUseMagic(monst)) { // if he actually cast a spell
+			monst->ticksUntilTurn = monst->attackSpeed * (monst->info.flags & MONST_CAST_SPELLS_SLOWLY ? 2 : 1);
 			return;
 		}
 	}
