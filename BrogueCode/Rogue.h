@@ -2535,6 +2535,7 @@ extern "C" {
 	void messageWithColor(char *msg, color *theColor, boolean requireAcknowledgment);
 	void flavorMessage(char *msg);
 	void message(const char *msg, boolean requireAcknowledgment);
+    void displayMoreSignWithoutWaitingForAcknowledgment();
 	void displayMoreSign();
 	short encodeMessageColor(char *msg, short i, const color *theColor);
 	short decodeMessageColor(const char *msg, short i, color *returnColor);

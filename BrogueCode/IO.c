@@ -2753,6 +2753,15 @@ void message(const char *msg, boolean requireAcknowledgment) {
 	restoreRNG;
 }
 
+// Only used for the "you die..." message, to enable posthumous inventory viewing.
+void displayMoreSignWithoutWaitingForAcknowledgment() {
+	if (strLenWithoutEscapes(displayedMessage[0]) < DCOLS - 8 || messageConfirmed[0]) {
+		printString("--MORE--", COLS - 8, MESSAGE_LINES-1, &black, &white, 0);
+	} else {
+		printString("--MORE--", COLS - 8, MESSAGE_LINES, &black, &white, 0);
+	}
+}
+
 void displayMoreSign() {
 	short i;
 	

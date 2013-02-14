@@ -1012,6 +1012,8 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
 	rogueHighScoresEntry theEntry;
 	cellDisplayBuffer dbuf[COLS][ROWS];
 	boolean playback;
+	rogueEvent theEvent;
+    item *theItem;
 	
 	rogue.autoPlayingLevel = false;
 	
@@ -1029,7 +1031,28 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
 		if (!D_IMMORTAL) {
 			rogue.playbackMode = false;
 		}
-		messageWithColor("You die...", &badMessageColor, true);
+		messageWithColor("You die...", &badMessageColor, false);
+        displayMoreSignWithoutWaitingForAcknowledgment();
+        
+        do {
+            nextBrogueEvent(&theEvent, false, false, false);
+            if (theEvent.eventType == KEYSTROKE
+                && theEvent.param1 != ACKNOWLEDGE_KEY
+                && theEvent.param1 != ESCAPE_KEY
+                && theEvent.param1 != INVENTORY_KEY) {
+                
+                flashTemporaryAlert(" -- Press space or click to continue, or press 'i' to view inventory -- ", 1500);
+            } else if (theEvent.eventType == KEYSTROKE && theEvent.param1 == INVENTORY_KEY) {
+                for (theItem = packItems->nextItem; theItem != NULL; theItem = theItem->nextItem) {
+                    identify(theItem);
+                }
+                displayInventory(ALL_ITEMS, 0, 0, true, false);
+            }
+        } while (!(theEvent.eventType == KEYSTROKE && (theEvent.param1 == ACKNOWLEDGE_KEY || theEvent.param1 == ESCAPE_KEY)
+                   || theEvent.eventType == MOUSE_UP));
+        
+        confirmMessages();
+        
 		rogue.playbackMode = playback;
 	}
     
