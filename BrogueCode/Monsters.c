@@ -2523,6 +2523,7 @@ boolean allyFlees(creature *ally, creature *closestEnemy) {
     
     if (distanceBetween(x, y, closestEnemy->xLoc, closestEnemy->yLoc) < 10
         && (100 * ally->currentHP / ally->info.maxHP <= 33)
+        && ally->info.turnsBetweenRegen > 0
         && !ally->carriedMonster
         && ((ally->info.flags & MONST_FLEES_NEAR_DEATH) || (100 * ally->currentHP / ally->info.maxHP * 2 < 100 * player.currentHP / player.info.maxHP))) {
         // Flee if you're within 10 spaces, your HP is under 1/3, you're not a phoenix or lich or vampire in bat form,
