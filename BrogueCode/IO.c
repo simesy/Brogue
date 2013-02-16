@@ -1090,7 +1090,7 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 		if (rogue.inWater) {
 			applyColorAverage(&cellForeColor, &black, 80);
 			applyColorAverage(&cellBackColor, &black, 80);
-		} else {
+		} else if (!cellHasTMFlag(x, y, TM_BRIGHT_MEMORY)) {
 			if (!rogue.trueColorMode || !needDistinctness) {
 				applyColorMultiplier(&cellForeColor, &memoryColor);
 				applyColorAverage(&cellForeColor, &memoryOverlay, 25);
