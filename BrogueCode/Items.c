@@ -580,7 +580,7 @@ void populateItems(short upstairsX, short upstairsY) {
 		
 		if (theItem->category & FOOD) {
 			rogue.foodSpawned += foodTable[theItem->kind].strengthRequired;
-            printf("\n *** Depth %i: generated food!", rogue.depthLevel);
+            //DEBUG printf("\n *** Depth %i: generated food!", rogue.depthLevel);
 		}
 		
 		// Choose a placement location not in a hallway.

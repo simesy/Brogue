@@ -3530,7 +3530,8 @@ void addXPXPToAlly(short XPXP, creature *monst) {
     char theMonsterName[100], buf[200];
     if (!(monst->info.flags & (MONST_INANIMATE | MONST_IMMOBILE))
         && monst->creatureState == MONSTER_ALLY
-        && monst->spawnDepth <= rogue.depthLevel) {
+        && monst->spawnDepth <= rogue.depthLevel
+        && rogue.depthLevel <= AMULET_LEVEL) {
         
         monst->xpxp += XPXP;
         monst->absorbXPXP += XPXP;
