@@ -2651,7 +2651,7 @@ void temporaryMessage(char *msg, boolean requireAcknowledgment) {
 }
 
 void messageWithColor(char *msg, color *theColor, boolean requireAcknowledgment) {
-	char buf[COLS*2];
+	char buf[COLS*2] = "";
 	short i;
 	
 	i=0;
@@ -3675,11 +3675,8 @@ void printProgressBar(short x, short y, const char barLabel[COLS], long amtFille
 	
 	if (dim) {
 		applyColorAverage(&progressBarColor, &black, 50);
-		applyColorAverage(&darkenedBarColor, &black, 50);
 	}
-	
 	darkenedBarColor = progressBarColor;
-	
 	applyColorAverage(&darkenedBarColor, &black, 75);
 	
 	labelOffset = (20 - strlen(barLabel)) / 2;
