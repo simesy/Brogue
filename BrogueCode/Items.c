@@ -472,7 +472,7 @@ void populateItems(short upstairsX, short upstairsY) {
 	} else {
         rogue.lifePotionFrequency += 34;
 		rogue.strengthPotionFrequency += 17;
-		rogue.enchantScrollFrequency += 35;
+		rogue.enchantScrollFrequency += 30;
 		numberOfItems = 3;
 		while (rand_percent(60)) {
 			numberOfItems++;
