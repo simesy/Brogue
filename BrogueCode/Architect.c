@@ -2539,7 +2539,7 @@ boolean buildABridge() {
 				if (k < DROWS
 					&& (k - j > 3)
 					&& foundExposure
-					&& !cellHasTerrainFlag(i, k, T_OBSTRUCTS_PASSABILITY | T_CAN_BE_BRIDGED)
+					&& !cellHasTerrainFlag(i, k, T_PATHING_BLOCKER | T_CAN_BE_BRIDGED)
 					&& !pmap[i][k].machineNumber // Cannot end in a machine.
 					&& 100 * pathingDistance(i, j, i, k, T_PATHING_BLOCKER) / (k - j) > bridgeRatioY) {
 					
@@ -2624,11 +2624,6 @@ void digDungeon() {
 		temporaryMessage("Diagonal openings removed.", true);
 	}
 	
-	if (D_INSPECT_LEVELGEN) {
-		dumpLevelToScreen();
-		temporaryMessage("Bridges added.", true);
-	}
-	
 	// Now add some treasure machines.
 	addMachines();
 	
@@ -2640,8 +2635,18 @@ void digDungeon() {
 	// Now knock down the boundaries between similar lakes where possible.
 	cleanUpLakeBoundaries();
 	
+	if (D_INSPECT_LEVELGEN) {
+		dumpLevelToScreen();
+		temporaryMessage("Lake boundaries cleaned up.", true);
+	}
+	
 	// Now add some bridges.
 	while (buildABridge());
+	
+	if (D_INSPECT_LEVELGEN) {
+		dumpLevelToScreen();
+		temporaryMessage("Bridges added.", true);
+	}
     
 	// Now remove orphaned doors and upgrade some doors to secret doors
     finishDoors();
