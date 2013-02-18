@@ -2452,7 +2452,7 @@ char displayInventory(unsigned short categoryMask,
 					(buttons[i].flags & B_HOVER_ENABLED) ? whiteColorEscapeSequence : grayColorEscapeSequence,
 					buf,
 					grayColorEscapeSequence,
-					(theItem->flags & ITEM_EQUIPPED ? ((theItem->category & WEAPON) ? " (in hand) " : " (being worn) ") : ""));
+					(theItem->flags & ITEM_EQUIPPED ? ((theItem->category & WEAPON) ? " (in hand) " : " (worn) ") : ""));
 			buttons[i].symbol[1] = theItem->displayChar;
 		} else {
 			sprintf(buttons[i].text, " %c%s %s%s* %s%s%s%s", // The '*' is the item character, e.g. ':' for food.
@@ -2463,7 +2463,7 @@ char displayInventory(unsigned short categoryMask,
 					(buttons[i].flags & B_HOVER_ENABLED) ? whiteColorEscapeSequence : grayColorEscapeSequence,
 					buf,
 					grayColorEscapeSequence,
-					(theItem->flags & ITEM_EQUIPPED ? ((theItem->category & WEAPON) ? " (in hand) " : " (being worn) ") : ""));
+					(theItem->flags & ITEM_EQUIPPED ? ((theItem->category & WEAPON) ? " (in hand) " : " (worn) ") : ""));
 			buttons[i].symbol[0] = theItem->displayChar;
 		}
 		
