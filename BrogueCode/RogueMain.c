@@ -1031,7 +1031,10 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
 		if (!D_IMMORTAL) {
 			rogue.playbackMode = false;
 		}
-		messageWithColor("You die...", &badMessageColor, false);
+        strcpy(buf, "You die...");
+        encodeMessageColor(buf, strlen(buf), &veryDarkGray);
+        strcat(buf, " (press 'i' to view your inventory)");
+		messageWithColor(buf, &badMessageColor, false);
         displayMoreSignWithoutWaitingForAcknowledgment();
         
         do {
@@ -1045,6 +1048,7 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
             } else if (theEvent.eventType == KEYSTROKE && theEvent.param1 == INVENTORY_KEY) {
                 for (theItem = packItems->nextItem; theItem != NULL; theItem = theItem->nextItem) {
                     identify(theItem);
+                    theItem->flags &= ~ITEM_MAGIC_DETECTED;
                 }
                 displayInventory(ALL_ITEMS, 0, 0, true, false);
             }
