@@ -2080,8 +2080,7 @@ boolean monstUseMagic(creature *monst) {
         
 		CYCLE_MONSTERS_AND_PLAYERS(target) {
 			if (monstersAreEnemies(monst, target)
-				&& monst != target
-				&& !(monst->bookkeepingFlags & MONST_SUBMERGED)
+				&& !((monst->bookkeepingFlags | target->bookkeepingFlags) & MONST_SUBMERGED) // neither is submerged
 				&& !target->status[STATUS_INVISIBLE]
                 && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
 				&& openPathBetween(monst->xLoc, monst->yLoc, target->xLoc, target->yLoc)) {
@@ -2157,7 +2156,7 @@ boolean monstUseMagic(creature *monst) {
 				// Dar blademasters sometimes blink -- but it is handled elsewhere.
 				
 				// Discord.
-				if (monst->info.abilityFlags & (MA_CAST_DISCORD)
+				if ((monst->info.abilityFlags & MA_CAST_DISCORD)
                     && (!target->status[STATUS_DISCORDANT])
 					&& !(target->info.flags & MONST_INANIMATE)
                     && (target != &player)
@@ -2173,7 +2172,7 @@ boolean monstUseMagic(creature *monst) {
 				}
 				
 				// Opportunity to cast negation cleverly?
-				if (monst->info.abilityFlags & (MA_CAST_NEGATION)
+				if ((monst->info.abilityFlags & MA_CAST_NEGATION)
 					&& (target->status[STATUS_HASTED] || target->status[STATUS_TELEPATHIC] || target->status[STATUS_SHIELDED]
 						|| (target->info.flags & (MONST_DIES_IF_NEGATED | MONST_IMMUNE_TO_WEAPONS))
 						|| ((target->status[STATUS_IMMUNE_TO_FIRE] || target->status[STATUS_LEVITATING])
@@ -2181,6 +2180,7 @@ boolean monstUseMagic(creature *monst) {
 					&& !(target == &player && rogue.armor && (rogue.armor->flags & ITEM_RUNIC) && rogue.armor->enchant2 == A_REFLECTION && netEnchant(rogue.armor) > 0)
                     && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
 					&& (alwaysUse || rand_percent(50))) {
+                    
 					if (canDirectlySeeMonster(monst)) {
 						monsterName(monstName, monst, true);
 						sprintf(buf, "%s casts a negation spell", monstName);
@@ -2205,7 +2205,6 @@ boolean monstUseMagic(creature *monst) {
 					return true;
 				}
 			}
-			
 		}
 	}
 	
