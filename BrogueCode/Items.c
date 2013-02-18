@@ -2298,11 +2298,9 @@ boolean displayMagicCharForItem(item *theItem) {
 	if (!(theItem->flags & ITEM_MAGIC_DETECTED)
 		|| (theItem->category & PRENAMED_CATEGORY)) {
 		return false;
-	}
-	if (theItem->category & (STAFF | POTION | SCROLL | WAND)) {
-		return !(tableForItemCategory(theItem->category)[theItem->kind].identified);
-	}
-	return true;
+	} else {
+        return true;
+    }
 }
 
 char displayInventory(unsigned short categoryMask,
