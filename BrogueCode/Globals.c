@@ -1114,7 +1114,7 @@ const blueprint blueprintCatalog[NUMBER_BLUEPRINTS] = {
 		{DF_WATER_POOL,0,0,                     {4, 4},		1,			0,			-1,			0,				0,				4,				HORDE_MACHINE_WATER_MONSTER,0,MF_GENERATE_HORDE},
         {DF_GRASS,	FOLIAGE,	SURFACE,		{3, 4},		3,			0,			-1,			0,				0,				1,				0,			0,			0}}},
     // Thief area -- empty altar, monster with item, permanently fleeing.
-    {{3, AMULET_LEVEL},	{15, 20},	10,		2,			(BP_ADOPT_ITEM | BP_NO_INTERIOR_FLAG),	{
+    {{3, AMULET_LEVEL},	{15, 20},	10,		2,			(BP_ADOPT_ITEM),	{
 		{DF_LUMINESCENT_FUNGUS,	ALTAR_INERT,DUNGEON,{1,1},	1,			0,			-1,			0,				0,				2,				HORDE_MACHINE_THIEF,0,			(MF_ADOPT_ITEM | MF_BUILD_AT_ORIGIN | MF_TREAT_AS_BLOCKING | MF_NOT_IN_HALLWAY | MF_GENERATE_HORDE | MF_MONSTER_TAKE_ITEM | MF_MONSTER_FLEEING)},
         {0,         STATUE_INERT,0,             {3, 5},     2,          0,          -1,         0,              0,              2,              0,          0,          (MF_FAR_FROM_ORIGIN | MF_TREAT_AS_BLOCKING | MF_NOT_IN_HALLWAY)}}},
 	// Collapsing floor area -- key on an altar in an area; take key to cause the floor of the area to collapse
