@@ -3187,79 +3187,106 @@ void extinguishFireOnCreature(creature *monst) {
 	}
 }
 
-void monstersApproachStairs() {
-	creature *monst, *prevMonst, *nextMonst;
-	short n;
+// n is the monster's depthLevel - 1.
+void monsterEntersLevel(creature *monst, short n) {
+    creature *prevMonst;
 	char monstName[COLS], buf[COLS];
-	boolean pit;
+	boolean pit = false;
+    
+    // place traversing monster near the stairs on this level
+    if (monst->bookkeepingFlags & MONST_APPROACHING_DOWNSTAIRS) {
+        monst->xLoc = rogue.upLoc[0];
+        monst->yLoc = rogue.upLoc[1];
+    } else if (monst->bookkeepingFlags & MONST_APPROACHING_UPSTAIRS) {
+        monst->xLoc = rogue.downLoc[0];
+        monst->yLoc = rogue.downLoc[1];
+    } else if (monst->bookkeepingFlags & MONST_APPROACHING_PIT) { // jumping down pit
+        pit = true;
+        monst->xLoc = levels[n].playerExitedVia[0];
+        monst->yLoc = levels[n].playerExitedVia[1];
+    } else {
+#ifdef BROGUE_ASSERTS
+        assert(false);
+#endif
+    }
+    monst->depth = rogue.depthLevel;
+    
+    if (!pit) {
+        getQualifyingPathLocNear(&(monst->xLoc), &(monst->yLoc), monst->xLoc, monst->yLoc, true,
+                                 T_DIVIDES_LEVEL & avoidedFlagsForMonster(&(monst->info)), 0,
+                                 avoidedFlagsForMonster(&(monst->info)), HAS_STAIRS, false);
+    }
+    if (!pit
+        && (pmap[monst->xLoc][monst->yLoc].flags & (HAS_PLAYER | HAS_MONSTER))
+        && !(terrainFlags(monst->xLoc, monst->yLoc) & avoidedFlagsForMonster(&(monst->info)))) {
+        // Monsters using the stairs will displace any creatures already located there, to thwart stair-dancing.
+        prevMonst = monsterAtLoc(monst->xLoc, monst->yLoc);
+#ifdef BROGUE_ASSERTS
+        assert(prevMonst);
+#endif
+        getQualifyingPathLocNear(&(prevMonst->xLoc), &(prevMonst->yLoc), monst->xLoc, monst->yLoc, true,
+                                 T_DIVIDES_LEVEL & avoidedFlagsForMonster(&(prevMonst->info)), 0,
+                                 avoidedFlagsForMonster(&(prevMonst->info)), (HAS_MONSTER | HAS_PLAYER | HAS_STAIRS), false);
+        pmap[monst->xLoc][monst->yLoc].flags &= ~(HAS_PLAYER | HAS_MONSTER);
+        pmap[prevMonst->xLoc][prevMonst->yLoc].flags |= (prevMonst == &player ? HAS_PLAYER : HAS_MONSTER);
+        refreshDungeonCell(prevMonst->xLoc, prevMonst->yLoc);
+        //DEBUG printf("\nBumped a creature (%s) from (%i, %i) to (%i, %i).", prevMonst->info.monsterName, monst->xLoc, monst->yLoc, prevMonst->xLoc, prevMonst->yLoc);
+    }
+    
+    // remove traversing monster from other level monster chain
+    if (monst == levels[n].monsters) {
+        levels[n].monsters = monst->nextCreature;
+    } else {
+        for (prevMonst = levels[n].monsters; prevMonst->nextCreature != monst; prevMonst = prevMonst->nextCreature);
+        prevMonst->nextCreature = monst->nextCreature;
+    }
+    
+    // prepend traversing monster to current level monster chain
+    monst->nextCreature = monsters->nextCreature;
+    monsters->nextCreature = monst;
+    
+    monst->status[STATUS_ENTERS_LEVEL_IN] = 0;
+    monst->bookkeepingFlags |= MONST_PREPLACED;
+    monst->bookkeepingFlags &= ~MONST_IS_FALLING;
+    restoreMonster(monst, NULL, NULL);
+    //DEBUG printf("\nPlaced a creature (%s) at (%i, %i).", monst->info.monsterName, monst->xLoc, monst->yLoc);
+    monst->ticksUntilTurn = monst->movementSpeed;
+    refreshDungeonCell(monst->xLoc, monst->yLoc);
+    
+    if (pit) {
+        monsterName(monstName, monst, true);
+        if (!monst->status[STATUS_LEVITATING]) {
+            if (inflictDamage(monst, randClumpedRange(6, 12, 2), &red)) {
+                if (canSeeMonster(monst)) {
+                    sprintf(buf, "%s plummets from above and splatters against the ground!", monstName);
+                    messageWithColor(buf, messageColorFromVictim(monst), false);
+                }
+            } else {
+                if (canSeeMonster(monst)) {
+                    sprintf(buf, "%s falls from above and crashes to the ground!", monstName);
+                    message(buf, false);
+                }
+            }
+        } else if (canSeeMonster(monst)) {
+            sprintf(buf, "%s swoops into the cavern from above.", monstName);
+            message(buf, false);
+        }
+    }
+}
+
+void monstersApproachStairs() {
+	creature *monst, *nextMonst;
+	short n;
 	
 	for (n = rogue.depthLevel - 2; n <= rogue.depthLevel; n += 2) { // cycle through previous and next level
 		if (n >= 0 && n < DEEPEST_LEVEL && levels[n].visited) {
 			for (monst = levels[n].monsters; monst != NULL;) {
 				nextMonst = monst->nextCreature;
-				pit = false;
 				if (monst->status[STATUS_ENTERS_LEVEL_IN] > 1) {
 					monst->status[STATUS_ENTERS_LEVEL_IN]--;
 				} else if (monst->status[STATUS_ENTERS_LEVEL_IN] == 1) {
-					// monster is entering the level!
-					
-					// remove traversing monster from other level monster chain
-					if (monst == levels[n].monsters) {
-						levels[n].monsters = monst->nextCreature;
-					} else {
-						for (prevMonst = levels[n].monsters; prevMonst->nextCreature != monst; prevMonst = prevMonst->nextCreature);
-						prevMonst->nextCreature = monst->nextCreature;
-					}
-					
-					// prepend traversing monster to current level monster chain
-					monst->nextCreature = monsters->nextCreature;
-					monsters->nextCreature = monst;
-					
-					// place traversing monster near the stairs on this level
-					if (monst->bookkeepingFlags & MONST_APPROACHING_DOWNSTAIRS) {
-						monst->xLoc = rogue.upLoc[0];
-						monst->yLoc = rogue.upLoc[1];
-					} else if (monst->bookkeepingFlags & MONST_APPROACHING_UPSTAIRS) {
-						monst->xLoc = rogue.downLoc[0];
-						monst->yLoc = rogue.downLoc[1];					
-					} else if (monst->bookkeepingFlags & MONST_APPROACHING_PIT) { // jumping down pit
-						pit = true;
-						monst->xLoc = levels[n].playerExitedVia[0];
-						monst->yLoc = levels[n].playerExitedVia[1];
-					} else {
-#ifdef BROGUE_ASSERTS
-                        assert(false);
-#endif
-                    }
-					monst->depth = rogue.depthLevel;
-					
-					monst->status[STATUS_ENTERS_LEVEL_IN] = 0;
-					monst->bookkeepingFlags |= MONST_PREPLACED;
-					monst->bookkeepingFlags &= ~MONST_IS_FALLING;
-					restoreMonster(monst, NULL, NULL);
-					monst->ticksUntilTurn = monst->movementSpeed;
-					refreshDungeonCell(monst->xLoc, monst->yLoc);
-					
-					if (pit) {
-						monsterName(monstName, monst, true);
-						if (!monst->status[STATUS_LEVITATING]) {
-							if (inflictDamage(monst, randClumpedRange(6, 12, 2), &red)) {
-								if (canSeeMonster(monst)) {
-									sprintf(buf, "%s plummets from above and splatters against the ground!", monstName);
-									messageWithColor(buf, messageColorFromVictim(monst), false);
-								}
-							} else {
-								if (canSeeMonster(monst)) {
-									sprintf(buf, "%s falls from above and crashes to the ground!", monstName);
-									message(buf, false);
-								}
-							}
-						} else if (canSeeMonster(monst)) {
-							sprintf(buf, "%s swoops into the cavern from above.", monstName);
-							message(buf, false);
-						}
-					}
-				}
+                    monsterEntersLevel(monst, n);
+                }
 				monst = nextMonst;
 			}
 		}

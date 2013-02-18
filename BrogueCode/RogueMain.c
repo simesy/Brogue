@@ -637,7 +637,7 @@ void startLevel(short oldLevelNumber, short stairDirection) {
 					&& !monst->status[STATUS_PARALYZED]
 					&& mapToStairs[monst->xLoc][monst->yLoc] < 30000) {
 					
-					monst->status[STATUS_ENTERS_LEVEL_IN] = max(1, mapToStairs[monst->xLoc][monst->yLoc] * monst->movementSpeed / 100);
+					monst->status[STATUS_ENTERS_LEVEL_IN] = max(1, mapToStairs[monst->xLoc][monst->yLoc] * monst->movementSpeed / 100 + 1);
 					switch (stairDirection) {
 						case 1:
 							monst->bookkeepingFlags |= MONST_APPROACHING_DOWNSTAIRS;
