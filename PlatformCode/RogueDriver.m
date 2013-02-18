@@ -454,12 +454,10 @@ boolean saveHighScore(rogueHighScoresEntry theEntry) {
 }
 
 void initializeLaunchArguments(enum NGCommands *command, char *path, unsigned long *seed) {
-	*command = NG_NOTHING;
+	//*command = NG_SCUM;
+    *command = NG_NOTHING;
 	path[0] = '\0';
 	*seed = 0;
-    
-    //	*command = NG_NEW_GAME_WITH_SEED;
-    //	*seed = 30;
 }
 
 void initializeBrogueSaveLocation() {

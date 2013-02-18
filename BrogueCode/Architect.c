@@ -1561,15 +1561,17 @@ void runAutogenerators() {
 
 // Knock down the boundaries between similar lakes where possible.
 void cleanUpLakeBoundaries() {
-	short i, j, x, y, layer;
+	short i, j, x, y, failsafe, layer;
 	boolean reverse, madeChange;
     unsigned long subjectFlags;
 	
 	reverse = true;
 	
+    failsafe = 100;
 	do {
 		madeChange = false;
 		reverse = !reverse;
+        failsafe--;
 		
 		for (i = (reverse ? DCOLS - 2 : 1);
 			 (reverse ? i > 0 : i < DCOLS - 1);
@@ -1612,7 +1614,7 @@ void cleanUpLakeBoundaries() {
 				}
 			}
 		}
-	} while (madeChange);
+	} while (madeChange && failsafe > 0);
 }
 
 void removeDiagonalOpenings() {

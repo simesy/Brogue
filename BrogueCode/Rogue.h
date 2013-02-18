@@ -1950,6 +1950,7 @@ enum NGCommands {
 	NG_OPEN_GAME,
 	NG_VIEW_RECORDING,
 	NG_HIGH_SCORES,
+    NG_SCUM,
 	NG_QUIT,
 };
 

@@ -566,6 +566,54 @@ boolean dialogChooseFile(char *path, const char *suffix, const char *prompt) {
 	}
 }
 
+void scum(unsigned long startingSeed, short numberOfSeedsToScan, short scanThroughDepth) {
+    unsigned long theSeed;
+    char path[BROGUE_FILENAME_MAX];
+    item *theItem, spareItem;
+    char buf[200];
+    FILE *logFile;
+    
+    logFile = fopen("Brogue seed scumming log file.txt", "w");
+    rogue.nextGame = NG_NOTHING;
+    
+    getAvailableFilePath(path, LAST_GAME_NAME, GAME_SUFFIX);
+    strcat(path, GAME_SUFFIX);
+    
+    fprintf(logFile, "Brogue seed scummer output:\nScanning seeds %li to %li, through depth %i.",
+            startingSeed, startingSeed + numberOfSeedsToScan - 1, scanThroughDepth);
+    
+    for (theSeed = startingSeed; theSeed < startingSeed + numberOfSeedsToScan; theSeed++) {
+        fprintf(logFile, "\n\nSeed %li:", theSeed);
+        printf("\nScanned seed %li.", theSeed);
+        rogue.nextGamePath[0] = '\0';
+        randomNumbersGenerated = 0;
+        
+        rogue.playbackMode = false;
+        rogue.playbackFastForward = false;
+        rogue.playbackBetweenTurns = false;
+        
+        strcpy(currentFilePath, path);
+        initializeRogue(theSeed);
+        for (rogue.depthLevel = 1; rogue.depthLevel <= scanThroughDepth; rogue.depthLevel++) {
+            startLevel(rogue.depthLevel == 1 ? 1 : rogue.depthLevel - 1, 1); // descending into level n
+            fprintf(logFile, "\n    Depth %i:", rogue.depthLevel);
+            for (theItem = floorItems->nextItem; theItem != NULL; theItem = theItem->nextItem) {
+                spareItem = *theItem;
+                identify(&spareItem);
+                itemName(&spareItem, buf, true, true, NULL);
+                upperCase(buf);
+                fprintf(logFile, "\n        %s", buf);
+                if (pmap[theItem->xLoc][theItem->yLoc].machineNumber > 0) {
+                    fprintf(logFile, " (vault %i)", pmap[theItem->xLoc][theItem->yLoc].machineNumber);
+                }
+            }
+        }
+        freeEverything();
+        remove(currentFilePath); // Don't add a spurious LastGame file to the brogue folder.
+    }
+    fclose(logFile);
+}
+
 // This is the basic program loop.
 // When the program launches, or when a game ends, you end up here.
 // If the player has already said what he wants to do next
@@ -734,6 +782,10 @@ void mainBrogueJunction() {
 				rogue.nextGame = NG_NOTHING;
 				printHighScores(false);
 				break;
+            case NG_SCUM:
+                rogue.nextGame = NG_NOTHING;
+                scum(1, 1000, 5);
+                break;
 			case NG_QUIT:
 				// No need to do anything.
 				break;
