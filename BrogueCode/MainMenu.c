@@ -579,8 +579,11 @@ void scum(unsigned long startingSeed, short numberOfSeedsToScan, short scanThrou
     getAvailableFilePath(path, LAST_GAME_NAME, GAME_SUFFIX);
     strcat(path, GAME_SUFFIX);
     
-    fprintf(logFile, "Brogue seed scummer output:\nScanning seeds %li to %li, through depth %i.",
-            startingSeed, startingSeed + numberOfSeedsToScan - 1, scanThroughDepth);
+    fprintf(logFile, "Brogue seed catalog, seeds %li to %li, through depth %i.\n\n\
+To play one of these seeds, press control-N from the title screen \
+and enter the seed number. Knowing which items will appear on \
+the first %i depths will, of course, make the game significantly easier.",
+            startingSeed, startingSeed + numberOfSeedsToScan - 1, scanThroughDepth, scanThroughDepth);
     
     for (theSeed = startingSeed; theSeed < startingSeed + numberOfSeedsToScan; theSeed++) {
         fprintf(logFile, "\n\nSeed %li:", theSeed);
