@@ -1386,7 +1386,7 @@ boolean isVowelish(char *theChar) {
     char str[30];
     strncpy(str, theChar, 29);
     for (i = 0; i < 30; i++) {
-        upperCase(&(str[1]));
+        upperCase(&(str[i]));
     }
     if (stringsMatch(str, "UNI")        // Words that start with "uni" aren't treated like vowels; e.g., "a" unicorn.
         || stringsMatch(str, "EU")) {   // Words that start with "eu" aren't treated like vowels; e.g., "a" eucalpytus staff.
