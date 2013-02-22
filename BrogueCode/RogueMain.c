@@ -488,12 +488,6 @@ void initializeRogue(unsigned long seed) {
 		identify(theItem);
 		theItem = addItemToPack(theItem);
 		
-		theItem = generateItem(STAFF, STAFF_DISCORD);
-		theItem->enchant1 = theItem->charges = 10;
-		theItem->flags &= ~ITEM_CURSED;
-		identify(theItem);
-		theItem = addItemToPack(theItem);
-		
 		theItem = generateItem(STAFF, STAFF_ENTRANCEMENT);
 		theItem->enchant1 = 10;
 		theItem->charges = 300;
@@ -509,12 +503,6 @@ void initializeRogue(unsigned long seed) {
 		theItem = addItemToPack(theItem);
 		
 		theItem = generateItem(STAFF, STAFF_CONJURATION);
-		theItem->enchant1 = 10;
-		theItem->charges = 300;
-		identify(theItem);
-		theItem = addItemToPack(theItem);
-		
-		theItem = generateItem(STAFF, STAFF_POISON);
 		theItem->enchant1 = 10;
 		theItem->charges = 300;
 		identify(theItem);
@@ -541,16 +529,6 @@ void initializeRogue(unsigned long seed) {
 		theItem = generateItem(RING, RING_AWARENESS);
 		theItem->enchant1 = 30;
 		theItem->flags &= ~ITEM_CURSED;
-		identify(theItem);
-		theItem = addItemToPack(theItem);
-		
-		theItem = generateItem(STAFF, STAFF_PROTECTION);
-        theItem->enchant1 = 5;
-		identify(theItem);
-		theItem = addItemToPack(theItem);
-		
-		theItem = generateItem(CHARM, CHARM_TELEPORTATION);
-        theItem->enchant1 = 15;
 		identify(theItem);
 		theItem = addItemToPack(theItem);
 		

@@ -573,7 +573,7 @@ void scum(unsigned long startingSeed, short numberOfSeedsToScan, short scanThrou
     char buf[200];
     FILE *logFile;
     
-    logFile = fopen("Brogue seed scumming log file.txt", "w");
+    logFile = fopen("Brogue seed catalog.txt", "w");
     rogue.nextGame = NG_NOTHING;
     
     getAvailableFilePath(path, LAST_GAME_NAME, GAME_SUFFIX);
