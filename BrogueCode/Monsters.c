@@ -292,7 +292,7 @@ void resolvePronounEscapes(char *text, creature *monst) {
 	
 	if (monst == &player) {
 		gender = 1;
-    } else if (!canSeeMonster(monst)) {
+    } else if (!canSeeMonster(monst) && !rogue.playbackOmniscience) {
         gender = 4;
 	} else if (monst->info.flags & MONST_MALE) {
 		gender = 2;
