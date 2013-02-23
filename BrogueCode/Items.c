@@ -942,18 +942,14 @@ boolean inscribeItem(item *theItem) {
 }
 
 boolean itemCanBeCalled(item *theItem) {
-	if ((theItem->flags & ITEM_IDENTIFIED) || theItem->category & (WEAPON|ARMOR|CHARM|FOOD|GOLD|AMULET|GEM)) {
-		if (theItem->category & (WEAPON | ARMOR | CHARM | STAFF | WAND | RING)) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-	if ((theItem->category & (POTION|SCROLL|WAND|STAFF|RING))
-		&& !(tableForItemCategory(theItem->category)[theItem->kind].identified)) {
-		return true;
-	}
-	return false;
+    if (theItem->category & (WEAPON|ARMOR|SCROLL|RING|POTION|STAFF|WAND|CHARM)) {
+        return true;
+    } else if ((theItem->category & (POTION | SCROLL))
+               && !tableForItemCategory(theItem->category)[theItem->kind].identified) {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 void call(item *theItem) {
@@ -977,7 +973,7 @@ void call(item *theItem) {
                 tempItem->flags |= ITEM_CAN_BE_IDENTIFIED;
             }
         }
-		theItem = promptForItemOfType((WEAPON|ARMOR|SCROLL|RING|POTION|STAFF|WAND), ITEM_CAN_BE_IDENTIFIED, 0,
+		theItem = promptForItemOfType((WEAPON|ARMOR|SCROLL|RING|POTION|STAFF|WAND|CHARM), ITEM_CAN_BE_IDENTIFIED, 0,
 									  "Call what? (a-z, shift for more info; or <esc> to cancel)", true);
         updateIdentifiableItems(); // Reset the flags.
 	}
