@@ -2267,7 +2267,7 @@ const char monsterAbilityFlagDescriptions[33][COLS] = {
 
 const char monsterBookkeepingFlagDescriptions[32][COLS] = {
 	"",											// MONST_WAS_VISIBLE
-	"",											// unused
+	"is telepathically bonded with you",		// MONST_TELEPATHICALLY_REVEALED
 	"",											// MONST_PREPLACED
 	"",											// MONST_APPROACHING_UPSTAIRS
 	"",											// MONST_APPROACHING_DOWNSTAIRS
