@@ -2992,6 +2992,7 @@ void updateSafetyMap() {
 					monst = monsterAtLoc(i, j);
 					if ((monst->creatureState == MONSTER_SLEEPING
 						 || monst->turnsSpentStationary > 2
+                         || (monst->info.flags & MONST_GETS_TURN_ON_ACTIVATION)
 						 || monst->creatureState == MONSTER_ALLY)
 						&& monst->creatureState != MONSTER_FLEEING) {
 						
@@ -3089,7 +3090,7 @@ void updateSafeTerrainMap() {
                 
 				costMap[i][j] = cellHasTerrainFlag(i, j, T_OBSTRUCTS_DIAGONAL_MOVEMENT) ? PDS_OBSTRUCTION : PDS_FORBIDDEN;
 				rogue.mapToSafeTerrain[i][j] = 30000; // OOS prophylactic
-			} else if ((monst && monst->turnsSpentStationary > 1)
+			} else if ((monst && (monst->turnsSpentStationary > 1 || (monst->info.flags & MONST_GETS_TURN_ON_ACTIVATION)))
 				|| (cellHasTerrainFlag(i, j, T_PATHING_BLOCKER & ~T_HARMFUL_TERRAIN) && !cellHasTMFlag(i, j, TM_IS_SECRET))) {
                 
 				costMap[i][j] = PDS_FORBIDDEN;

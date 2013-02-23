@@ -1086,6 +1086,15 @@ boolean monsterAvoids(creature *monst, short x, short y) {
             return false;
         }
     }
+    
+    // Monsters always avoid damage-immune stationary monsters.
+    defender = monsterAtLoc(x, y);
+    if (defender
+        && (defender->info.flags & MONST_IMMUNE_TO_WEAPONS)
+        && (defender->info.flags & (MONST_IMMOBILE | MONST_GETS_TURN_ON_ACTIVATION))) {
+        
+        return true;
+    }
 	
 	// hidden terrain
 	if (cellHasTMFlag(x, y, TM_IS_SECRET) && monst == &player) {

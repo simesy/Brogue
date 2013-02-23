@@ -251,14 +251,22 @@ void calculateDistances(short **distanceMap,
 						creature *traveler,
 						boolean canUseSecretDoors,
 						boolean eightWays) {
-	static pdsMap map;
+	creature *monst;
+    static pdsMap map;
 
 	short i, j;
 	
 	for (i=0; i<DCOLS; i++) {
 		for (j=0; j<DROWS; j++) {
 			char cost;
-			if (canUseSecretDoors
+            monst = monsterAtLoc(i, j);
+            if (monst
+                && (monst->info.flags & MONST_IMMUNE_TO_WEAPONS)
+                && (monst->info.flags & (MONST_IMMOBILE | MONST_GETS_TURN_ON_ACTIVATION))) {
+                
+                // Always avoid damage-immune stationary monsters.
+                cost = PDS_FORBIDDEN;
+            } else if (canUseSecretDoors
                 && cellHasTMFlag(i, j, TM_IS_SECRET)
                 && cellHasTerrainFlag(i, j, T_OBSTRUCTS_PASSABILITY)
                 && !(discoveredTerrainFlagsAtLoc(i, j) & T_OBSTRUCTS_PASSABILITY)) {
