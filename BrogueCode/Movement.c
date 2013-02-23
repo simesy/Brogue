@@ -461,6 +461,28 @@ void updateFlavorText() {
 	}
 }
 
+void updatePlayerUnderwaterness() {
+    if (rogue.inWater) {
+        if (!cellHasTerrainFlag(player.xLoc, player.yLoc, T_IS_DEEP_WATER) || player.status[STATUS_LEVITATING]
+            || cellHasTerrainFlag(player.xLoc, player.yLoc, (T_ENTANGLES | T_OBSTRUCTS_PASSABILITY))) {
+            
+            rogue.inWater = false;
+            updateMinersLightRadius();
+            updateVision(true);
+            displayLevel();
+        }
+    } else {
+        if (cellHasTerrainFlag(player.xLoc, player.yLoc, T_IS_DEEP_WATER) && !player.status[STATUS_LEVITATING]
+            && !cellHasTerrainFlag(player.xLoc, player.yLoc, (T_ENTANGLES | T_OBSTRUCTS_PASSABILITY))) {
+            
+            rogue.inWater = true;
+            updateMinersLightRadius();
+            updateVision(true);
+            displayLevel();
+        }
+    }
+}
+
 void useKeyAt(item *theItem, short x, short y) {
 	short layer, i;
 	creature *monst;
@@ -556,25 +578,7 @@ void applyInstantTileEffectsToCreature(creature *monst) {
 	
 	// Visual effect for submersion in water.
 	if (monst == &player) {
-		if (rogue.inWater) {
-			if (!cellHasTerrainFlag(player.xLoc, player.yLoc, T_IS_DEEP_WATER) || player.status[STATUS_LEVITATING]
-				|| cellHasTerrainFlag(player.xLoc, player.yLoc, (T_ENTANGLES | T_OBSTRUCTS_PASSABILITY))) {
-				
-                rogue.inWater = false;
-				updateMinersLightRadius();
-				updateVision(true);
-				displayLevel();
-			}
-		} else {
-			if (cellHasTerrainFlag(player.xLoc, player.yLoc, T_IS_DEEP_WATER) && !player.status[STATUS_LEVITATING]
-				&& !cellHasTerrainFlag(player.xLoc, player.yLoc, (T_ENTANGLES | T_OBSTRUCTS_PASSABILITY))) {
-                
-				rogue.inWater = true;
-				updateMinersLightRadius();
-				updateVision(true);
-				displayLevel();
-			}
-		}
+        updatePlayerUnderwaterness();
 	}
 	
 	// lava
@@ -1883,6 +1887,7 @@ void travel(short x, short y, boolean autoConfirm) {
 		player.xLoc = x;
 		player.yLoc = y;
 		pmap[x][y].flags |= HAS_PLAYER;
+        updatePlayerUnderwaterness();
 		refreshDungeonCell(x, y);
 		updateVision(true);
 		return;
@@ -4210,6 +4215,7 @@ boolean useStairs(short stairDirection) {
 	}
 	
 	if (succeeded) {
+        updatePlayerUnderwaterness();
 		rogue.cursorLoc[0] = -1;
 		rogue.cursorLoc[1] = -1;
 	}
