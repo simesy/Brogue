@@ -3905,12 +3905,8 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 					printString("     (Sleeping)     ", 0, y++, (dim ? &darkGray : &gray), &black, 0);
                 } else if ((monst->creatureState == MONSTER_ALLY) && y < ROWS - 1) {
                     printString("       (Ally)       ", 0, y++, (dim ? &darkGray : &gray), &black, 0);
-                } else if (monst->ticksUntilTurn > player.ticksUntilTurn + player.movementSpeed) {
-                    printString("   (Off balance)    ", 0, y++, (dim ? &darkGray : &gray), &black, 0);
 				} else if (monst->creatureState == MONSTER_FLEEING && y < ROWS - 1) {
 					printString("     (Fleeing)      ", 0, y++, (dim ? &darkGray : &gray), &black, 0);
-				} else if ((monst->creatureState == MONSTER_TRACKING_SCENT) && y < ROWS - 1) {
-					printString("     (Hunting)      ", 0, y++, (dim ? &darkGray : &gray), &black, 0);
 				} else if ((monst->creatureState == MONSTER_WANDERING) && y < ROWS - 1) {
 					if ((monst->bookkeepingFlags & MONST_FOLLOWER) && monst->leader && (monst->leader->info.flags & MONST_IMMOBILE)) {
 						// follower of an immobile leader -- i.e. a totem
@@ -3921,6 +3917,10 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 					} else {
 						printString("    (Wandering)     ", 0, y++, (dim ? &darkGray : &gray), &black, 0);
 					}
+                } else if (monst->ticksUntilTurn > player.ticksUntilTurn + player.movementSpeed) {
+                    printString("   (Off balance)    ", 0, y++, (dim ? &darkGray : &gray), &black, 0);
+                } else if ((monst->creatureState == MONSTER_TRACKING_SCENT) && y < ROWS - 1) {
+					printString("     (Hunting)      ", 0, y++, (dim ? &darkGray : &gray), &black, 0);
 				}
 			}
 		} else if (monst == &player) {
