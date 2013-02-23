@@ -1190,7 +1190,6 @@ boolean playerMoves(short direction) {
                 pmap[x][y].layers[SURFACE] = NOTHING;
             }
         }
-        
     }
 	
 	if (((!cellHasTerrainFlag(newX, newY, T_OBSTRUCTS_PASSABILITY) || (cellHasTMFlag(newX, newY, TM_PROMOTES_WITH_KEY) && keyInPackFor(newX, newY)))
@@ -1479,6 +1478,14 @@ boolean playerMoves(short direction) {
 		if ((tileCatalog[i].flags & T_OBSTRUCTS_PASSABILITY)
             && (!diagonalBlocked(x, y, newX, newY) || !cellHasTMFlag(newX, newY, TM_PROMOTES_WITH_KEY))) {
             
+            if (!(pmap[newX][newY].flags & DISCOVERED)) {
+                if (!alreadyRecorded) {
+                    recordKeystroke(directionKeys[initialDirection], false, false);
+                    alreadyRecorded = true;
+                }
+                pmap[newX][newY].flags |= DISCOVERED;
+                refreshDungeonCell(newX, newY);
+            }
 			messageWithColor(tileCatalog[i].flavorText, &backgroundMessageColor, false);
 		}
 	}
