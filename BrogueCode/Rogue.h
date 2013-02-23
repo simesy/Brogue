@@ -53,7 +53,7 @@
 // set to false to allow multiple loads from the same saved file:
 #define DELETE_SAVE_FILE_AFTER_LOADING	true
 
-//#define BROGUE_ASSERTS		// introduces several assert()s -- useful to find certain array overruns
+#define BROGUE_ASSERTS		// introduces several assert()s -- useful to find certain array overruns
 //#define AUDIT_RNG             // VERY slow, but sometimes necessary to debug out-of-sync recording errors
 //#define GENERATE_FONT_FILES	// Displays font in grid upon startup, which can be screen-captured into font files for PC.
 
