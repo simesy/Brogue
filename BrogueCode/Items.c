@@ -346,6 +346,7 @@ item *placeItem(item *theItem, short x, short y) {
 		pmap[theItem->xLoc][theItem->yLoc].flags |= ITEM_DETECTED;
 	}
 	if (cellHasTerrainFlag(x, y, T_IS_DF_TRAP)
+        && !cellHasTerrainFlag(x, y, T_MOVES_ITEMS)
 		&& !(pmap[x][y].flags & PRESSURE_PLATE_DEPRESSED)) {
 		
 		pmap[x][y].flags |= PRESSURE_PLATE_DEPRESSED;
@@ -856,7 +857,7 @@ void updateFloorItems() {
 		nextItem = theItem->nextItem;
         x = theItem->xLoc;
         y = theItem->yLoc;
-        if ((cellHasTerrainFlag(x, y, T_IS_FIRE) && theItem->flags & ITEM_FLAMMABLE)
+        if ((cellHasTerrainFlag(x, y, T_IS_FIRE) && (theItem->flags & ITEM_FLAMMABLE))
             || (cellHasTerrainFlag(x, y, T_LAVA_INSTA_DEATH) && theItem->category != AMULET)) {
             
             burnItem(theItem);
@@ -877,7 +878,6 @@ void updateFloorItems() {
             continue;
         }
         if (cellHasTerrainFlag(x, y, T_AUTO_DESCENT)) {
-            
             if (playerCanSeeOrSense(x, y)) {
                 itemName(theItem, buf, false, false, NULL);
                 sprintf(buf2, "The %s plunge%s out of sight!", buf, (theItem->quantity > 1 ? "" : "s"));

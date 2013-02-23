@@ -640,6 +640,7 @@ void applyInstantTileEffectsToCreature(creature *monst) {
 	// Pressure plates.
 	if (!(monst->status[STATUS_LEVITATING])
 		&& !(monst->bookkeepingFlags & MONST_SUBMERGED)
+        && (!cellHasTMFlag(*x, *y, TM_ALLOWS_SUBMERGING) || !(monst->info.flags & MONST_SUBMERGES))
 		&& cellHasTerrainFlag(*x, *y, T_IS_DF_TRAP)
 		&& !(pmap[*x][*y].flags & PRESSURE_PLATE_DEPRESSED)) {
 		
@@ -2880,7 +2881,9 @@ void updateEnvironment() {
 	for (i=0; i<DCOLS; i++) {
 		for (j=0; j<DROWS; j++) {
 			pmap[i][j].flags &= ~(CAUGHT_FIRE_THIS_TURN);
-			if (!(pmap[i][j].flags & (HAS_PLAYER | HAS_MONSTER | HAS_ITEM)) && pmap[i][j].flags & PRESSURE_PLATE_DEPRESSED) {
+			if (!(pmap[i][j].flags & (HAS_PLAYER | HAS_MONSTER | HAS_ITEM))
+                && (pmap[i][j].flags & PRESSURE_PLATE_DEPRESSED)) {
+                
 				pmap[i][j].flags &= ~PRESSURE_PLATE_DEPRESSED;
 			}
 			if (cellHasTMFlag(i, j, TM_PROMOTES_WITHOUT_KEY) && !keyOnTileAt(i, j)) {
@@ -2909,7 +2912,7 @@ void updateEnvironment() {
 		}
 	}
 	
-    // Terrain that affects items
+    // Terrain that affects items and vice versa
     updateFloorItems();
 }
 
