@@ -564,6 +564,9 @@ void expandMachineInterior(char interior[DCOLS][DROWS], short minimumInteriorNei
                             }
                         }
                     }
+                } else if (pmap[i][j].layers[DUNGEON] == DOOR
+                           || pmap[i][j].layers[DUNGEON] == SECRET_DOOR) {
+                    pmap[i][j].layers[DUNGEON] = FLOOR;
                 }
             }
         }
@@ -630,6 +633,105 @@ boolean fillInteriorForVestibuleMachine(char interior[DCOLS][DROWS], short bp, s
     return success;
 }
 
+void prepareInteriorWithMachineFlags(char interior[DCOLS][DROWS], unsigned long flags) {
+    short i, j, newX, newY;
+    enum dungeonLayers layer;
+    enum directions dir;
+    
+    // If requested, clear and expand the room as far as possible until either it's convex or it bumps into surrounding rooms
+	if (flags & BP_MAXIMIZE_INTERIOR) {
+		expandMachineInterior(interior, 1);
+	} else if (flags & BP_OPEN_INTERIOR) {
+		expandMachineInterior(interior, 4);
+	}
+	
+	// If requested, cleanse the interior -- no interesting terrain allowed.
+	if (flags & BP_PURGE_INTERIOR) {
+		for(i=0; i<DCOLS; i++) {
+			for(j=0; j<DROWS; j++) {
+				if (interior[i][j]) {
+					for (layer=0; layer<NUMBER_TERRAIN_LAYERS; layer++) {
+						pmap[i][j].layers[layer] = (layer == DUNGEON ? FLOOR : NOTHING);
+					}
+				}
+			}
+		}
+	}
+	
+	// If requested, purge pathing blockers -- no traps allowed.
+	if (flags & BP_PURGE_PATHING_BLOCKERS) {
+		for(i=0; i<DCOLS; i++) {
+			for(j=0; j<DROWS; j++) {
+				if (interior[i][j]) {
+					for (layer=0; layer<NUMBER_TERRAIN_LAYERS; layer++) {
+						if (tileCatalog[pmap[i][j].layers[layer]].flags & T_PATHING_BLOCKER) {
+							pmap[i][j].layers[layer] = (layer == DUNGEON ? FLOOR : NOTHING);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	// If requested, purge the liquid layer in the interior -- no liquids allowed.
+	if (flags & BP_PURGE_LIQUIDS) {
+		for(i=0; i<DCOLS; i++) {
+			for(j=0; j<DROWS; j++) {
+				if (interior[i][j]) {
+					pmap[i][j].layers[LIQUID] = NOTHING;
+				}
+			}
+		}
+	}
+	
+	// Surround with walls if requested.
+	if (flags & BP_SURROUND_WITH_WALLS) {
+		for(i=0; i<DCOLS; i++) {
+			for(j=0; j<DROWS; j++) {
+				if (interior[i][j] && !(pmap[i][j].flags & IS_GATE_SITE)) {
+					for (dir=0; dir<8; dir++) {
+						newX = i + nbDirs[dir][0];
+						newY = j + nbDirs[dir][1];
+						if (coordinatesAreInMap(newX, newY)
+							&& !interior[newX][newY]
+							&& !cellHasTerrainFlag(newX, newY, T_OBSTRUCTS_PASSABILITY)
+							&& !(pmap[newX][newY].flags & IS_GATE_SITE)
+							&& !pmap[newX][newY].machineNumber
+                            && cellHasTerrainFlag(newX, newY, T_PATHING_BLOCKER)) {
+							for (layer=0; layer<NUMBER_TERRAIN_LAYERS; layer++) {
+								pmap[newX][newY].layers[layer] = (layer == DUNGEON ? WALL : 0);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	// Reinforce surrounding tiles and interior tiles if requested to prevent tunneling in or through.
+	if (flags & BP_IMPREGNABLE) {
+		for(i=0; i<DCOLS; i++) {
+			for(j=0; j<DROWS; j++) {
+				if (interior[i][j]
+                    && !(pmap[i][j].flags & IS_GATE_SITE)) {
+                    
+                    pmap[i][j].flags |= IMPREGNABLE;
+                    for (dir=0; dir<8; dir++) {
+                        newX = i + nbDirs[dir][0];
+                        newY = j + nbDirs[dir][1];
+                        if (coordinatesAreInMap(newX, newY)
+                            && !interior[newX][newY]
+                            && !(pmap[newX][newY].flags & IS_GATE_SITE)) {
+                            
+                            pmap[newX][newY].flags |= IMPREGNABLE;
+                        }
+					}
+				}
+			}
+		}
+	}
+}
+
 // Returns true if the machine got built; false if it was aborted.
 // If empty array parentSpawnedItems or parentSpawnedMonsters is given, will pass those back for deletion if necessary.
 boolean buildAMachine(enum machineTypes bp,
@@ -639,8 +741,7 @@ boolean buildAMachine(enum machineTypes bp,
 					  item *parentSpawnedItems[MACHINES_BUFFER_LENGTH],
 					  creature *parentSpawnedMonsters[MACHINES_BUFFER_LENGTH]) {
 	
-	short i, j, k, feat, randIndex, totalFreq, gateCandidates[50][2],
-	layer, dir, newX, newY, instance, instanceCount, qualifyingTileCount,
+	short i, j, k, feat, randIndex, totalFreq, gateCandidates[50][2], instance, instanceCount, qualifyingTileCount,
 	featX, featY, itemCount, monsterCount,
 	sRows[DROWS], sCols[DCOLS],
 	**distanceMap, distance25, distance75, distances[100], distanceBound[2],
@@ -872,115 +973,23 @@ boolean buildAMachine(enum machineTypes bp,
 	// This is the point of no return. Back up the level so it can be restored if we have to abort this machine after this point.
 	copyMap(pmap, levelBackup);
 	
-	// If requested, clear and expand the room as far as possible until either it's convex or it bumps into surrounding rooms
-	if (blueprintCatalog[bp].flags & BP_MAXIMIZE_INTERIOR) {
-		expandMachineInterior(interior, 1);
-	} else if (blueprintCatalog[bp].flags & BP_OPEN_INTERIOR) {
-		expandMachineInterior(interior, 4);
-	}
-	
-	// If requested, cleanse the interior -- no interesting terrain allowed.
-	if (blueprintCatalog[bp].flags & BP_PURGE_INTERIOR) {
-		for(i=0; i<DCOLS; i++) {
-			for(j=0; j<DROWS; j++) {
-				if (interior[i][j]) {
-					for (layer=0; layer<NUMBER_TERRAIN_LAYERS; layer++) {
-						pmap[i][j].layers[layer] = (layer == DUNGEON ? FLOOR : NOTHING);
-					}
-				}
-			}
-		}
-	}
-	
-	// If requested, purge pathing blockers -- no traps allowed.
-	if (blueprintCatalog[bp].flags & BP_PURGE_PATHING_BLOCKERS) {
-		for(i=0; i<DCOLS; i++) {
-			for(j=0; j<DROWS; j++) {
-				if (interior[i][j]) {
-					for (layer=0; layer<NUMBER_TERRAIN_LAYERS; layer++) {
-						if (tileCatalog[pmap[i][j].layers[layer]].flags & T_PATHING_BLOCKER) {
-							pmap[i][j].layers[layer] = (layer == DUNGEON ? FLOOR : NOTHING);
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	// If requested, purge the liquid layer in the interior -- no liquids allowed.
-	if (blueprintCatalog[bp].flags & BP_PURGE_LIQUIDS) {
-		for(i=0; i<DCOLS; i++) {
-			for(j=0; j<DROWS; j++) {
-				if (interior[i][j]) {
-					pmap[i][j].layers[LIQUID] = NOTHING;
-				}
-			}
-		}
-	}
-	
-	// Surround with walls if requested.
-	if (blueprintCatalog[bp].flags & BP_SURROUND_WITH_WALLS) {
-		for(i=0; i<DCOLS; i++) {
-			for(j=0; j<DROWS; j++) {
-				if (interior[i][j] && !(pmap[i][j].flags & IS_GATE_SITE)) {
-					for (dir=0; dir<8; dir++) {
-						newX = i + nbDirs[dir][0];
-						newY = j + nbDirs[dir][1];
-						if (coordinatesAreInMap(newX, newY)
-							&& !interior[newX][newY]
-							&& !cellHasTerrainFlag(newX, newY, T_OBSTRUCTS_PASSABILITY)
-							&& !(pmap[newX][newY].flags & IS_GATE_SITE)
-							&& !pmap[newX][newY].machineNumber
-                            && cellHasTerrainFlag(newX, newY, T_PATHING_BLOCKER)) {
-							for (layer=0; layer<NUMBER_TERRAIN_LAYERS; layer++) {
-								pmap[newX][newY].layers[layer] = (layer == DUNGEON ? WALL : 0);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	
-	// Reinforce surrounding tiles and interior tiles if requested to prevent tunneling in or through.
-	if (blueprintCatalog[bp].flags & BP_IMPREGNABLE) {
-		for(i=0; i<DCOLS; i++) {
-			for(j=0; j<DROWS; j++) {
-				if (interior[i][j]
-                    && !(pmap[i][j].flags & IS_GATE_SITE)) {
-                    
-                    pmap[i][j].flags |= IMPREGNABLE;
-                    for (dir=0; dir<8; dir++) {
-                        newX = i + nbDirs[dir][0];
-                        newY = j + nbDirs[dir][1];
-                        if (coordinatesAreInMap(newX, newY)
-                            && !interior[newX][newY]
-                            && !(pmap[newX][newY].flags & IS_GATE_SITE)) {
-                            
-                            pmap[newX][newY].flags |= IMPREGNABLE;
-                        }
-					}
-				}
-			}
-		}
-	}
+    // Perform any transformations to the interior indicated by the blueprint flags, including expanding the interior if requested.
+    prepareInteriorWithMachineFlags(interior, blueprintCatalog[bp].flags);
 	
 	// If necessary, label the interior as IS_IN_AREA_MACHINE or IS_IN_ROOM_MACHINE and mark down the number.
 	machineNumber = ++rogue.machineNumber; // Reserve this machine number, starting with 1.
-	//if (!(blueprintCatalog[bp].flags & BP_NO_INTERIOR_FLAG)) {
-		for(i=0; i<DCOLS; i++) {
-			for(j=0; j<DROWS; j++) {
-				if (interior[i][j]) {
-					pmap[i][j].flags |= ((blueprintCatalog[bp].flags & BP_ROOM) ? IS_IN_ROOM_MACHINE : IS_IN_AREA_MACHINE);
-					pmap[i][j].machineNumber = machineNumber;
-					// also clear any secret doors, since they screw up distance mapping and aren't fun inside machines
-					if (pmap[i][j].layers[DUNGEON] == SECRET_DOOR) {
-						pmap[i][j].layers[DUNGEON] = DOOR;
-					}
-				}
-			}
-		}
-	//}
+    for(i=0; i<DCOLS; i++) {
+        for(j=0; j<DROWS; j++) {
+            if (interior[i][j]) {
+                pmap[i][j].flags |= ((blueprintCatalog[bp].flags & BP_ROOM) ? IS_IN_ROOM_MACHINE : IS_IN_AREA_MACHINE);
+                pmap[i][j].machineNumber = machineNumber;
+                // also clear any secret doors, since they screw up distance mapping and aren't fun inside machines
+                if (pmap[i][j].layers[DUNGEON] == SECRET_DOOR) {
+                    pmap[i][j].layers[DUNGEON] = DOOR;
+                }
+            }
+        }
+    }
 	
 //	DEBUG printf("\n\nWorking on blueprint %i, with origin at (%i, %i). Here's the initial interior map:", bp, originX, originY);
 //	DEBUG logBuffer(interior);
