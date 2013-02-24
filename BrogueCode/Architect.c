@@ -633,7 +633,7 @@ boolean fillInteriorForVestibuleMachine(char interior[DCOLS][DROWS], short bp, s
     return success;
 }
 
-void prepareInteriorWithMachineFlags(char interior[DCOLS][DROWS], unsigned long flags) {
+void prepareInteriorWithMachineFlags(char interior[DCOLS][DROWS], short originX, short originY, unsigned long flags) {
     short i, j, newX, newY;
     enum dungeonLayers layer;
     enum directions dir;
@@ -707,6 +707,46 @@ void prepareInteriorWithMachineFlags(char interior[DCOLS][DROWS], unsigned long 
 			}
 		}
 	}
+    
+    // Completely clear the interior, fill with granite, and cut entirely new rooms into it from the gate site.
+    // Then zero out any portion of the interior that is still wall.
+    if (flags & BP_REDESIGN_INTERIOR) {
+        short **grid;
+        const short roomFrequencies[ROOM_TYPE_COUNT] = {0, 1, 0, 0, 0, 0, 0};
+        grid = allocGrid();
+        
+		for(i=0; i<DCOLS; i++) {
+			for(j=0; j<DROWS; j++) {
+				if (interior[i][j]) {
+                     if ((pmap[i][j].flags & IS_GATE_SITE) && pmap[i][j].machineNumber
+                         || i == originX && j == originY) {
+                         
+                         grid[i][j] = 1; // All rooms must grow from this space.
+                     } else {
+                         grid[i][j] = 0; // Other interior squares are fair game for placing rooms.
+                     }
+                } else {
+                    grid[i][j] = -1; // Exterior spaces are off limits.
+                }
+            }
+        }
+        attachRooms(grid, roomFrequencies, 50, 40, 40);
+		for(i=0; i<DCOLS; i++) {
+			for(j=0; j<DROWS; j++) {
+                if (grid[i][j] >= 0) {
+                    pmap[i][j].layers[LIQUID] = pmap[i][j].layers[SURFACE] = pmap[i][j].layers[GAS] = NOTHING;
+                }
+                if (grid[i][j] == 0) {
+                    pmap[i][j].layers[DUNGEON] = GRANITE;
+                    interior[i][j] = false;
+                }
+                if (grid[i][j] >= 1) {
+                    pmap[i][j].layers[DUNGEON] = FLOOR;
+                }
+            }
+        }
+        freeGrid(grid);
+    }
 	
 	// Reinforce surrounding tiles and interior tiles if requested to prevent tunneling in or through.
 	if (flags & BP_IMPREGNABLE) {
@@ -974,7 +1014,7 @@ boolean buildAMachine(enum machineTypes bp,
 	copyMap(pmap, levelBackup);
 	
     // Perform any transformations to the interior indicated by the blueprint flags, including expanding the interior if requested.
-    prepareInteriorWithMachineFlags(interior, blueprintCatalog[bp].flags);
+    prepareInteriorWithMachineFlags(interior, originX, originY, blueprintCatalog[bp].flags);
 	
 	// If necessary, label the interior as IS_IN_AREA_MACHINE or IS_IN_ROOM_MACHINE and mark down the number.
 	machineNumber = ++rogue.machineNumber; // Reserve this machine number, starting with 1.
@@ -1496,7 +1536,9 @@ void addMachines() {
 }
 
 // Add terrain, DFs and flavor machines. Includes traps, torches, funguses, flavor machines, etc.
-void runAutogenerators() {
+// If buildAreaMachines is true, build ONLY the autogenerators that include machines.
+// If false, build all EXCEPT the autogenerators that include machines.
+void runAutogenerators(boolean buildAreaMachines) {
 	short AG, count, x, y, i;
 	const autoGenerator *gen;
 	char grid[DCOLS][DROWS];
@@ -1506,65 +1548,68 @@ void runAutogenerators() {
 		
 		// Shortcut:
 		gen = &(autoGeneratorCatalog[AG]);
-		
-		// Enforce depth constraints.
-		if (rogue.depthLevel < gen->minDepth || rogue.depthLevel > gen->maxDepth) {
-			continue;
-		}
-		
-		// Decide how many of this AG to build.
-		count = min((gen->minNumberIntercept + rogue.depthLevel * gen->minNumberSlope) / 100, gen->maxNumber);
-		while (rand_percent(gen->frequency) && count < gen->maxNumber) {
-			count++;
-		}
-		
-		// Build that many instances.
-		for (i = 0; i < count; i++) {
-			
-			// Find a location for DFs and terrain generations.
-			//if (randomMatchingLocation(&x, &y, gen->requiredDungeonFoundationType, NOTHING, -1)) {
-            //if (randomMatchingLocation(&x, &y, -1, -1, gen->requiredDungeonFoundationType)) {
-            if (randomMatchingLocation(&x, &y, gen->requiredDungeonFoundationType, gen->requiredLiquidFoundationType, -1)) {
-				
-				// Spawn the DF.
-				if (gen->DFType) {
-					spawnDungeonFeature(x, y, &(dungeonFeatureCatalog[gen->DFType]), false, true);
-					
-					if (D_INSPECT_LEVELGEN) {
-						dumpLevelToScreen();
-						hiliteCell(x, y, &yellow, 50, true);
-						temporaryMessage("Dungeon feature added.", true);
-					}
-				}
-				
-				// Spawn the terrain if it's got the priority to spawn there and won't disrupt connectivity.
-				if (gen->terrain
-					&& tileCatalog[pmap[x][y].layers[gen->layer]].drawPriority >= tileCatalog[gen->terrain].drawPriority) {
-					
-					// Check connectivity.
-					zeroOutGrid(grid);
-					grid[x][y] = true;
-					if (!(tileCatalog[gen->terrain].flags & T_PATHING_BLOCKER)
-						|| !levelIsDisconnectedWithBlockingMap(grid, false)) {
-						
-						// Build!
-						pmap[x][y].layers[gen->layer] = gen->terrain;
-						
-						if (D_INSPECT_LEVELGEN) {
-							dumpLevelToScreen();
-							hiliteCell(x, y, &yellow, 50, true);
-							temporaryMessage("Terrain added.", true);
-						}
-					}
-				}
-			}
-			
-			// Attempt to build the machine if requested.
-			// Machines will find their own locations, so it will not be at the same place as terrain and DF.
-			if (gen->machine > 0) {
-				buildAMachine(gen->machine, -1, -1, 0, NULL, NULL, NULL);
-			}
-		}
+        
+        if (gen->machine > 0 == buildAreaMachines) {
+            
+            // Enforce depth constraints.
+            if (rogue.depthLevel < gen->minDepth || rogue.depthLevel > gen->maxDepth) {
+                continue;
+            }
+            
+            // Decide how many of this AG to build.
+            count = min((gen->minNumberIntercept + rogue.depthLevel * gen->minNumberSlope) / 100, gen->maxNumber);
+            while (rand_percent(gen->frequency) && count < gen->maxNumber) {
+                count++;
+            }
+            
+            // Build that many instances.
+            for (i = 0; i < count; i++) {
+                
+                // Find a location for DFs and terrain generations.
+                //if (randomMatchingLocation(&x, &y, gen->requiredDungeonFoundationType, NOTHING, -1)) {
+                //if (randomMatchingLocation(&x, &y, -1, -1, gen->requiredDungeonFoundationType)) {
+                if (randomMatchingLocation(&x, &y, gen->requiredDungeonFoundationType, gen->requiredLiquidFoundationType, -1)) {
+                    
+                    // Spawn the DF.
+                    if (gen->DFType) {
+                        spawnDungeonFeature(x, y, &(dungeonFeatureCatalog[gen->DFType]), false, true);
+                        
+                        if (D_INSPECT_LEVELGEN) {
+                            dumpLevelToScreen();
+                            hiliteCell(x, y, &yellow, 50, true);
+                            temporaryMessage("Dungeon feature added.", true);
+                        }
+                    }
+                    
+                    // Spawn the terrain if it's got the priority to spawn there and won't disrupt connectivity.
+                    if (gen->terrain
+                        && tileCatalog[pmap[x][y].layers[gen->layer]].drawPriority >= tileCatalog[gen->terrain].drawPriority) {
+                        
+                        // Check connectivity.
+                        zeroOutGrid(grid);
+                        grid[x][y] = true;
+                        if (!(tileCatalog[gen->terrain].flags & T_PATHING_BLOCKER)
+                            || !levelIsDisconnectedWithBlockingMap(grid, false)) {
+                            
+                            // Build!
+                            pmap[x][y].layers[gen->layer] = gen->terrain;
+                            
+                            if (D_INSPECT_LEVELGEN) {
+                                dumpLevelToScreen();
+                                hiliteCell(x, y, &yellow, 50, true);
+                                temporaryMessage("Terrain added.", true);
+                            }
+                        }
+                    }
+                }
+                
+                // Attempt to build the machine if requested.
+                // Machines will find their own locations, so it will not be at the same place as terrain and DF.
+                if (gen->machine > 0) {
+                    buildAMachine(gen->machine, -1, -1, 0, NULL, NULL, NULL);
+                }
+            }
+        }
 	}
 }
 
@@ -1672,7 +1717,7 @@ void insertRoomAt(short **dungeonMap, short **roomMap, short roomToDungeonX, sho
             if (roomMap[xRoom][yRoom]
                 && coordinatesAreInMap(xRoom + roomToDungeonX, yRoom + roomToDungeonY)) {
                 
-                dungeonMap[xRoom + roomToDungeonX][yRoom + roomToDungeonY] = true;
+                dungeonMap[xRoom + roomToDungeonX][yRoom + roomToDungeonY] = 1;
             }
         }
     }
@@ -1740,6 +1785,16 @@ void designCrossRoom(short **grid) {
     drawRectangleOnGrid(grid, roomX2 - 5, roomY2 + 5, roomWidth2, roomHeight2, 1);
 }
 
+void designSmallRoom(short **grid) {
+    short width, height;
+    
+    fillGrid(grid, 0);
+    
+    width = rand_range(3, 6);
+    height = rand_range(2, 4);
+    drawRectangleOnGrid(grid, (DCOLS - width) / 2, (DROWS - height) / 2, width, height, 1);
+}
+
 void designCircularRoom(short **grid) {
 	short radius;
     
@@ -1792,7 +1847,7 @@ enum directions directionOfDoorSite(short **grid, short x, short y) {
     enum directions dir, solutionDir;
     short newX, newY, oppX, oppY;
     
-    if (grid[x][y]) { // Already interior
+    if (grid[x][y]) { // Already occupied
         return NO_DIRECTION;
     }
     
@@ -1804,7 +1859,7 @@ enum directions directionOfDoorSite(short **grid, short x, short y) {
         oppY = y - nbDirs[dir][1];
         if (coordinatesAreInMap(oppX, oppY)
             && coordinatesAreInMap(newX, newY)
-            && grid[oppX][oppY]) {
+            && grid[oppX][oppY] == 1) {
             
             // This grid cell would be a valid tile on which to place a door that, facing outward, points dir.
             if (solutionDir != NO_DIRECTION) {
@@ -1929,11 +1984,12 @@ void attachHallwayTo(short **grid, short doorSites[4][2]) {
 // and then relocate three of the door sites to radiate from the end of the hallway. (The fourth is defunct.)
 // RoomTypeFrequencies specifies the probability of each room type, in the following order:
 //      1. Cross room
-//      2. Circular room
-//      3. Chunky room
-//      4. Cave
-//      5. Cavern (the kind that fills a level)
-//      6. Entrance room (the big upside-down T room at the start of depth 1)
+//      2. Small room
+//      3. Circular room
+//      4. Chunky room
+//      5. Cave
+//      6. Cavern (the kind that fills a level)
+//      7. Entrance room (the big upside-down T room at the start of depth 1)
 
 void designRandomRoom(short **grid, boolean attachHallway, short doorSites[4][2], const short roomTypeFrequencies[ROOM_TYPE_COUNT]) {
     short randIndex, i, sum;
@@ -1956,12 +2012,15 @@ void designRandomRoom(short **grid, boolean attachHallway, short doorSites[4][2]
             designCrossRoom(grid);
             break;
         case 1:
-            designCircularRoom(grid);
+            designSmallRoom(grid);
             break;
         case 2:
-            designChunkyRoom(grid);
+            designCircularRoom(grid);
             break;
         case 3:
+            designChunkyRoom(grid);
+            break;
+        case 4:
             switch (rand_range(0, 2)) {
                 case 0:
                     designCavern(grid, 3, 12, 4, 8); // Compact cave room.
@@ -1976,10 +2035,10 @@ void designRandomRoom(short **grid, boolean attachHallway, short doorSites[4][2]
                     break;
             }
             break;
-        case 4:
+        case 5:
             designCavern(grid, CAVE_MIN_WIDTH, DCOLS - 2, CAVE_MIN_HEIGHT, DROWS - 2);
             break;
-        case 5:
+        case 6:
             designEntranceRoom(grid);
             break;
         default:
@@ -2021,57 +2080,21 @@ boolean roomFitsAt(short **dungeonMap, short **roomMap, short roomToDungeonX, sh
     return true;
 }
 
-// Called by digDungeon().
-// Slaps a bunch of rooms and hallways into the grid.
-// On the grid, a 0 denotes granite, a 1 denotes floor, and a 2 denotes a possible door site.
-// Parent function will translate this grid into pmap[][] to make floors, walls, doors, etc.
-void carveDungeon(short **grid) {
+void attachRooms(short **grid, const short roomFrequencies[ROOM_TYPE_COUNT], short corridorPercent, short attempts, short maxRoomCount) {
     short roomsBuilt, roomsAttempted;
     short **roomMap;
     short doorSites[4][2];
     short i, x, y, sCoord[DCOLS*DROWS];
     enum directions dir, oppDir;
-    const short descentPercent = clamp(100 * (rogue.depthLevel - 1) / (AMULET_LEVEL - 1), 0, 100);
-    
-    // Room frequencies:
-    //      1. Cross room
-    //      2. Circular room
-    //      3. Chunky room
-    //      4. Cave
-    //      5. Cavern (the kind that fills a level)
-    //      6. Entrance room (the big upside-down T room at the start of depth 1)
-    const short roomFrequencies[ROOM_TYPE_COUNT] = {
-        2 + 20 * (100 - descentPercent) / 100,
-        1 + 7 * (100 - descentPercent) / 100,
-        7,
-        1 + 10 * descentPercent / 100,
-        0,
-        0};
-    
-    const short firstRoomFrequencies[ROOM_TYPE_COUNT]   = {10, 3, 7, 10, 10 + 50 * descentPercent / 100, 0};
-    
-    const short corridorPercent = 10 + 80 * (100 - descentPercent) / 100;
     
     fillSequentialList(sCoord, DCOLS*DROWS);
     shuffleList(sCoord, DCOLS*DROWS);
     
-    if (rogue.depthLevel == 1) {
-        designEntranceRoom(grid);
-    } else {
-        designRandomRoom(grid, false, NULL, firstRoomFrequencies);
-    }
-    
-    if (D_INSPECT_LEVELGEN) {
-        colorOverDungeon(&darkGray);
-        hiliteGrid(grid, &white, 100);
-        temporaryMessage("First room placed:", true);
-    }
-    
     roomMap = allocGrid();
-    for (roomsBuilt = roomsAttempted = 0; roomsBuilt < 35 && roomsAttempted < 35; roomsAttempted++) {
+    for (roomsBuilt = roomsAttempted = 0; roomsBuilt < maxRoomCount && roomsAttempted < attempts; roomsAttempted++) {
         // Build a room in hyperspace.
         fillGrid(roomMap, 0);
-        designRandomRoom(roomMap, roomsAttempted <= 30 && rand_percent(corridorPercent), doorSites, roomFrequencies);
+        designRandomRoom(roomMap, roomsAttempted <= attempts - 5 && rand_percent(corridorPercent), doorSites, roomFrequencies);
         
         if (D_INSPECT_LEVELGEN) {
             colorOverDungeon(&darkGray);
@@ -2087,7 +2110,7 @@ void carveDungeon(short **grid) {
         for (i = 0; i < DCOLS*DROWS; i++) {
             x = sCoord[i] / DROWS;
             y = sCoord[i] % DROWS;
-        
+            
             dir = directionOfDoorSite(grid, x, y);
             oppDir = oppositeDirection(dir);
             if (dir != NO_DIRECTION
@@ -2097,7 +2120,6 @@ void carveDungeon(short **grid) {
                 // Room fits here.
                 if (D_INSPECT_LEVELGEN) {
                     colorOverDungeon(&darkGray);
-                    
                     hiliteGrid(grid, &white, 100);
                 }
                 insertRoomAt(grid, roomMap, x - doorSites[oppDir][0], y - doorSites[oppDir][1]);
@@ -2113,6 +2135,49 @@ void carveDungeon(short **grid) {
     }
     
     freeGrid(roomMap);
+}
+
+// Called by digDungeon().
+// Slaps a bunch of rooms and hallways into the grid.
+// On the grid, a 0 denotes granite, a 1 denotes floor, and a 2 denotes a possible door site.
+// -1 denotes off-limits areas -- rooms can't be placed there and also can't sprout off of there.
+// Parent function will translate this grid into pmap[][] to make floors, walls, doors, etc.
+void carveDungeon(short **grid) {
+    const short descentPercent = clamp(100 * (rogue.depthLevel - 1) / (AMULET_LEVEL - 1), 0, 100);
+    
+    // Room frequencies:
+    //      1. Cross room
+    //      2. Circular room
+    //      3. Chunky room
+    //      4. Cave
+    //      5. Cavern (the kind that fills a level)
+    //      6. Entrance room (the big upside-down T room at the start of depth 1)
+    const short roomFrequencies[ROOM_TYPE_COUNT] = {
+        2 + 20 * (100 - descentPercent) / 100,
+        1,
+        1 + 7 * (100 - descentPercent) / 100,
+        7,
+        1 + 10 * descentPercent / 100,
+        0,
+        0};
+    
+    const short firstRoomFrequencies[ROOM_TYPE_COUNT]   = {10, 0, 3, 7, 10, 10 + 50 * descentPercent / 100, 0};
+    
+    const short corridorPercent = 10 + 80 * (100 - descentPercent) / 100;
+    
+    if (rogue.depthLevel == 1) {
+        designEntranceRoom(grid);
+    } else {
+        designRandomRoom(grid, false, NULL, firstRoomFrequencies);
+    }
+    
+    if (D_INSPECT_LEVELGEN) {
+        colorOverDungeon(&darkGray);
+        hiliteGrid(grid, &white, 100);
+        temporaryMessage("First room placed:", true);
+    }
+    
+    attachRooms(grid, roomFrequencies, corridorPercent, 35, 35);
     
 //    colorOverDungeon(&darkGray);
 //    hiliteGrid(grid, &white, 100);
@@ -2622,10 +2687,10 @@ void digDungeon() {
 	fillLakes(lakeMap);
     freeGrid(lakeMap);
 	
-	// Now run the autoGenerators.
-	runAutogenerators();
+	// Run the non-machine autoGenerators.
+	runAutogenerators(false);
 	
-	// Now remove diagonal openings.
+	// Remove diagonal openings.
 	removeDiagonalOpenings();
 	
 	if (D_INSPECT_LEVELGEN) {
@@ -2640,6 +2705,9 @@ void digDungeon() {
 		dumpLevelToScreen();
 		temporaryMessage("Machines added.", true);
 	}
+    
+	// Run the machine autoGenerators.
+	runAutogenerators(true);
 	
 	// Now knock down the boundaries between similar lakes where possible.
 	cleanUpLakeBoundaries();

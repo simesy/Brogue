@@ -969,7 +969,7 @@ enum tileFlags {
 #define CROSS_ROOM_MAX_HEIGHT				5
 #define MIN_SCALED_ROOM_DIMENSION			2
 
-#define ROOM_TYPE_COUNT                     6
+#define ROOM_TYPE_COUNT                     7
 
 #define CORRIDOR_WIDTH						1
 
@@ -2153,6 +2153,7 @@ enum blueprintFlags {
 	BP_TREAT_AS_BLOCKING			= Fl(11),	// abort the machine if, were it filled with wall tiles, it would disrupt the level connectivity
 	BP_REQUIRE_BLOCKING				= Fl(12),	// abort the machine unless, were it filled with wall tiles, it would disrupt the level connectivity
 	BP_NO_INTERIOR_FLAG				= Fl(13),	// don't flag the area as being part of a machine
+    BP_REDESIGN_INTERIOR            = Fl(14),   // nuke and pave -- delete all terrain in the interior and build entirely new rooms within the bounds
 };
 
 typedef struct blueprint {
@@ -2176,6 +2177,7 @@ enum machineTypes {
 	MT_REWARD_KENNEL,
 	MT_REWARD_VAMPIRE_LAIR,
 	MT_REWARD_ASTRAL_PORTAL,
+    MT_REWARD_GOBLIN_WARREN,
     
     // Door guard machines:
     MT_LOCKED_DOOR_VESTIBULE,
@@ -2362,6 +2364,7 @@ extern "C" {
 						  item *adoptiveItem,
 						  item *parentSpawnedItems[50],
 						  creature *parentSpawnedMonsters[50]);
+    void attachRooms(short **grid, const short roomFrequencies[ROOM_TYPE_COUNT], short corridorPercent, short attempts, short maxRoomCount);
 	void digDungeon();
 	void updateMapToShore();
 	short levelIsDisconnectedWithBlockingMap(char blockingMap[DCOLS][DROWS], boolean countRegionSize);

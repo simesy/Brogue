@@ -6,3 +6,7 @@
 Brogue.xcodeproj/brianwalker.pbxuser
 
 Brogue.xcodeproj/brianwalker.mode1v3
+
+*.pbxproj
+
+*.xcscheme

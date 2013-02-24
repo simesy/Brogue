@@ -2839,10 +2839,10 @@ short decodeMessageColor(const char *msg, short i, color *returnColor) {
 
 // Returns a color for combat text based on the identity of the victim.
 color *messageColorFromVictim(creature *monst) {
-	if (monstersAreEnemies(&player, monst)) {
-		return &goodMessageColor;
-	} else if (monst == &player || monst->creatureState == MONSTER_ALLY) {
+	if (monst == &player || monst->creatureState == MONSTER_ALLY) {
 		return &badMessageColor;
+	} else if (monstersAreEnemies(&player, monst)) {
+		return &goodMessageColor;
 	} else {
 		return &white;
 	}

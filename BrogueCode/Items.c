@@ -3122,6 +3122,8 @@ boolean tunnelize(short x, short y) {
 }
 
 void negate(creature *monst) {
+    monst->info.abilityFlags = 0; // negated monsters lose all special abilities
+    
 	if (monst->info.flags & MONST_DIES_IF_NEGATED) {
 		char buf[DCOLS * 3], monstName[DCOLS];
 		monsterName(monstName, monst, true);
@@ -3136,7 +3138,6 @@ void negate(creature *monst) {
 		combatMessage(buf, messageColorFromVictim(monst));
 	} else {
 		// works on inanimates
-		monst->info.abilityFlags = 0; // negated monsters lose all special abilities
 		monst->status[STATUS_IMMUNE_TO_FIRE] = 0;
 		monst->status[STATUS_SLOWED] = 0;
 		monst->status[STATUS_HASTED] = 0;
