@@ -945,11 +945,12 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 				cellForeColor = *(monsterCatalog[rand_range(1, NUMBER_MONSTER_KINDS - 1)].foreColor);
 			} else {
 				cellChar = monst->info.displayChar;
+                cellForeColor = *(monst->info.foreColor);
 				if (monst->status[STATUS_INVISIBLE] || (monst->bookkeepingFlags & MONST_SUBMERGED)) {
                     // Invisible allies show up on the screen with a transparency effect.
-					cellForeColor = cellBackColor;
+					//cellForeColor = cellBackColor;
+                    applyColorAverage(&cellForeColor, &cellBackColor, 75);
 				} else {
-					cellForeColor = *(monst->info.foreColor);
 					if (monst->creatureState == MONSTER_ALLY
 						&& (monst->info.displayChar >= 'a' && monst->info.displayChar <= 'z' || monst->info.displayChar >= 'A' && monst->info.displayChar <= 'Z')) {
 						//applyColorAverage(&cellForeColor, &blue, 50);

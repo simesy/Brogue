@@ -5004,7 +5004,9 @@ void throwItem(item *theItem, creature *thrower, short targetLoc[2], short maxDi
 	
 	thrower->ticksUntilTurn = thrower->attackSpeed;
 	
-	if (thrower != &player && pmap[originLoc[0]][originLoc[1]].flags & IN_FIELD_OF_VIEW) {
+	if (thrower != &player
+        && (pmap[originLoc[0]][originLoc[1]].flags & IN_FIELD_OF_VIEW)) {
+        
 		monsterName(buf2, thrower, true);
 		itemName(theItem, buf3, false, true, NULL);
 		sprintf(buf, "%s hurls %s.", buf2, buf3);
@@ -5012,43 +5014,41 @@ void throwItem(item *theItem, creature *thrower, short targetLoc[2], short maxDi
 	}
 	
 	for (i=0; i<numCells && i < maxDistance; i++) {
-		
 		x = listOfCoordinates[i][0];
 		y = listOfCoordinates[i][1];
 		
 		if (pmap[x][y].flags & (HAS_MONSTER | HAS_PLAYER)) {
 			monst = monsterAtLoc(x, y);
-			
+            if (!(monst->bookkeepingFlags & MONST_SUBMERGED)) {
 //			if (projectileReflects(thrower, monst) && i < DCOLS*2) {
 //				if (projectileReflects(thrower, monst)) { // if it scores another reflection roll, reflect at caster
 //					numCells = reflectBolt(originLoc[0], originLoc[1], listOfCoordinates, i, true);
 //				} else {
 //					numCells = reflectBolt(-1, -1, listOfCoordinates, i, false); // otherwise reflect randomly
 //				}
-//				
+//
 //				monsterName(buf2, monst, true);
 //				itemName(theItem, buf3, false, false, NULL);
 //				sprintf(buf, "%s deflect%s the %s", buf2, (monst == &player ? "" : "s"), buf3);
 //				combatMessage(buf, 0);
 //				continue;
 //			}
-			
-			if ((theItem->category & WEAPON)
-				&& theItem->kind != INCENDIARY_DART
-				&& hitMonsterWithProjectileWeapon(thrower, monst, theItem)) {
-				return;
-			}
-			
-			break;
-		}
-		
-		// We hit something!
-		if (cellHasTerrainFlag(x, y, (T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_VISION))) {
-			if ((theItem->category & WEAPON)
-				&& (theItem->kind == INCENDIARY_DART)
-				&& (cellHasTerrainFlag(x, y, T_IS_FLAMMABLE) || (pmap[x][y].flags & (HAS_MONSTER | HAS_PLAYER)))) {
-				// Incendiary darts thrown at flammable obstructions (foliage, wooden barricades, doors) will hit the obstruction
-				// instead of bursting a cell earlier.
+                if ((theItem->category & WEAPON)
+                    && theItem->kind != INCENDIARY_DART
+                    && hitMonsterWithProjectileWeapon(thrower, monst, theItem)) {
+                    return;
+                }
+                break;
+            }
+        }
+        
+        // We hit something!
+        if (cellHasTerrainFlag(x, y, (T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_VISION))) {
+            if ((theItem->category & WEAPON)
+                && (theItem->kind == INCENDIARY_DART)
+                && (cellHasTerrainFlag(x, y, T_IS_FLAMMABLE) || (pmap[x][y].flags & (HAS_MONSTER | HAS_PLAYER)))) {
+                // Incendiary darts thrown at flammable obstructions (foliage, wooden barricades, doors) will hit the obstruction
+                // instead of bursting a cell earlier.
             } else if (cellHasTerrainFlag(x, y, T_OBSTRUCTS_PASSABILITY)
                        && cellHasTMFlag(x, y, TM_PROMOTES_ON_PLAYER_ENTRY)
                        && tileCatalog[pmap[x][y].layers[layerWithTMFlag(x, y, TM_PROMOTES_ON_PLAYER_ENTRY)]].flags & T_OBSTRUCTS_PASSABILITY) {
@@ -5057,20 +5057,20 @@ void throwItem(item *theItem, creature *thrower, short targetLoc[2], short maxDi
                     message(tileCatalog[pmap[x][y].layers[layer]].flavorText, false);
                     promoteTile(x, y, layer, false);
                 }
-			} else {
-				i--;
-				if (i >= 0) {
-					x = listOfCoordinates[i][0];
-					y = listOfCoordinates[i][1];
-				} else { // it was aimed point-blank into an obstruction
-					x = thrower->xLoc;
-					y = thrower->yLoc;
-				}
-			}
-			hitSomethingSolid = true;
-			break;
-		}
-		
+            } else {
+                i--;
+                if (i >= 0) {
+                    x = listOfCoordinates[i][0];
+                    y = listOfCoordinates[i][1];
+                } else { // it was aimed point-blank into an obstruction
+                    x = thrower->xLoc;
+                    y = thrower->yLoc;
+                }
+            }
+            hitSomethingSolid = true;
+            break;
+        }
+        
 		if (playerCanSee(x, y)) { // show the graphic
 			getCellAppearance(x, y, &displayChar, &foreColor, &backColor);
 			foreColor = *(theItem->foreColor);
@@ -5092,7 +5092,7 @@ void throwItem(item *theItem, creature *thrower, short targetLoc[2], short maxDi
 		if (x == targetLoc[0] && y == targetLoc[1]) { // reached its target
 			break;
 		}
-	}	
+	}
 	
 	if ((theItem->category & POTION) && (hitSomethingSolid || !cellHasTerrainFlag(x, y, T_AUTO_DESCENT))) {
 		if (theItem->kind == POTION_CONFUSION || theItem->kind == POTION_POISON
