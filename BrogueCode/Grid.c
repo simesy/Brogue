@@ -112,6 +112,27 @@ void findReplaceGrid(short **grid, short findValueMin, short findValueMax, short
 	}
 }
 
+// Flood-fills the grid from (x, y) along cells that are within the eligible range.
+// Returns the total count of filled cells.
+short floodFillGrid(short **grid, short x, short y, short eligibleValueMin, short eligibleValueMax, short fillValue) {
+    enum directions dir;
+	short newX, newY, fillCount = 1;
+    
+    assert(fillValue < eligibleValueMin || fillValue > eligibleValueMax);
+    
+    grid[x][y] = fillValue;
+    for (dir = 0; dir < 4; dir++) {
+        newX = x + nbDirs[dir][0];
+        newY = y + nbDirs[dir][1];
+        if (coordinatesAreInMap(newX, newY)
+            && grid[newX][newY] >= eligibleValueMin
+            && grid[newX][newY] <= eligibleValueMax) {
+            fillCount += floodFillGrid(grid, newX, newY, eligibleValueMin, eligibleValueMax, fillValue);
+        }
+    }
+    return fillCount;
+}
+
 void drawRectangleOnGrid(short **grid, short x, short y, short width, short height, short value) {
     short i, j;
     

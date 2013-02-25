@@ -318,6 +318,63 @@ void analyzeMap(boolean calculateChokeMap) {
 	}
 }
 
+// Add some loops to the otherwise simply connected network of rooms.
+void addLoops(short **grid, short minimumPathingDistance) {
+    short newX, newY, oppX, oppY;
+    short **pathMap, **costMap;
+    short i, d, x, y, sCoord[DCOLS*DROWS];
+    const short dirCoords[2][2] = {{1, 0}, {0, 1}};
+    
+    fillSequentialList(sCoord, DCOLS*DROWS);
+    shuffleList(sCoord, DCOLS*DROWS);
+    
+    if (D_INSPECT_LEVELGEN) {
+        colorOverDungeon(&darkGray);
+        hiliteGrid(grid, &white, 100);
+    }
+    
+    pathMap = allocGrid();
+    costMap = allocGrid();
+    copyGrid(costMap, grid);
+    findReplaceGrid(costMap, 0, 0, PDS_OBSTRUCTION);
+    findReplaceGrid(costMap, 1, 30000, 1);
+    
+    for (i = 0; i < DCOLS*DROWS; i++) {
+        x = sCoord[i]/DROWS;
+        y = sCoord[i] % DROWS;
+        if (!grid[x][y]) {
+            for (d=0; d <= 1; d++) { // Try a horizontal door, and then a vertical door.
+                newX = x + dirCoords[d][0];
+                oppX = x - dirCoords[d][0];
+                newY = y + dirCoords[d][1];
+                oppY = y - dirCoords[d][1];
+                if (coordinatesAreInMap(newX, newY)
+                    && coordinatesAreInMap(oppX, oppY)
+                    && grid[newX][newY] > 0
+                    && grid[oppX][oppY] > 0) { // If the tile being inspected has floor on both sides,
+                    
+                    fillGrid(pathMap, 30000);
+                    pathMap[newX][newY] = 0;
+                    dijkstraScan(pathMap, costMap, false);
+                    if (pathMap[oppX][oppY] > minimumPathingDistance) { // and if the pathing distance between the two flanking floor tiles exceeds minimumPathingDistance,
+                        grid[x][y] = 2;             // then turn the tile into a doorway.
+                        costMap[x][y] = 1;          // (Cost map also needs updating.)
+                        if (D_INSPECT_LEVELGEN) {
+                            plotCharWithColor(DOOR_CHAR, mapToWindowX(x), mapToWindowY(y), &black, &green);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    if (D_INSPECT_LEVELGEN) {
+        temporaryMessage("Added secondary connections:", true);
+    }
+    freeGrid(pathMap);
+    freeGrid(costMap);
+}
+
 // Assumes (startX, startY) is in the machine.
 // Returns true if everything went well, and false if we ran into a machine component
 // that was already there, as we don't want to build a machine around it.
@@ -725,23 +782,28 @@ void prepareInteriorWithMachineFlags(char interior[DCOLS][DROWS], short originX,
                      } else {
                          grid[i][j] = 0; // Other interior squares are fair game for placing rooms.
                      }
+                } else if (!cellHasTerrainFlag(i, j, T_PATHING_BLOCKER)) {
+                    grid[i][j] = 1; // Treat existing level as already built (though shielded by a film of -1s).
                 } else {
                     grid[i][j] = -1; // Exterior spaces are off limits.
                 }
             }
         }
         attachRooms(grid, roomFrequencies, 50, 40, 40);
+        addLoops(grid, 10);
 		for(i=0; i<DCOLS; i++) {
 			for(j=0; j<DROWS; j++) {
-                if (grid[i][j] >= 0) {
-                    pmap[i][j].layers[LIQUID] = pmap[i][j].layers[SURFACE] = pmap[i][j].layers[GAS] = NOTHING;
-                }
-                if (grid[i][j] == 0) {
-                    pmap[i][j].layers[DUNGEON] = GRANITE;
-                    interior[i][j] = false;
-                }
-                if (grid[i][j] >= 1) {
-                    pmap[i][j].layers[DUNGEON] = FLOOR;
+                if (interior[i][j]) {
+                    if (grid[i][j] >= 0) {
+                        pmap[i][j].layers[SURFACE] = pmap[i][j].layers[GAS] = NOTHING;
+                    }
+                    if (grid[i][j] == 0) {
+                        pmap[i][j].layers[DUNGEON] = GRANITE;
+                        interior[i][j] = false;
+                    }
+                    if (grid[i][j] >= 1) {
+                        pmap[i][j].layers[DUNGEON] = FLOOR;
+                    }
                 }
             }
         }
@@ -888,7 +950,8 @@ boolean buildAMachine(enum machineTypes bp,
 							&& !(pmap[i][j].flags & IS_IN_MACHINE)
 							&& chokeMap[i][j] >= blueprintCatalog[bp].roomSize[0]
 							&& chokeMap[i][j] <= blueprintCatalog[bp].roomSize[1]) {
-							
+                            
+                            //DEBUG printf("\nDepth %i: Gate site qualified with interior size of %i.", rogue.depthLevel, chokeMap[i][j]);
 							gateCandidates[totalFreq][0] = i;
 							gateCandidates[totalFreq][1] = j;
 							totalFreq++;
@@ -1709,16 +1772,23 @@ void removeDiagonalOpenings() {
 	} while (diagonalCornerRemoved == true);
 }
 
-void insertRoomAt(short **dungeonMap, short **roomMap, short roomToDungeonX, short roomToDungeonY) {
-    short xRoom, yRoom;
+void insertRoomAt(short **dungeonMap, short **roomMap, const short roomToDungeonX, const short roomToDungeonY, const short xRoom, const short yRoom) {
+    short newX, newY;
+    enum directions dir;
     
-    for (xRoom = 0; xRoom < DCOLS; xRoom++) {
-        for (yRoom = 0; yRoom < DROWS; yRoom++) {
-            if (roomMap[xRoom][yRoom]
-                && coordinatesAreInMap(xRoom + roomToDungeonX, yRoom + roomToDungeonY)) {
-                
-                dungeonMap[xRoom + roomToDungeonX][yRoom + roomToDungeonY] = 1;
-            }
+#ifdef BROGUE_ASSERTS
+    assert(coordinatesAreInMap(xRoom + roomToDungeonX, yRoom + roomToDungeonY));
+#endif
+    
+    dungeonMap[xRoom + roomToDungeonX][yRoom + roomToDungeonY] = 1;
+    for (dir = 0; dir < 4; dir++) {
+        newX = xRoom + nbDirs[dir][0];
+        newY = yRoom + nbDirs[dir][1];
+        if (roomMap[newX][newY]
+            && coordinatesAreInMap(newX + roomToDungeonX, newY + roomToDungeonY)
+            && dungeonMap[newX + roomToDungeonX][newY + roomToDungeonY] == 0) {
+            
+            insertRoomAt(dungeonMap, roomMap, roomToDungeonX, roomToDungeonY, newX, newY);
         }
     }
 }
@@ -1726,6 +1796,8 @@ void insertRoomAt(short **dungeonMap, short **roomMap, short roomToDungeonX, sho
 void designCavern(short **grid, short minWidth, short maxWidth, short minHeight, short maxHeight) {
 	short destX, destY;
     short caveX, caveY, caveWidth, caveHeight;
+    short fillX, fillY;
+    boolean foundFillPoint = false;
     short **blobGrid;
     blobGrid = allocGrid();
     
@@ -1741,8 +1813,16 @@ void designCavern(short **grid, short minWidth, short maxWidth, short minHeight,
 	// Position the new cave in the middle of the grid...
 	destX = (DCOLS - caveWidth) / 2;
 	destY = (DROWS - caveHeight) / 2;
+    // ...pick a floodfill insertion point...
+    for (fillX = 0; fillX < DCOLS && !foundFillPoint; fillX++) {
+        for (fillY = 0; fillY < DROWS && !foundFillPoint; fillY++) {
+            if (blobGrid[fillX][fillY]) {
+                foundFillPoint = true;
+            }
+        }
+    }
 	// ...and copy it to the master grid.
-    insertRoomAt(grid, blobGrid, destX - caveX, destY - caveY);
+    insertRoomAt(grid, blobGrid, destX - caveX, destY - caveY, fillX, fillY);
     freeGrid(blobGrid);
 }
 
@@ -2069,7 +2149,7 @@ boolean roomFitsAt(short **dungeonMap, short **roomMap, short roomToDungeonX, sh
                 for (i = xDungeon - 1; i <= xDungeon + 1; i++) {
                     for (j = yDungeon - 1; j <= yDungeon + 1; j++) {
                         if (!coordinatesAreInMap(i, j)
-                            || dungeonMap[i][j]) {
+                            || dungeonMap[i][j] > 0) {
                             return false;
                         }
                     }
@@ -2122,7 +2202,7 @@ void attachRooms(short **grid, const short roomFrequencies[ROOM_TYPE_COUNT], sho
                     colorOverDungeon(&darkGray);
                     hiliteGrid(grid, &white, 100);
                 }
-                insertRoomAt(grid, roomMap, x - doorSites[oppDir][0], y - doorSites[oppDir][1]);
+                insertRoomAt(grid, roomMap, x - doorSites[oppDir][0], y - doorSites[oppDir][1], doorSites[oppDir][0], doorSites[oppDir][1]);
                 grid[x][y] = 2; // Door site.
                 if (D_INSPECT_LEVELGEN) {
                     hiliteGrid(grid, &green, 50);
@@ -2220,63 +2300,6 @@ void finishWalls(boolean includingDiagonals) {
 			}
 		}
 	}
-}
-
-// Add some loops to the otherwise simply connected network of rooms.
-void addLoops(short **grid) {
-    short newX, newY, oppX, oppY;
-    short **pathMap, **costMap;
-    short i, d, x, y, sCoord[DCOLS*DROWS];
-    const short dirCoords[2][2] = {{1, 0}, {0, 1}};
-    
-    fillSequentialList(sCoord, DCOLS*DROWS);
-    shuffleList(sCoord, DCOLS*DROWS);
-    
-    if (D_INSPECT_LEVELGEN) {
-        colorOverDungeon(&darkGray);
-        hiliteGrid(grid, &white, 100);
-    }
-    
-    pathMap = allocGrid();
-    costMap = allocGrid();
-    copyGrid(costMap, grid);
-    findReplaceGrid(costMap, 0, 0, PDS_OBSTRUCTION);
-    findReplaceGrid(costMap, 1, 30000, 1);
-    
-    for (i = 0; i < DCOLS*DROWS; i++) {
-        x = sCoord[i]/DROWS;
-        y = sCoord[i] % DROWS;
-        if (!grid[x][y]) {
-            for (d=0; d <= 1; d++) { // Try a horizontal door, and then a vertical door.
-                newX = x + dirCoords[d][0];
-                oppX = x - dirCoords[d][0];
-                newY = y + dirCoords[d][1];
-                oppY = y - dirCoords[d][1];
-                if (coordinatesAreInMap(newX, newY)
-                    && coordinatesAreInMap(oppX, oppY)
-                    && grid[newX][newY]
-                    && grid[oppX][oppY]) { // If the tile being inspected has floor on both sides,
-                    
-                    fillGrid(pathMap, 30000);
-                    pathMap[newX][newY] = 0;
-                    dijkstraScan(pathMap, costMap, false);
-                    if (pathMap[oppX][oppY] > 20) { // and if the pathing distance between the two flanking floor tiles exceeds 20,
-                        grid[x][y] = 2;             // then turn the tile into a doorway.
-                        costMap[x][y] = 1;          // (Cost map also needs updating.)
-                        if (D_INSPECT_LEVELGEN) {
-                            plotCharWithColor(DOOR_CHAR, mapToWindowX(x), mapToWindowY(y), &black, &green);
-                        }
-                        break;
-                    }
-                }
-            }
-        }
-    }
-    if (D_INSPECT_LEVELGEN) {
-        temporaryMessage("Added secondary connections:", true);
-    }
-    freeGrid(pathMap);
-    freeGrid(costMap);
 }
 
 void liquidType(short *deep, short *shallow, short *shallowWidth) {
@@ -2652,7 +2675,7 @@ void digDungeon() {
     
     grid = allocGrid();
     carveDungeon(grid);
-    addLoops(grid);
+    addLoops(grid, 20);
     for (i=0; i<DCOLS; i++) {
         for (j=0; j<DROWS; j++) {
             if (grid[i][j] == 1) {

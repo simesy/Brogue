@@ -772,7 +772,7 @@ void applyInstantTileEffectsToCreature(creature *monst) {
                 }
                 flashMonster(monst, &brown, 100);
                 monsterName(buf, monst, true);
-                sprintf(buf2, "%s choke%s and gag%s on the stench of rot.", buf,
+                sprintf(buf2, "%s choke%s and gag%s on the overpowering stench of decay.", buf,
                         (monst == &player ? "": "s"), (monst == &player ? "": "s"));
                 message(buf2, false);
             }

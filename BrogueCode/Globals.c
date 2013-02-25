@@ -119,6 +119,10 @@ color wallBackColor;
 const color wallBackColorStart =	{45,	40,		40,		15,		0,			5,			20,		false};
 const color wallBackColorEnd =		{40,	30,		35,		0,		20,			30,			20,		false};
 
+const color mudWallForeColor =      {55,	45,		0,		5,		5,			5,			1,		false};
+//const color mudWallForeColor =      {40,	34,		7,		0,		3,			0,			3,		false};
+const color mudWallBackColor =      {20,	12,		3,		8,		4,			3,			0,		false};
+
 const color graniteBackColor =		{10,	10,		10,		0,		0,			0,			0,		false};
 
 const color floorForeColor =		{30,	30,		30,		0,		0,			0,			35,		false};
@@ -515,7 +519,7 @@ const floorTileType tileCatalog[NUMBER_TILETYPES] = {
 	{GRASS_CHAR,	&grayFungusColor,		0,						51,	10,	DF_PLAIN_FIRE,	0,			0,				0,				NO_LIGHT,		(T_IS_FLAMMABLE), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION),                                  "withered fungus",		"groping tendrils of pale fungus rise from the muck."},
 	{GRASS_CHAR,	&fungusColor,			0,						60,	10,	DF_PLAIN_FIRE,	0,			0,				0,				FUNGUS_LIGHT,	(T_IS_FLAMMABLE), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION),                                  "luminescent fungus",	"luminescent fungus casts a pale, eerie glow."},
 	{GRASS_CHAR,	&lichenColor,			0,						60,	50,	DF_PLAIN_FIRE,	0,			DF_LICHEN_GROW,	10000,			NO_LIGHT,		(T_CAUSES_POISON | T_IS_FLAMMABLE), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION),                "deadly lichen",		"venomous barbs cover the quivering tendrils of this fast-growing lichen."},
-	{GRASS_CHAR,	&hayColor,				&refuseBackColor,		57,	50,	DF_PLAIN_FIRE,	0,			0,				0,				NO_LIGHT,		(T_IS_FLAMMABLE), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION),                                  "filthy hay",			"a pile of hay, matted with filth, has been arranged here as a makeshift bed."},
+	{GRASS_CHAR,	&hayColor,				&refuseBackColor,		57,	50,	DF_STENCH_BURN,	0,			0,				0,				NO_LIGHT,		(T_IS_FLAMMABLE), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION),                                  "filthy hay",			"a pile of hay, matted with filth, has been arranged here as a makeshift bed."},
 	{FLOOR_CHAR,	&humanBloodColor,		0,						80,	0,	DF_PLAIN_FIRE,	0,			0,				0,				NO_LIGHT,		(0), (TM_STAND_IN_TILE),                                                                            "a pool of blood",		"the floor is splattered with blood."},
 	{FLOOR_CHAR,	&insectBloodColor,		0,						80,	0,	DF_PLAIN_FIRE,	0,			0,				0,				NO_LIGHT,		(0), (TM_STAND_IN_TILE),                                                                            "a pool of green blood", "the floor is splattered with green blood."},
 	{FLOOR_CHAR,	&poisonGasColor,		0,						80,	0,	DF_PLAIN_FIRE,	0,			0,				0,				NO_LIGHT,		(0), (TM_STAND_IN_TILE),                                                                            "a pool of purple blood", "the floor is splattered with purple blood."},
@@ -563,6 +567,7 @@ const floorTileType tileCatalog[NUMBER_TILETYPES] = {
 	{	' ',		0,						&poisonGasColor,		35,	100,DF_GAS_FIRE,	0,			0,				0,				NO_LIGHT,		(T_IS_FLAMMABLE | T_CAUSES_DAMAGE), (TM_STAND_IN_TILE | TM_GAS_DISSIPATES),							"a cloud of caustic gas", "you can feel the purple gas eating at your flesh."},
 	{	' ',		0,						&confusionGasColor,		35,	100,DF_GAS_FIRE,	0,			0,				0,				CONFUSION_GAS_LIGHT,(T_IS_FLAMMABLE | T_CAUSES_CONFUSION), (TM_STAND_IN_TILE | TM_GAS_DISSIPATES_QUICKLY),			"a cloud of confusion gas", "the rainbow-colored gas tickles your brain."},
 	{	' ',		0,						&vomitColor,			35,	100,DF_GAS_FIRE,	0,			0,				0,				NO_LIGHT,		(T_IS_FLAMMABLE | T_CAUSES_NAUSEA), (TM_STAND_IN_TILE | TM_GAS_DISSIPATES_QUICKLY),					"a cloud of putrescence", "the stench of rotting flesh is overpowering."},
+    {	' ',		0,						&vomitColor,			35,	0,  DF_GAS_FIRE,	0,			0,				0,				NO_LIGHT,		(T_CAUSES_NAUSEA), (TM_STAND_IN_TILE | TM_GAS_DISSIPATES_QUICKLY),                                  "a cloud of putrid smoke", "you retch violently at the smell of the greasy smoke."},
 	{	' ',		0,						&pink,					35,	100,DF_GAS_FIRE,	0,			0,				0,				NO_LIGHT,		(T_IS_FLAMMABLE | T_CAUSES_PARALYSIS), (TM_STAND_IN_TILE | TM_GAS_DISSIPATES_QUICKLY),				"a cloud of paralytic gas", "the pale gas causes your muscles to stiffen."},
 	{	' ',		0,						&methaneColor,			35,	100,DF_GAS_FIRE,    0,          DF_EXPLOSION_FIRE, 0,			NO_LIGHT,		(T_IS_FLAMMABLE), (TM_STAND_IN_TILE | TM_EXPLOSIVE_PROMOTE),                                        "a cloud of explosive gas",	"the smell of explosive swamp gas fills the air."},
 	{	' ',		0,						&white,					35,	0,	DF_GAS_FIRE,	0,			0,				0,				NO_LIGHT,		(T_CAUSES_DAMAGE), (TM_STAND_IN_TILE | TM_GAS_DISSIPATES_QUICKLY),									"a cloud of scalding steam", "scalding steam fills the air!"},
@@ -594,6 +599,10 @@ const floorTileType tileCatalog[NUMBER_TILETYPES] = {
     
     // zombie crypt
 	{FIRE_CHAR,		&fireForeColor,			&statueBackColor,       0,	0,	DF_PLAIN_FIRE,	0,			0,				0,				BURNING_CREATURE_LIGHT,	(T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_ITEMS | T_IS_FIRE), (TM_STAND_IN_TILE | TM_LIST_IN_SIDEBAR),"a ceremonial brazier",		"The ancient brazier smolders with a deep crimson flame."},
+    
+    // goblin warren
+    {FLOOR_CHAR,    &mudBackColor,          &refuseBackColor,       85,	0,	DF_STENCH_SMOLDER,0,		0,				0,				NO_LIGHT,		(T_IS_FLAMMABLE), (TM_VANISHES_UPON_PROMOTION),                                                     "the mud floor",		"The mud floor emits a stench that nearly overpowers you."},
+    {WALL_CHAR,		&mudWallForeColor,		&mudWallBackColor,		0,	0,	DF_PLAIN_FIRE,	0,			0,				0,				NO_LIGHT,		(T_OBSTRUCTS_EVERYTHING), (TM_STAND_IN_TILE),														"a mud-covered wall",	"A malodorous layer of clay and fecal matter has been smeared over the wall."},
 };
 
 #pragma mark Dungeon Feature definitions
@@ -873,6 +882,10 @@ dungeonFeature dungeonFeatureCatalog[NUMBER_DUNGEON_FEATURES] = {
 	
 	// monster cages open:
 	{MONSTER_CAGE_OPEN,			DUNGEON,	0,		0,		0},
+    
+    // goblin warren:
+    {STENCH_SMOKE_GAS,          GAS,		50,		0,		0, "", 0, 0, 0, 0, DF_PLAIN_FIRE},
+    {STENCH_SMOKE_GAS,          GAS,		50,		0,		0, "", 0, 0, 0, 0, DF_EMBERS},
 };
 
 #pragma mark Lights
@@ -1019,9 +1032,11 @@ const blueprint blueprintCatalog[NUMBER_BLUEPRINTS] = {
 		{DF_LUMINESCENT_FUNGUS,	ALTAR_KEYHOLE, DUNGEON,	{1,1}, 1,		KEY,		KEY_PORTAL,	0,				0,				2,				0,			(ITEM_IS_KEY | ITEM_PLAYER_AVOIDS),(MF_GENERATE_ITEM | MF_NOT_IN_HALLWAY | MF_NEAR_ORIGIN | MF_OUTSOURCE_ITEM_TO_MACHINE | MF_KEY_DISPOSABLE)},
 		{DF_LUMINESCENT_FUNGUS,	PORTAL,	DUNGEON,{1,1},		1,			0,			-1,			0,				0,				2,				HORDE_MACHINE_LEGENDARY_ALLY,0,	(MF_GENERATE_HORDE | MF_MONSTERS_DORMANT | MF_FAR_FROM_ORIGIN)}}},
     // Goblin warren
-	{{1, AMULET_LEVEL},{100, 500},	0,      2,			(BP_ROOM | BP_REWARD | BP_MAXIMIZE_INTERIOR | BP_REDESIGN_INTERIOR),	{
-		{DF_HAY,	0,			0,				{5, 10},	1,			0,			-1,			0,				0,				1,				0,			0,			(MF_NOT_IN_HALLWAY)},
-		{DF_JUNK,	0,			0,				{5, 8},		1,			0,			-1,			0,				0,				1,				0,			0,			(MF_NOT_IN_HALLWAY)}}},
+	{{1, AMULET_LEVEL},{150, 250},	0,       4,			(BP_ROOM | BP_REWARD | BP_MAXIMIZE_INTERIOR | BP_REDESIGN_INTERIOR),	{
+		{0,			MUD_FLOOR,	DUNGEON,		{0,0},		0,			0,			-1,			0,				0,				0,				0,			0,			(MF_EVERYWHERE)},
+        {DF_HAY,	0,			0,				{10, 15},	1,			0,			-1,			0,				0,				1,				0,			0,			(MF_NOT_IN_HALLWAY)},
+		{DF_JUNK,	0,			0,				{7, 12},	1,			0,			-1,			0,				0,				1,				0,			0,			(MF_NOT_IN_HALLWAY)},
+        {0,         MUD_WALL,   DUNGEON,        {1,1},      100,        0,			-1,			0,				0,				1,				0,			0,			(MF_BUILD_IN_WALLS | MF_EVERYWHERE)}}},
 	
     // -- VESTIBULES --
     

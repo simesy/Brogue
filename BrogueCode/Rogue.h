@@ -512,6 +512,7 @@ enum tileType {
 	POISON_GAS,
 	CONFUSION_GAS,
 	ROT_GAS,
+    STENCH_SMOKE_GAS,
 	PARALYSIS_GAS,
 	METHANE_GAS,
 	STEAM,
@@ -537,6 +538,9 @@ enum tileType {
     WORM_TUNNEL_OUTER_WALL,
     
     BRAZIER,
+    
+    MUD_FLOOR,
+    MUD_WALL,
     
 	NUMBER_TILETYPES,
 };
@@ -1519,6 +1523,10 @@ enum dungeonFeatureTypes {
 	
 	// monster cages open:
 	DF_MONSTER_CAGE_OPENS,
+    
+    // goblin warren:
+    DF_STENCH_BURN,
+    DF_STENCH_SMOLDER,
 	
 	NUMBER_DUNGEON_FEATURES,
 };
@@ -2707,6 +2715,7 @@ extern "C" {
 	void fillGrid(short **grid, short fillValue);
     void hiliteGrid(short **grid, color *hiliteColor, short hiliteStrength);
     void findReplaceGrid(short **grid, short findValueMin, short findValueMax, short fillValue);
+    short floodFillGrid(short **grid, short x, short y, short eligibleValueMin, short eligibleValueMax, short fillValue);
     void drawRectangleOnGrid(short **grid, short x, short y, short width, short height, short value);
     void drawCircleOnGrid(short **grid, short x, short y, short radius, short value);
     void getTerrainGrid(short **grid, short value, unsigned long terrainFlags, unsigned long mapFlags);
