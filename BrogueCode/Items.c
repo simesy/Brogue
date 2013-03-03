@@ -3224,6 +3224,7 @@ boolean polymorph(creature *monst) {
     }
 	
 	unAlly(monst); // Sorry, no cheap dragon allies.
+    monst->mutationIndex = -1; // Polymorph cures mutation -- basic science.
 	healthFraction = monst->currentHP / monst->info.maxHP;
 	previousDamageTaken = monst->info.maxHP - monst->currentHP;
 	

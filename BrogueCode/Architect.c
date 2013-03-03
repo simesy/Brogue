@@ -1869,7 +1869,6 @@ void designSmallRoom(short **grid) {
     short width, height;
     
     fillGrid(grid, 0);
-    
     width = rand_range(3, 6);
     height = rand_range(2, 4);
     drawRectangleOnGrid(grid, (DCOLS - width) / 2, (DROWS - height) / 2, width, height, 1);

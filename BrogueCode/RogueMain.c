@@ -992,7 +992,7 @@ void freeEverything() {
 }
 
 void gameOver(char *killedBy, boolean useCustomPhrasing) {
-	char buf[COLS];
+	char buf[200], buf2[200];
 	rogueHighScoresEntry theEntry;
 	cellDisplayBuffer dbuf[COLS][ROWS];
 	boolean playback;
@@ -1069,17 +1069,24 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
 	}
 	
 	if (useCustomPhrasing) {
-		sprintf(buf, "%s on level %i%s.", killedBy, rogue.depthLevel,
-				(numberOfMatchingPackItems(AMULET, 0, 0, false) > 0 ? ", amulet in hand" : ""));
+		sprintf(buf, "%s on depth %i", killedBy, rogue.depthLevel);
 	} else {
-		sprintf(buf, "Killed by a%s %s on level %i%s.", (isVowelish(killedBy) ? "n" : ""), killedBy,
-				rogue.depthLevel, (numberOfMatchingPackItems(AMULET, 0, 0, false) > 0 ? ", amulet in hand" : ""));
+		sprintf(buf, "Killed by a%s %s on depth %i", (isVowelish(killedBy) ? "n" : ""), killedBy,
+				rogue.depthLevel);
 	}
-	
-	theEntry.score = rogue.gold;
+    theEntry.score = rogue.gold;
 	if (rogue.easyMode) {
 		theEntry.score /= 10;
 	}
+    if (theEntry.score > 0) {
+        sprintf(buf2, " with %li gold", theEntry.score);
+        strcat(buf, buf2);
+    }
+    if (numberOfMatchingPackItems(AMULET, 0, 0, false) > 0) {
+        strcat(buf, ", amulet in hand");
+    }
+    strcat(buf, ".");
+	
 	strcpy(theEntry.description, buf);
 	
 	printString(buf, ((COLS - strLenWithoutEscapes(buf)) / 2), (ROWS / 2), &gray, &black, 0);

@@ -3339,7 +3339,7 @@ void printHelpScreen() {
 		"             \\  ****disable/enable color effects",
 		"   <space/esc>  ****clear message or cancel command",
 		"",
-		"        -- press any key to continue --"
+		"        -- press space or click to continue --"
 	};
 	
 	// Replace the "****"s with color escapes.
