@@ -541,6 +541,7 @@ enum tileType {
     
     MUD_FLOOR,
     MUD_WALL,
+    MUD_DOORWAY,
     
 	NUMBER_TILETYPES,
 };
@@ -892,7 +893,7 @@ enum monsterTypes {
 
 #define NUMBER_MUTATORS             8
 
-#define	NUMBER_HORDES				160
+#define	NUMBER_HORDES				169
 
 // flavors
 
@@ -1710,12 +1711,14 @@ enum hordeFlags {
 	HORDE_MACHINE_LEGENDARY_ALLY	= Fl(14),	// legendary allies
     HORDE_NEVER_OOD                 = Fl(15),   // Horde cannot be generated out of depth
     HORDE_MACHINE_THIEF             = Fl(16),   // monsters that can be generated in the key thief area machines
+    HORDE_MACHINE_GOBLIN_WARREN     = Fl(17),   // can spawn in goblin warrens
 	
 	HORDE_MACHINE_ONLY				= (HORDE_MACHINE_BOSS | HORDE_MACHINE_WATER_MONSTER
 									   | HORDE_MACHINE_CAPTIVE | HORDE_MACHINE_STATUE
 									   | HORDE_MACHINE_TURRET | HORDE_MACHINE_MUD
 									   | HORDE_MACHINE_KENNEL | HORDE_VAMPIRE_FODDER
-									   | HORDE_MACHINE_LEGENDARY_ALLY | HORDE_MACHINE_THIEF),
+									   | HORDE_MACHINE_LEGENDARY_ALLY | HORDE_MACHINE_THIEF
+                                       | HORDE_MACHINE_GOBLIN_WARREN),
 };
 
 enum monsterBehaviorFlags {
