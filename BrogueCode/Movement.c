@@ -2474,7 +2474,9 @@ void burnItem(item *theItem) {
 	short x, y;
 	char buf1[DCOLS], buf2[DCOLS];
 	itemName(theItem, buf1, false, true, NULL);
-	sprintf(buf2, "%s burns up!", buf1);
+	sprintf(buf2, "%s burn%s up!",
+            buf1,
+            theItem->quantity == 1 ? "s" : "");
 	
 	x = theItem->xLoc;
 	y = theItem->yLoc;
