@@ -2095,7 +2095,6 @@ boolean monstUseMagic(creature *monst) {
 			if (monstersAreEnemies(monst, target)
 				&& !((monst->bookkeepingFlags | target->bookkeepingFlags) & MONST_SUBMERGED) // neither is submerged
 				&& !target->status[STATUS_INVISIBLE]
-                && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
 				&& openPathBetween(monst->xLoc, monst->yLoc, target->xLoc, target->yLoc)) {
                 
 				targetLoc[0] = target->xLoc;
@@ -2103,6 +2102,7 @@ boolean monstUseMagic(creature *monst) {
                 
                 // mirrored totems sometimes cast beckoning
 				if ((monst->info.abilityFlags & MA_CAST_BECKONING)
+                    && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
 					&& !(target->info.flags & MONST_INANIMATE)
                     && distanceBetween(monst->xLoc, monst->yLoc, targetLoc[0], targetLoc[1]) > 1
                     && (alwaysUse || rand_percent(35))) {
@@ -2118,6 +2118,7 @@ boolean monstUseMagic(creature *monst) {
 				
 				// dragons sometimes breathe fire
 				if ((monst->info.abilityFlags & MA_BREATHES_FIRE)
+                    && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
                     && !target->status[STATUS_IMMUNE_TO_FIRE]
                     && !target->status[STATUS_ENTRANCED]
                     && (alwaysUse || rand_percent(35))) {
@@ -2170,6 +2171,7 @@ boolean monstUseMagic(creature *monst) {
 				
 				// Discord.
 				if ((monst->info.abilityFlags & MA_CAST_DISCORD)
+                    && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
                     && (!target->status[STATUS_DISCORDANT])
 					&& !(target->info.flags & MONST_INANIMATE)
                     && (target != &player)
@@ -2186,6 +2188,7 @@ boolean monstUseMagic(creature *monst) {
 				
 				// Opportunity to cast negation cleverly?
 				if ((monst->info.abilityFlags & MA_CAST_NEGATION)
+                    && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
 					&& (target->status[STATUS_HASTED] || target->status[STATUS_TELEPATHIC] || target->status[STATUS_SHIELDED]
 						|| (target->info.flags & (MONST_DIES_IF_NEGATED | MONST_IMMUNE_TO_WEAPONS))
 						|| ((target->status[STATUS_IMMUNE_TO_FIRE] || target->status[STATUS_LEVITATING])
@@ -2205,6 +2208,7 @@ boolean monstUseMagic(creature *monst) {
 				
 				// Slow.
 				if ((monst->info.abilityFlags & MA_CAST_SLOW)
+                    && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))
                     && (!target->status[STATUS_SLOWED])
 					&& !(target->info.flags & MONST_INANIMATE)
                     && (alwaysUse || rand_percent(50))) {
