@@ -2549,6 +2549,23 @@ boolean allyFlees(creature *ally, creature *closestEnemy) {
     return false;
 }
 
+void monsterMillAbout(creature *monst, short movementChance) {
+    enum directions dir;
+    short targetLoc[2];
+    
+    const short x = monst->xLoc;
+	const short y = monst->yLoc;
+    
+    if (rand_percent(movementChance)) {
+        dir = randValidDirectionFrom(monst, x, y, true);
+        if (dir != -1) {
+            targetLoc[0] = x + nbDirs[dir][0];
+            targetLoc[1] = y + nbDirs[dir][1];
+            moveMonsterPassivelyTowards(monst, targetLoc, false);
+        }
+    }
+}
+
 void moveAlly(creature *monst) {
 	creature *target, *closestMonster = NULL;
 	short i, j, x, y, dir, shortestDistance, targetLoc[2], leashLength;
@@ -2717,14 +2734,7 @@ void moveAlly(creature *monst) {
 			   || (distanceBetween(x, y, player.xLoc, player.yLoc) < 3 && (pmap[x][y].flags & IN_FIELD_OF_VIEW))) {
         
 		monst->bookkeepingFlags &= ~MONST_GIVEN_UP_ON_SCENT;
-		if (rand_percent(30)) {
-			dir = randValidDirectionFrom(monst, x, y, true);
-			if (dir != -1) {
-				targetLoc[0] = x + nbDirs[dir][0];
-				targetLoc[1] = y + nbDirs[dir][1];
-				moveMonsterPassivelyTowards(monst, targetLoc, false);
-			}
-		}
+        monsterMillAbout(monst, 30);
 	} else {
 		if ((monst->info.abilityFlags & MA_CAST_BLINK)
 			&& !(monst->bookkeepingFlags & MONST_GIVEN_UP_ON_SCENT)
@@ -3051,10 +3061,16 @@ void monstersTurn(creature *monst) {
 		}
 		
 		// if you're a follower, don't get separated from the pack
-		if ((monst->bookkeepingFlags & MONST_FOLLOWER)
-            && distanceBetween(x, y, monst->leader->xLoc, monst->leader->yLoc) > 2) {
-            
-			moveTowardLeader(monst);
+		if (monst->bookkeepingFlags & MONST_FOLLOWER) {
+            if (distanceBetween(x, y, monst->leader->xLoc, monst->leader->yLoc) > 2) {
+                moveTowardLeader(monst);
+            } else if (monst->leader->info.flags & MONST_IMMOBILE) {
+                monsterMillAbout(monst, 100); // Worshipers will pace frenetically.
+            } else if (monst->leader->bookkeepingFlags & MONST_CAPTIVE) {
+                monsterMillAbout(monst, 10); // Captors are languid.
+            } else {
+                monsterMillAbout(monst, 30); // Other followers mill about like your allies do.
+            }
 		} else {
             // Step toward the chosen waypoint.
             dir = NO_DIRECTION;
