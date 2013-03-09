@@ -2075,8 +2075,12 @@ boolean monstUseMagic(creature *monst) {
         if (alwaysUse && minionCount < 50) {
 			summonMinions(monst);
 			return true;
-        } else if ((monst->creatureState != MONSTER_ALLY || minionCount < 5 || (monst->info.abilityFlags & MA_ENTER_SUMMONS))
-			&& !rand_range(0, minionCount * minionCount * 3 + (monst->info.abilityFlags & MA_ENTER_SUMMONS ? 5 : 1))) {
+        } else if (monst->info.abilityFlags & MA_ENTER_SUMMONS) {
+            if (!rand_range(0, 7)) {
+                summonMinions(monst);
+            }
+        } else if ((monst->creatureState != MONSTER_ALLY || minionCount < 5)
+			&& !rand_range(0, minionCount * minionCount * 3 + 1)) {
             
 			summonMinions(monst);
 			return true;
