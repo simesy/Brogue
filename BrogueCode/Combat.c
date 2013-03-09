@@ -163,8 +163,10 @@ void monsterShoots(creature *attacker, short targetLoc[2], uchar projChar, color
 //				continue;
 //			}
 			
-			attack(attacker, monst, false);
-			break;
+            if (!(monst->bookkeepingFlags & MONST_SUBMERGED)) {
+                attack(attacker, monst, false);
+                break;
+            }
 		}
 		
 		if (playerCanSee(x, y)) {
