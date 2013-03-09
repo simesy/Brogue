@@ -474,11 +474,11 @@ unsigned long avoidedFlagsForMonster(creatureType *monsterType) {
 	if (monsterType->flags & MONST_INANIMATE) {
 		flags &= ~(T_CAUSES_POISON | T_CAUSES_DAMAGE | T_CAUSES_EXPLOSIVE_DAMAGE | T_CAUSES_PARALYSIS | T_CAUSES_CONFUSION);
 	}
-	if (monsterType->flags & (MONST_IMMUNE_TO_FIRE)) {
+	if (monsterType->flags & MONST_IMMUNE_TO_FIRE) {
 		flags &= ~T_IS_FIRE;
 	}
-	if (monsterType->flags & (MONST_FLIES)) {
-		flags &= ~(T_CAUSES_POISON);
+	if (monsterType->flags & MONST_FLIES) {
+		flags &= ~T_CAUSES_POISON;
 	}
 	return flags;
 }
