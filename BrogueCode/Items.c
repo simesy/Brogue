@@ -6362,7 +6362,8 @@ void recalculateEquipmentBonuses() {
 	if (rogue.armor) {
 		theItem = rogue.armor;
 		enchant = netEnchant(theItem);
-		player.info.defense = theItem->armor + enchant * 10;
+        enchant -= player.status[STATUS_DONNING];
+		player.info.defense = theItem->armor + (enchant + FLOAT_FUDGE) * 10;
 		if (player.info.defense < 0) {
 			player.info.defense = 0;
 		}
@@ -6393,6 +6394,7 @@ void equipItem(item *theItem, boolean force) {
 		recalculateEquipmentBonuses();
 	} else if (theItem->category & ARMOR) {
 		rogue.armor = theItem;
+        player.status[STATUS_DONNING] = player.maxStatus[STATUS_DONNING] = rogue.armor->armor / 10;
 		recalculateEquipmentBonuses();
 	} else if (theItem->category & RING) {
 		if (rogue.ringLeft && rogue.ringRight) {

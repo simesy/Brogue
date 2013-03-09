@@ -3720,6 +3720,16 @@ void highlightScreenCell(short x, short y, color *highlightColor, short strength
 	displayBuffer[x][y].needsUpdate = true;
 }
 
+short estimatedArmorValue() {
+    short retVal;
+    
+    retVal = ((armorTable[rogue.armor->kind].range.upperBound + armorTable[rogue.armor->kind].range.lowerBound) / 2) / 10;
+    retVal += strengthModifier(rogue.armor);
+    retVal -= player.status[STATUS_DONNING];
+    
+    return max(0, retVal);
+}
+
 // returns the y-coordinate after the last line printed
 short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight) {
 	char buf[COLS], buf2[COLS], monstName[COLS], redColorEscape[5], grayColorEscape[5];
@@ -3741,6 +3751,7 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 		"    (Quivering)     ",
 	};
 	const char statusStrings[NUMBER_OF_STATUS_EFFECTS][COLS] = {
+        "Donning Armor",
 		"Weakened: -",
 		"Telepathic",
 		"Hallucinating",
@@ -3951,7 +3962,7 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 							redColorEscape,
 							rogue.strength - player.weaknessAmount,
 							grayColorEscape,
-							max(0, (short) (((armorTable[rogue.armor->kind].range.upperBound + armorTable[rogue.armor->kind].range.lowerBound) / 2) / 10 + strengthModifier(rogue.armor))));
+							estimatedArmorValue());
 				}
 				//buf[20] = '\0';
 				printString("                    ", 0, y, &white, &black, 0);

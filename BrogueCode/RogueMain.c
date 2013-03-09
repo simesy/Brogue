@@ -422,6 +422,7 @@ void initializeRogue(unsigned long seed) {
 	identify(theItem);
 	theItem = addItemToPack(theItem);
 	equipItem(theItem, false);
+    player.status[STATUS_DONNING] = 0;
 	
 	DEBUG {
 		theItem = generateItem(RING, RING_CLAIRVOYANCE);

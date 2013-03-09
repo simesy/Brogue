@@ -1666,7 +1666,8 @@ enum terrainMechanicalFlagCatalog {
 };
 
 enum statusEffects {
-	STATUS_WEAKENED = 0,
+    STATUS_DONNING = 0,
+	STATUS_WEAKENED,
 	STATUS_TELEPATHIC,
 	STATUS_HALLUCINATING,
 	STATUS_LEVITATING,

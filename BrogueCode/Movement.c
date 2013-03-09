@@ -3370,6 +3370,11 @@ void decrementPlayerStatus() {
 		message("strength returns to your muscles as the weakening toxin wears off.", false);
 		updateEncumbrance();
 	}
+    
+    if (player.status[STATUS_DONNING]) {
+        player.status[STATUS_DONNING]--;
+        recalculateEquipmentBonuses();
+    }
 	
 	if (player.status[STATUS_IMMUNE_TO_FIRE] > 0 && !--player.status[STATUS_IMMUNE_TO_FIRE]) {
 		//player.info.flags &= ~MONST_IMMUNE_TO_FIRE;
