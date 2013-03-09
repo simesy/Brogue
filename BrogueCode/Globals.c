@@ -1365,7 +1365,7 @@ creatureType monsterCatalog[NUMBER_MONSTER_KINDS] = {
 		(0), (MA_HIT_STEAL_FLEE)},
 	{0, "bloat",		'b',	&poisonGasColor,4,		0,		100,	{0, 0, 0},		5,	DCOLS,	100,	100,	100,	DF_PURPLE_BLOOD,0,		0,		DF_BLOAT_DEATH,
 		(MONST_FLIES | MONST_FLITS), (MA_KAMIKAZE | MA_DF_ON_DEATH)},
-	{0, "pit bloat",	'b',	&blue,          4,		0,		100,	{0, 0, 0},		5,	DCOLS,	100,	100,	100,	DF_PURPLE_BLOOD,0,		0,		DF_HOLE_POTION,
+	{0, "pit bloat",	'b',	&lightBlue,     4,		0,		100,	{0, 0, 0},		5,	DCOLS,	100,	100,	100,	DF_PURPLE_BLOOD,0,		0,		DF_HOLE_POTION,
 		(MONST_FLIES | MONST_FLITS), (MA_KAMIKAZE | MA_DF_ON_DEATH)},
 	{0, "goblin",		'g',	&goblinColor,	15,		10,		70,		{2, 5, 1},		20,	30,		20,		100,	100,	DF_RED_BLOOD,	0,		0,		0},
 	{0, "goblin conjurer",'g',	&goblinConjurerColor, 10,10,	70,		{2, 4, 1},		20,	30,		20,		100,	100,	DF_RED_BLOOD,	0,		0,		0,
