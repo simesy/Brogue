@@ -482,15 +482,18 @@ void specialHit(creature *attacker, creature *defender, short damage) {
 			}
 		}
 	}
-	if ((attacker->info.abilityFlags & MA_POISONS) && damage > 0) {
-		if (defender == &player && !player.status[STATUS_POISONED]) {
-			combatMessage("scalding poison fills your veins", &badMessageColor);
-		}
-		if (!defender->status[STATUS_POISONED]) {
-			defender->maxStatus[STATUS_POISONED] = 0;
-		}
-		defender->status[STATUS_POISONED] += damage;
-		defender->maxStatus[STATUS_POISONED] = defender->info.maxHP;
+	if ((attacker->info.abilityFlags & MA_POISONS)
+        && damage > 0
+        && !(defender->info.flags & MONST_INANIMATE)) {
+        
+        if (defender == &player && !player.status[STATUS_POISONED]) {
+            combatMessage("scalding poison fills your veins", &badMessageColor);
+        }
+        if (!defender->status[STATUS_POISONED]) {
+            defender->maxStatus[STATUS_POISONED] = 0;
+        }
+        defender->status[STATUS_POISONED] += damage;
+        defender->maxStatus[STATUS_POISONED] = defender->info.maxHP;
 	}
 	if ((attacker->info.abilityFlags & MA_CAUSES_WEAKNESS)
         && damage > 0
