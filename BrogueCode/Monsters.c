@@ -3058,7 +3058,6 @@ void monstersTurn(creature *monst) {
 				if (monstersAreEnemies(monst, ally) && distanceBetween(x, y, ally->xLoc, ally->yLoc) == 1
 					&& (!ally->status[STATUS_INVISIBLE] || rand_percent(33))) {
                     
-					monst->creatureState = MONSTER_TRACKING_SCENT; // this alerts the monster that you're nearby
 					targetLoc[0] = ally->xLoc;
 					targetLoc[1] = ally->yLoc;
 					if (moveMonsterPassivelyTowards(monst, targetLoc, true)) {

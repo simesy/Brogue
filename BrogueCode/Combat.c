@@ -373,6 +373,14 @@ void moralAttack(creature *attacker, creature *defender) {
 		
 			unAlly(defender);
 		}
+        
+        if ((attacker == &player || attacker->creatureState == MONSTER_ALLY)
+            && defender != &player
+            && defender->creatureState != MONSTER_ALLY) {
+            
+            defender->creatureState = MONSTER_TRACKING_SCENT; // this alerts the monster that you're nearby
+        }
+        
 		if ((defender->info.abilityFlags & MA_CLONE_SELF_ON_DEFEND) && alliedCloneCount(defender) < 100) {
 			if (distanceBetween(defender->xLoc, defender->yLoc, attacker->xLoc, attacker->yLoc) <= 1) {
 				splitMonster(defender, attacker->xLoc, attacker->yLoc);
