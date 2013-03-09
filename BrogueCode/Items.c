@@ -5598,7 +5598,9 @@ void updateIdentifiableItem(item *theItem) {
 			   && (!(theItem->flags & ITEM_RUNIC) || (theItem->flags & ITEM_RUNIC_IDENTIFIED))) {
 		
 		theItem->flags &= ~ITEM_CAN_BE_IDENTIFIED;
-	}
+	} else if (theItem->category & NEVER_IDENTIFIABLE) {
+        theItem->flags &= ~ITEM_CAN_BE_IDENTIFIED;
+    }
 }
 
 void updateIdentifiableItems() {
