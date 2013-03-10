@@ -1833,7 +1833,7 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 										nextLevelState = weaponConfusionDuration((float) (enchant + enchantIncrement(theItem)));
 										break;
 									case W_FORCE:
-										sprintf(buf2, " up to %i spaces backward. If the enemy hits an obstruction, it will take damage in proportion to the distance it flew. ",
+										sprintf(buf2, " up to %i spaces backward. If the enemy hits an obstruction, it (and any monster it hits) will take damage in proportion to the distance it flew. ",
 												weaponForceDistance(enchant));
 										strcat(buf, buf2);
 										nextLevelState = weaponForceDistance((float) (enchant + enchantIncrement(theItem)));

@@ -581,13 +581,90 @@ short runicWeaponChance(item *theItem, boolean customEnchantLevel, float enchant
 	return chance;
 }
 
+void forceWeaponHit(creature *defender, item *theItem) {
+	short oldLoc[2], newLoc[2], forceDamage;
+	char buf[DCOLS*3], buf2[COLS], monstName[DCOLS];
+    creature *otherMonster = NULL;
+    boolean knowFirstMonsterDied = false;
+    
+    monsterName(monstName, defender, true);
+    
+    oldLoc[0] = defender->xLoc;
+    oldLoc[1] = defender->yLoc;
+    newLoc[0] = defender->xLoc + (defender->xLoc - player.xLoc);
+    newLoc[1] = defender->yLoc + (defender->yLoc - player.yLoc);
+    if (canDirectlySeeMonster(defender)
+        && !cellHasTerrainFlag(newLoc[0], newLoc[1], T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_VISION)
+        && !(pmap[newLoc[0]][newLoc[1]].flags & (HAS_MONSTER | HAS_PLAYER))) {
+        sprintf(buf, "you launch %s backward with the force of your blow", monstName);
+        buf[DCOLS] = '\0';
+        combatMessage(buf, messageColorFromVictim(defender));
+    }
+    zap(oldLoc, newLoc, BOLT_BLINKING, max(1, netEnchant(theItem) + FLOAT_FUDGE), false);
+    if (!(defender->bookkeepingFlags & MONST_IS_DYING)
+        && distanceBetween(oldLoc[0], oldLoc[1], defender->xLoc, defender->yLoc) > 0
+        && distanceBetween(oldLoc[0], oldLoc[1], defender->xLoc, defender->yLoc) < weaponForceDistance(netEnchant(theItem))) {
+        
+        if (pmap[defender->xLoc + newLoc[0] - oldLoc[0]][defender->yLoc + newLoc[1] - oldLoc[1]].flags & (HAS_MONSTER | HAS_PLAYER)) {
+            otherMonster = monsterAtLoc(defender->xLoc + newLoc[0] - oldLoc[0], defender->yLoc + newLoc[1] - oldLoc[1]);
+            monsterName(buf2, otherMonster, true);
+        } else {
+            otherMonster = NULL;
+            strcpy(buf2, tileCatalog[pmap[defender->xLoc + newLoc[0] - oldLoc[0]][defender->yLoc + newLoc[1] - oldLoc[1]].layers[highestPriorityLayer(defender->xLoc + newLoc[0] - oldLoc[0], defender->yLoc + newLoc[1] - oldLoc[1], true)]].description);
+        }
+        
+        forceDamage = distanceBetween(oldLoc[0], oldLoc[1], defender->xLoc, defender->yLoc);
+        
+        if (!(defender->info.flags & MONST_IMMUNE_TO_WEAPONS)
+            && inflictDamage(defender, forceDamage, &white)) {
+            
+            if (canDirectlySeeMonster(defender)) {
+                knowFirstMonsterDied = true;
+                sprintf(buf, "%s %s on impact with %s",
+                        monstName,
+                        (defender->info.flags & MONST_INANIMATE) ? "is destroyed" : "dies",
+                        buf2);
+                buf[DCOLS] = '\0';
+                combatMessage(buf, messageColorFromVictim(defender));
+            }
+        } else {
+            moralAttack(&player, defender);
+            if (canDirectlySeeMonster(defender)) {
+                sprintf(buf, "%s slams against %s",
+                        monstName,
+                        buf2);
+                buf[DCOLS] = '\0';
+                combatMessage(buf, messageColorFromVictim(defender));
+            }
+        }
+        if (otherMonster
+            && !(defender->info.flags & MONST_IMMUNE_TO_WEAPONS)) {
+            
+            if (inflictDamage(otherMonster, forceDamage, &white)) {
+                if (canDirectlySeeMonster(otherMonster)) {
+                    sprintf(buf, "%s %s%s when %s slams into $HIMHER",
+                            buf2,
+                            (knowFirstMonsterDied ? "also " : ""),
+                            (defender->info.flags & MONST_INANIMATE) ? "is destroyed" : "dies",
+                            monstName);
+                    resolvePronounEscapes(buf, otherMonster);
+                    buf[DCOLS] = '\0';
+                    combatMessage(buf, messageColorFromVictim(otherMonster));
+                }
+            } else {
+                moralAttack(&player, otherMonster);
+            }
+        }
+    }
+}
+
 void magicWeaponHit(creature *defender, item *theItem, boolean backstabbed) {
-	char buf[DCOLS*3], buf2[COLS], monstName[DCOLS], theItemName[DCOLS];
+	char buf[DCOLS*3], monstName[DCOLS], theItemName[DCOLS];
 	
 	color *effectColors[NUMBER_WEAPON_RUNIC_KINDS] = {&white, &black,
 		&yellow, &pink, &green, &confusionGasColor, NULL, NULL, &darkRed, &rainbow};
 	//	W_SPEED, W_QUIETUS, W_PARALYSIS, W_MULTIPLICITY, W_SLOWING, W_CONFUSION, W_FORCE, W_SLAYING, W_MERCY, W_PLENTY
-	short chance, i, oldLoc[2], newLoc[2];
+	short chance, i;
 	float enchant;
 	enum weaponEnchants enchantType = theItem->enchant2;
 	creature *newMonst;
@@ -725,50 +802,7 @@ void magicWeaponHit(creature *defender, item *theItem, boolean backstabbed) {
 				}
 				break;
 			case W_FORCE:
-                oldLoc[0] = defender->xLoc;
-                oldLoc[1] = defender->yLoc;
-                newLoc[0] = defender->xLoc + (defender->xLoc - player.xLoc);
-                newLoc[1] = defender->yLoc + (defender->yLoc - player.yLoc);
-				if (canDirectlySeeMonster(defender)
-                    && !cellHasTerrainFlag(newLoc[0], newLoc[1], T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_VISION)
-                    && !(pmap[newLoc[0]][newLoc[1]].flags & (HAS_MONSTER | HAS_PLAYER))) {
-					sprintf(buf, "you launch %s backward with the force of your blow", monstName);
-					buf[DCOLS] = '\0';
-					combatMessage(buf, messageColorFromVictim(defender));
-				}
-                zap(oldLoc, newLoc, BOLT_BLINKING, max(1, netEnchant(theItem) + FLOAT_FUDGE), false);
-                if (!(defender->bookkeepingFlags & MONST_IS_DYING)
-                    && distanceBetween(oldLoc[0], oldLoc[1], defender->xLoc, defender->yLoc) > 0
-                    && distanceBetween(oldLoc[0], oldLoc[1], defender->xLoc, defender->yLoc) < weaponForceDistance(netEnchant(theItem))) {
-                    
-                    if (pmap[defender->xLoc + newLoc[0] - oldLoc[0]][defender->yLoc + newLoc[1] - oldLoc[1]].flags & (HAS_MONSTER | HAS_PLAYER)) {
-                        monsterName(buf2, monsterAtLoc(defender->xLoc + newLoc[0] - oldLoc[0], defender->yLoc + newLoc[1] - oldLoc[1]), true);
-                    } else {
-                        strcpy(buf2, tileCatalog[pmap[defender->xLoc + newLoc[0] - oldLoc[0]][defender->yLoc + newLoc[1] - oldLoc[1]].layers[highestPriorityLayer(defender->xLoc + newLoc[0] - oldLoc[0], defender->yLoc + newLoc[1] - oldLoc[1], true)]].description);
-                    }
-                    
-                    if (!(defender->info.flags & MONST_IMMUNE_TO_WEAPONS)
-                        && inflictDamage(defender, distanceBetween(oldLoc[0], oldLoc[1], defender->xLoc, defender->yLoc), &white)) {
-                        
-                        if (canDirectlySeeMonster(defender)) {
-                            sprintf(buf, "%s %s on impact with %s",
-                                    monstName,
-                                    (defender->info.flags & MONST_INANIMATE) ? "is destroyed" : "dies",
-                                    buf2);
-                            buf[DCOLS] = '\0';
-                            combatMessage(buf, messageColorFromVictim(defender));
-                        }
-                    } else {
-                        moralAttack(&player, defender);
-                        if (canDirectlySeeMonster(defender)) {
-                            sprintf(buf, "%s slams against %s",
-                                    monstName,
-                                    buf2);
-                            buf[DCOLS] = '\0';
-                            combatMessage(buf, messageColorFromVictim(defender));
-                        }
-                    }
-                }
+                forceWeaponHit(defender, theItem);
 				break;
 			case W_MERCY:
 				heal(defender, 50);
