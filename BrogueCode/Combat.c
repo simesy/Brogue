@@ -152,7 +152,7 @@ void monsterShoots(creature *attacker, short targetLoc[2], uchar projChar, color
 //				} else {
 //					numCells = reflectBolt(-1, -1, listOfCoordinates, i, false); // otherwise reflect randomly
 //				}
-//				
+//
 //				monsterName(monstName, monst, true);
 //				sprintf(buf, "%s deflect%s the arrow", monstName, (monst == &player ? "" : "s"));
 //				combatMessage(buf, 0);
@@ -229,7 +229,8 @@ void shootWeb(creature *breather, short targetLoc[2], short kindOfWeb) {
 }
 
 void addMonsterToContiguousMonsterGrid(short x, short y, creature *monst, char grid[DCOLS][DROWS]) {
-	short dir, newX, newY;
+	short newX, newY;
+    enum directions dir;
 	creature *tempMonst;
 	
 	grid[x][y] = true;
@@ -261,14 +262,14 @@ void splitMonster(creature *monst, short x, short y) {
 	zeroOutGrid(monsterGrid);
 	zeroOutGrid(eligibleGrid);
 	eligibleLocationCount = 0;
-	
-	// Find the contiguous group of monsters.
-	addMonsterToContiguousMonsterGrid(monst->xLoc, monst->yLoc, monst, monsterGrid);
-	
+    
 	// Add the (x, y) location to the contiguous group, if any.
 	if (x > 0 && y > 0) {
 		monsterGrid[x][y] = true;
 	}
+	
+	// Find the contiguous group of monsters.
+	addMonsterToContiguousMonsterGrid(monst->xLoc, monst->yLoc, monst, monsterGrid);
 	
 	// Find the eligible edges around the group of monsters.
 	for (i=0; i<DCOLS; i++) {
@@ -290,6 +291,12 @@ void splitMonster(creature *monst, short x, short y) {
 			}
 		}
 	}
+//    DEBUG {
+//        hiliteCharGrid(eligibleGrid, &green, 75);
+//        hiliteCharGrid(monsterGrid, &blue, 75);
+//        temporaryMessage("Jelly spawn possibilities (green = eligible, blue = monster):", true);
+//        displayLevel();
+//    }
 	
 	// Pick a random location on the eligibleGrid and add the clone there.
 	if (eligibleLocationCount) {

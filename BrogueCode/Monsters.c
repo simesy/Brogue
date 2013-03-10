@@ -405,7 +405,7 @@ creature *cloneMonster(creature *monst, boolean announce, boolean placeClone) {
 	newMonst->carriedMonster = parentMonst;
 	newMonst->ticksUntilTurn = 101;
     if (!(monst->creatureState == MONSTER_ALLY)) {
-        newMonst->bookkeepingFlags &= MONST_TELEPATHICALLY_REVEALED;
+        newMonst->bookkeepingFlags &= ~MONST_TELEPATHICALLY_REVEALED;
     }
 	if (monst->leader) {
 		newMonst->leader = monst->leader;
