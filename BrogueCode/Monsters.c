@@ -2158,6 +2158,7 @@ boolean monstUseMagic(creature *monst) {
 				if ((monst->info.abilityFlags & MA_ATTACKS_FROM_DISTANCE)
                     && !(target->info.flags & MONST_IMMUNE_TO_WEAPONS)
                     && !target->status[STATUS_ENTRANCED]
+                    && (!cellHasTerrainFlag(target->xLoc, target->yLoc, T_OBSTRUCTS_PASSABILITY) || (target->info.flags & MONST_ATTACKABLE_THRU_WALLS))
 					&& distanceBetween(monst->xLoc, monst->yLoc, targetLoc[0], targetLoc[1]) < 11
                     && (alwaysUse || !monst->status[STATUS_DISCORDANT] || rand_percent(35))) {
                     

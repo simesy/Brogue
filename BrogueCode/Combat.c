@@ -143,10 +143,6 @@ void monsterShoots(creature *attacker, short targetLoc[2], uchar projChar, color
 		x = listOfCoordinates[i][0];
 		y = listOfCoordinates[i][1];
 		
-		if (cellHasTerrainFlag(x, y, (T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_VISION))) {
-			break;
-		}
-		
 		if (pmap[x][y].flags & (HAS_MONSTER | HAS_PLAYER)) {
 			monst = monsterAtLoc(x, y);
 			
@@ -163,10 +159,16 @@ void monsterShoots(creature *attacker, short targetLoc[2], uchar projChar, color
 //				continue;
 //			}
 			
-            if (!(monst->bookkeepingFlags & MONST_SUBMERGED)) {
+            if (!(monst->bookkeepingFlags & MONST_SUBMERGED)
+                && (!cellHasTerrainFlag(x, y, T_OBSTRUCTS_PASSABILITY) || (monst->info.flags & MONST_ATTACKABLE_THRU_WALLS))) {
+                
                 attack(attacker, monst, false);
                 break;
             }
+		}
+		
+		if (cellHasTerrainFlag(x, y, (T_OBSTRUCTS_PASSABILITY | T_OBSTRUCTS_VISION))) {
+			break;
 		}
 		
 		if (playerCanSee(x, y)) {
