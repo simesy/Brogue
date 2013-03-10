@@ -374,7 +374,6 @@ enum tileType {
 	CRYSTAL_WALL,
 	PORTCULLIS_CLOSED,
 	PORTCULLIS_DORMANT,
-	ADD_WOODEN_BARRICADE,
 	WOODEN_BARRICADE,
 	PILOT_LIGHT_DORMANT,
 	PILOT_LIGHT,
@@ -525,6 +524,9 @@ enum tileType {
     DEEP_WATER_ALGAE_WELL,
     DEEP_WATER_ALGAE_1,
     DEEP_WATER_ALGAE_2,
+    
+	STATUE_INERT_DOORWAY,
+	STATUE_DORMANT_DOORWAY,
     
 	CHASM_WITH_HIDDEN_BRIDGE,
 	CHASM_WITH_HIDDEN_BRIDGE_ACTIVE,
@@ -1075,8 +1077,8 @@ boolean cellHasTerrainFlag(short x, short y, unsigned long flagMask);
 											|| pmap[x][y].layers[GAS] == (terrain)) ? true : false)
 
 #define cellIsPassableOrDoor(x, y)			(!cellHasTerrainFlag((x), (y), T_PATHING_BLOCKER) \
-											|| (cellHasTMFlag((x), (y), (TM_IS_SECRET | TM_PROMOTES_WITH_KEY)) \
-												&& cellHasTerrainFlag((x), (y), T_OBSTRUCTS_PASSABILITY))) // May not be perfect with hidden levers.
+											|| (cellHasTMFlag((x), (y), (TM_IS_SECRET | TM_PROMOTES_WITH_KEY | TM_CONNECTS_LEVEL)) \
+												&& cellHasTerrainFlag((x), (y), T_OBSTRUCTS_PASSABILITY)))
 
 #define coordinatesAreInMap(x, y)			((x) >= 0 && (x) < DCOLS	&& (y) >= 0 && (y) < DROWS)
 #define coordinatesAreInWindow(x, y)		((x) >= 0 && (x) < COLS		&& (y) >= 0 && (y) < ROWS)
@@ -1421,7 +1423,6 @@ enum dungeonFeatureTypes {
     DF_WALL_CRACK,
 	
 	// wooden barricade at entrance
-	DF_ADD_WOODEN_BARRICADE,
 	DF_WOODEN_BARRICADE_BURN,
 	
 	// wooden barricade around altar, dead grass all around
@@ -1664,6 +1665,7 @@ enum terrainMechanicalFlagCatalog {
     TM_VISUALLY_DISTINCT            = Fl(16),       // terrain will be color-adjusted if necessary so the character stands out from the background
     TM_BRIGHT_MEMORY                = Fl(17),       // no blue fade when this tile is out of sigh
     TM_EXPLOSIVE_PROMOTE            = Fl(18),       // when burned, will promote to promoteType instead of burningType if surrounded by tiles with T_IS_FIRE or TM_EXPLOSIVE_PROMOTE
+    TM_CONNECTS_LEVEL               = Fl(19),       // will be treated as passable for purposes of calculating level connectedness, irrespective of other aspects of this terrain layer
 };
 
 enum statusEffects {

@@ -581,7 +581,8 @@ void expandMachineInterior(char interior[DCOLS][DROWS], short minimumInteriorNei
         madeChange = false;
         for(i=1; i<DCOLS-1; i++) {
             for(j=1; j < DROWS-1; j++) {
-                if (cellHasTerrainFlag(i, j, T_PATHING_BLOCKER)) {
+                if (cellHasTerrainFlag(i, j, T_PATHING_BLOCKER)
+                    && pmap[i][j].machineNumber == 0) {
                     
                     // Count up the number of interior open neighbors out of eight:
                     for (nbcount = dir = 0; dir < 8; dir++) {
@@ -2362,7 +2363,7 @@ void lakeFloodFill(short x, short y, short **floodMap, short **grid, short **lak
         newY = y + nbDirs[dir][1];
         if (coordinatesAreInMap(newX, newY)
             && !floodMap[newX][newY]
-            && !cellHasTerrainFlag(newX, newY, T_PATHING_BLOCKER)
+            && (!cellHasTerrainFlag(newX, newY, T_PATHING_BLOCKER) || cellHasTMFlag(newX, newY, TM_CONNECTS_LEVEL))
             && !lakeMap[newX][newY]
             && (!coordinatesAreInMap(newX+dungeonToGridX, newY+dungeonToGridY) || !grid[newX+dungeonToGridX][newY+dungeonToGridY])) {
             
