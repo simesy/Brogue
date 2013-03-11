@@ -2792,6 +2792,8 @@ void monstersTurn(creature *monst) {
 				}
 				if (monst->info.flags & MONST_FLIES) {
 					monst->status[STATUS_LEVITATING] = monst->maxStatus[STATUS_LEVITATING] = 1000; // won't decrease
+                    monst->info.flags &= ~(MONST_RESTRICTED_TO_LIQUID | MONST_SUBMERGES);
+                    monst->bookkeepingFlags &= ~(MONST_SUBMERGED);
 				}
 				if (monst->info.flags & MONST_IMMUNE_TO_FIRE) {
 					monst->status[STATUS_IMMUNE_TO_FIRE] = monst->maxStatus[STATUS_IMMUNE_TO_FIRE] = 1000; // won't decrease
