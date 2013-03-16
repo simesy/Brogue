@@ -2592,6 +2592,7 @@ boolean buildABridge() {
 					 k < DCOLS // Iterate across the prospective length of the bridge.
 					 && !pmap[k][j].machineNumber // No bridges in machines.
 					 && cellHasTerrainFlag(k, j, T_CAN_BE_BRIDGED)	// Candidate tile must be chasm.
+                     && !cellHasTMFlag(k, j, TM_IS_SECRET) // Can't bridge over secret trapdoors.
 					 && !cellHasTerrainFlag(k, j, T_OBSTRUCTS_PASSABILITY)	// Candidate tile cannot be a wall.
 					 && cellHasTerrainFlag(k, j-1, (T_CAN_BE_BRIDGED | T_OBSTRUCTS_PASSABILITY))	// Only chasms or walls are permitted next to the length of the bridge.
 					 && cellHasTerrainFlag(k, j+1, (T_CAN_BE_BRIDGED | T_OBSTRUCTS_PASSABILITY));
@@ -2623,6 +2624,7 @@ boolean buildABridge() {
 					 k < DROWS
 					 && !pmap[i][k].machineNumber
 					 && cellHasTerrainFlag(i, k, T_CAN_BE_BRIDGED)
+                     && !cellHasTMFlag(i, k, TM_IS_SECRET)
 					 && !cellHasTerrainFlag(i, k, T_OBSTRUCTS_PASSABILITY)
 					 && cellHasTerrainFlag(i-1, k, (T_CAN_BE_BRIDGED | T_OBSTRUCTS_PASSABILITY))
 					 && cellHasTerrainFlag(i+1, k, (T_CAN_BE_BRIDGED | T_OBSTRUCTS_PASSABILITY));
