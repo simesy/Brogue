@@ -1063,7 +1063,11 @@ boolean abortAttackAgainstAcidicTarget(creature *hitList[8]) {
         for (i=0; i<8; i++) {
             if (hitList[i]
                 && (hitList[i]->info.flags & MONST_DEFEND_DEGRADE_WEAPON)
-                && canSeeMonster(hitList[i])) {
+                && canSeeMonster(hitList[i])
+                && (!(rogue.weapon->flags & ITEM_RUNIC)
+                    || !(rogue.weapon->flags & ITEM_RUNIC_IDENTIFIED)
+                    || rogue.weapon->enchant2 != W_SLAYING
+                    || rogue.weapon->vorpalEnemy != hitList[i]->info.monsterID)) {
                 
                 monsterName(monstName, hitList[i], true);
                 itemName(rogue.weapon, weaponName, false, false, NULL);
