@@ -1791,7 +1791,7 @@ enum monsterAbilityFlags {
 	MA_DF_ON_DEATH					= Fl(20),	// monster spawns its DF when it dies
 	MA_CLONE_SELF_ON_DEFEND			= Fl(21),	// monster splits in two when struck
 	MA_KAMIKAZE						= Fl(22),	// monster dies instead of attacking
-	MA_TRANSFERENCE					= Fl(23),	// monster recovers 90% of the damage that it inflicts as health
+	MA_TRANSFERENCE					= Fl(23),	// monster recovers 40 or 90% of the damage that it inflicts as health
 	MA_CAUSES_WEAKNESS				= Fl(24),	// monster attacks cause weakness status in target
 	
 	MAGIC_ATTACK					= (MA_CAST_HEAL | MA_CAST_HASTE | MA_CAST_PROTECTION | MA_CAST_NEGATION | MA_CAST_SPARK | MA_CAST_FIRE | MA_CAST_SUMMON

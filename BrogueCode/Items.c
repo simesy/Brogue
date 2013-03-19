@@ -3233,7 +3233,7 @@ boolean polymorph(creature *monst) {
 	} while (monst->info.flags & (MONST_INANIMATE | MONST_NO_POLYMORPH)); // Can't turn something into an inanimate object or lich/phoenix.
 	
     monst->info.turnsBetweenRegen *= 1000;
-	monst->currentHP = max(1, max(healthFraction * monst->info.maxHP, monst->info.maxHP - previousDamageTaken));
+	monst->currentHP = max(1, max(healthFraction * monst->info.maxHP + FLOAT_FUDGE, monst->info.maxHP - previousDamageTaken));
 	
 	monst->movementSpeed = monst->info.movementSpeed;
 	monst->attackSpeed = monst->info.attackSpeed;
