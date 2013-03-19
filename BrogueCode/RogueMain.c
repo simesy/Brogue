@@ -576,6 +576,10 @@ void startLevel(short oldLevelNumber, short stairDirection) {
     }
     
     synchronizePlayerTimeState();
+    
+    rogue.updatedSafetyMapThisTurn			= false;
+    rogue.updatedAllySafetyMapThisTurn		= false;
+    rogue.updatedMapToSafeTerrainThisTurn	= false;
 	
 	rogue.cursorLoc[0] = -1;
 	rogue.cursorLoc[1] = -1;
