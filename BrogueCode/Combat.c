@@ -684,7 +684,7 @@ void magicWeaponHit(creature *defender, item *theItem, boolean backstabbed) {
 	} else {
 		chance = runicWeaponChance(theItem, false, 0);
 		if (backstabbed && chance < 100) {
-			chance *= 2;
+			chance = min(chance * 2, (chance + 100) / 2);
 		}
 	}
 	if (!(defender->info.flags & MONST_INANIMATE) && rand_percent(chance)) {
