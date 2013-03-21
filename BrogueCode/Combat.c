@@ -309,6 +309,12 @@ void splitMonster(creature *monst, short x, short y) {
 					monsterName(monstName, monst, true);
 					monst->currentHP = (monst->currentHP + 1) / 2;
 					clone = cloneMonster(monst, false, false);
+                    
+                    // Split monsters don't inherit the learnings of their parents.
+                    // Sorry, but self-healing jelly armies are too much.
+                    clone->info.flags           &= monsterCatalog[clone->info.monsterID].flags;
+                    clone->info.abilityFlags    &= monsterCatalog[clone->info.monsterID].abilityFlags;
+                    
 					clone->xLoc = i;
 					clone->yLoc = j;
 					pmap[i][j].flags |= HAS_MONSTER;
