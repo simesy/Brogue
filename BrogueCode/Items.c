@@ -3842,7 +3842,9 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 					combatMessage(buf, messageColorFromVictim(monst));
 				}
 				
-				moralAttack(shootingMonst, monst);
+                if (shootingMonst != &player || !alreadyReflected) {
+                    moralAttack(shootingMonst, monst);
+                }
 			}
 		}
 		
@@ -4112,7 +4114,9 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 					}
 					exposeCreatureToFire(monst);
 					
-					moralAttack(shootingMonst, monst);
+                    if (shootingMonst != &player || !alreadyReflected) {
+                        moralAttack(shootingMonst, monst);
+                    }
 				}
 				//refreshSideBar(-1, -1, false);
 			}
