@@ -1719,7 +1719,7 @@ const monsterWords monsterText[NUMBER_MONSTER_KINDS] = {
 
 const mutation mutationCatalog[NUMBER_MUTATORS] = {
     //Title         textColor       healthFactor    moveSpdMult attackSpdMult   defMult damMult DF% DFtype  monstFlags  abilityFlags    forbiddenFlags      forbiddenAbilities
-    {"explosive",   &orange,        50,             100,        100,            50,     100,    0,  DF_MUTATION_EXPLOSION, 0, MA_DF_ON_DEATH, 0,            0,
+    {"explosive",   &orange,        50,             100,        100,            50,     100,    0,  DF_MUTATION_EXPLOSION, 0, MA_DF_ON_DEATH, MONST_SUBMERGES, 0,
         "A rare mutation will cause $HIMHER to explode violently when $HESHE dies."},
     {"infested",    &lichenColor,   50,             100,        100,            50,     100,    0,  DF_MUTATION_LICHEN, 0, MA_DF_ON_DEATH, 0,               0,
         "$HESHE has been infested by deadly lichen spores; poisonous fungus will spread from $HISHER corpse when $HESHE dies."},
