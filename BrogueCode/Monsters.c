@@ -2028,23 +2028,11 @@ boolean monsterBlinkToSafety(creature *monst) {
 	return monsterBlinkToPreferenceMap(monst, blinkSafetyMap, false);
 }
 
-// returns whether the monster did something (and therefore ended its turn)
-boolean monstUseMagic(creature *monst) {
-	short originLoc[2] = {monst->xLoc, monst->yLoc};
-	short targetLoc[2];
-	short weakestAllyHealthFraction = 100;
-	creature *target, *weakestAlly;
-	char monstName[DCOLS];
-	char buf[DCOLS];
+boolean monsterSummons(creature *monst, boolean alwaysUse) {
+	creature *target;
 	short minionCount = 0;
-	boolean abortHaste, alwaysUse;
-    short numCells;
-	short listOfCoordinates[MAX_BOLT_LENGTH][2];
     
-    alwaysUse = (monst->info.flags & MONST_ALWAYS_USE_ABILITY) ? true : false;
-	
-	// abilities that have no particular target:
-	if (monst->info.abilityFlags & (MA_CAST_SUMMON)) {
+    if (monst->info.abilityFlags & (MA_CAST_SUMMON)) {
         // Count existing minions.
 		for (target = monsters->nextCreature; target != NULL; target = target->nextCreature) {
             if (monst->creatureState == MONSTER_ALLY) {
@@ -2079,12 +2067,33 @@ boolean monstUseMagic(creature *monst) {
                 summonMinions(monst);
             }
         } else if ((monst->creatureState != MONSTER_ALLY || minionCount < 5)
-			&& !rand_range(0, minionCount * minionCount * 3 + 1)) {
+                   && !rand_range(0, minionCount * minionCount * 3 + 1)) {
             
 			summonMinions(monst);
 			return true;
 		}
 	}
+    return false;
+}
+
+// returns whether the monster did something (and therefore ended its turn)
+boolean monstUseMagic(creature *monst) {
+	short originLoc[2] = {monst->xLoc, monst->yLoc};
+	short targetLoc[2];
+	short weakestAllyHealthFraction = 100;
+	creature *target, *weakestAlly;
+	char monstName[DCOLS];
+	char buf[DCOLS];
+	boolean abortHaste, alwaysUse;
+    short numCells;
+	short listOfCoordinates[MAX_BOLT_LENGTH][2];
+    
+    alwaysUse = (monst->info.flags & MONST_ALWAYS_USE_ABILITY) ? true : false;
+    
+	// abilities that have no particular target:
+    if (monsterSummons(monst, alwaysUse)) {
+        return true;
+    }
 	
 	// Strong abilities that might target the caster's enemies:
 	if (!monst->status[STATUS_CONFUSED] && monst->info.abilityFlags
@@ -2664,6 +2673,9 @@ void moveAlly(creature *monst) {
 			&& monsterBlinkToSafety(monst)) {
 			return;
 		}
+        if (monsterSummons(monst, (monst->info.flags & MONST_ALWAYS_USE_ABILITY))) {
+            return;
+        }
 		if (!rogue.updatedAllySafetyMapThisTurn) {
 			updateAllySafetyMap();
 		}
@@ -2791,65 +2803,72 @@ void moveAlly(creature *monst) {
 	}
 }
 
+// Returns whether to abort the turn.
+boolean updateMonsterCorpseAbsorption(creature *monst) {
+	char buf[COLS], buf2[COLS];
+    
+    if (monst->xLoc == monst->targetCorpseLoc[0]
+        && monst->yLoc == monst->targetCorpseLoc[1]
+        && (monst->bookkeepingFlags & MONST_ABSORBING)) {
+        if (!--monst->corpseAbsorptionCounter) {
+            monst->targetCorpseLoc[0] = monst->targetCorpseLoc[1] = 0;
+            if (monst->absorbBehavior) {
+                monst->info.flags |= monst->absorptionFlags;
+            } else {
+                monst->info.abilityFlags |= monst->absorptionFlags;
+            }
+            monst->absorbXPXP -= XPXP_NEEDED_FOR_ABSORB;
+            monst->bookkeepingFlags &= ~(MONST_ABSORBING | MONST_ALLY_ANNOUNCED_HUNGER);
+            
+            if (monst->info.flags & MONST_FIERY) {
+                monst->status[STATUS_BURNING] = monst->maxStatus[STATUS_BURNING] = 1000; // won't decrease
+            }
+            if (monst->info.flags & MONST_FLIES) {
+                monst->status[STATUS_LEVITATING] = monst->maxStatus[STATUS_LEVITATING] = 1000; // won't decrease
+                monst->info.flags &= ~(MONST_RESTRICTED_TO_LIQUID | MONST_SUBMERGES);
+                monst->bookkeepingFlags &= ~(MONST_SUBMERGED);
+            }
+            if (monst->info.flags & MONST_IMMUNE_TO_FIRE) {
+                monst->status[STATUS_IMMUNE_TO_FIRE] = monst->maxStatus[STATUS_IMMUNE_TO_FIRE] = 1000; // won't decrease
+            }
+            if (monst->info.flags & MONST_INVISIBLE) {
+                monst->status[STATUS_INVISIBLE] = monst->maxStatus[STATUS_INVISIBLE] = 1000; // won't decrease
+            }
+            if (canSeeMonster(monst)) {
+                monsterName(buf2, monst, true);
+                sprintf(buf, "%s finished %s the %s.", buf2, monsterText[monst->info.monsterID].absorbing, monst->targetCorpseName);
+                messageWithColor(buf, &goodMessageColor, false);
+                sprintf(buf, "%s now %s!", buf2,
+                        (monst->absorbBehavior ? monsterBehaviorFlagDescriptions[unflag(monst->absorptionFlags)] :
+                         monsterAbilityFlagDescriptions[unflag(monst->absorptionFlags)]));
+                resolvePronounEscapes(buf, monst);
+                messageWithColor(buf, &goodMessageColor, false);
+            }
+            monst->absorptionFlags = 0;
+        }
+        monst->ticksUntilTurn = 100;
+        return true;
+    } else if (!--monst->corpseAbsorptionCounter) {
+        monst->targetCorpseLoc[0] = monst->targetCorpseLoc[1] = 0; // lost its chance
+        monst->bookkeepingFlags &= ~MONST_ABSORBING;
+    } else if (monst->bookkeepingFlags & MONST_ABSORBING) {
+        monst->bookkeepingFlags &= ~MONST_ABSORBING; // absorbing but not on the corpse
+        if (monst->corpseAbsorptionCounter <= 15) {
+            monst->targetCorpseLoc[0] = monst->targetCorpseLoc[1] = 0; // lost its chance
+        }
+    }
+    return false;
+}
+
 void monstersTurn(creature *monst) {
 	short x, y, playerLoc[2], targetLoc[2], dir, shortestDistance;
 	boolean alreadyAtBestScent;
-	char buf[COLS], buf2[COLS];
 	creature *ally, *target, *closestMonster;
 	
 	monst->turnsSpentStationary++;
 	
-	if (monst->corpseAbsorptionCounter) {
-		if (monst->xLoc == monst->targetCorpseLoc[0]
-			&& monst->yLoc == monst->targetCorpseLoc[1]
-			&& (monst->bookkeepingFlags & MONST_ABSORBING)) {
-			if (!--monst->corpseAbsorptionCounter) {
-				monst->targetCorpseLoc[0] = monst->targetCorpseLoc[1] = 0;
-				if (monst->absorbBehavior) {
-					monst->info.flags |= monst->absorptionFlags;
-				} else {
-					monst->info.abilityFlags |= monst->absorptionFlags;
-				}
-				monst->absorbXPXP -= XPXP_NEEDED_FOR_ABSORB;
-				monst->bookkeepingFlags &= ~(MONST_ABSORBING | MONST_ALLY_ANNOUNCED_HUNGER);
-				
-				if (monst->info.flags & MONST_FIERY) {
-					monst->status[STATUS_BURNING] = monst->maxStatus[STATUS_BURNING] = 1000; // won't decrease
-				}
-				if (monst->info.flags & MONST_FLIES) {
-					monst->status[STATUS_LEVITATING] = monst->maxStatus[STATUS_LEVITATING] = 1000; // won't decrease
-                    monst->info.flags &= ~(MONST_RESTRICTED_TO_LIQUID | MONST_SUBMERGES);
-                    monst->bookkeepingFlags &= ~(MONST_SUBMERGED);
-				}
-				if (monst->info.flags & MONST_IMMUNE_TO_FIRE) {
-					monst->status[STATUS_IMMUNE_TO_FIRE] = monst->maxStatus[STATUS_IMMUNE_TO_FIRE] = 1000; // won't decrease
-				}
-				if (monst->info.flags & MONST_INVISIBLE) {
-					monst->status[STATUS_INVISIBLE] = monst->maxStatus[STATUS_INVISIBLE] = 1000; // won't decrease
-				}
-				if (canSeeMonster(monst)) {
-					monsterName(buf2, monst, true);
-					sprintf(buf, "%s finished %s the %s.", buf2, monsterText[monst->info.monsterID].absorbing, monst->targetCorpseName);
-					messageWithColor(buf, &goodMessageColor, false);
-					sprintf(buf, "%s now %s!", buf2,
-							(monst->absorbBehavior ? monsterBehaviorFlagDescriptions[unflag(monst->absorptionFlags)] :
-							 monsterAbilityFlagDescriptions[unflag(monst->absorptionFlags)]));
-					resolvePronounEscapes(buf, monst);
-					messageWithColor(buf, &goodMessageColor, false);
-				}
-				monst->absorptionFlags = 0;
-			}
-			monst->ticksUntilTurn = 100;
-			return;
-		} else if (!--monst->corpseAbsorptionCounter) {
-			monst->targetCorpseLoc[0] = monst->targetCorpseLoc[1] = 0; // lost its chance
-			monst->bookkeepingFlags &= ~MONST_ABSORBING;
-		} else if (monst->bookkeepingFlags & MONST_ABSORBING) {
-			monst->bookkeepingFlags &= ~MONST_ABSORBING; // absorbing but not on the corpse
-			if (monst->corpseAbsorptionCounter <= 15) {
-				monst->targetCorpseLoc[0] = monst->targetCorpseLoc[1] = 0; // lost its chance
-			}
-		}
+	if (monst->corpseAbsorptionCounter && updateMonsterCorpseAbsorption(monst)) {
+        return;
 	}
     
     if (monst->info.DFChance
@@ -3002,6 +3021,10 @@ void monstersTurn(creature *monst) {
 			&& monsterBlinkToSafety(monst)) {
 			return;
 		}
+        
+        if (monsterSummons(monst, (monst->info.flags & MONST_ALWAYS_USE_ABILITY))) {
+            return;
+        }
 		
 		if (pmap[x][y].flags & IN_FIELD_OF_VIEW) {
 			if (monst->safetyMap) {
