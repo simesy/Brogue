@@ -825,8 +825,7 @@ void applyInstantTileEffectsToCreature(creature *monst) {
             sprintf(buf2, "the lichen's grasping tendrils poison %s.", buf);
             messageWithColor(buf2, messageColorFromVictim(monst), false);
         }
-        monst->status[STATUS_POISONED] = max(monst->status[STATUS_POISONED], 10);
-        monst->maxStatus[STATUS_POISONED] = monst->info.maxHP;
+        addPoison(monst, 5);
     }
 	
 	// fire
@@ -3697,34 +3696,59 @@ void handleAllyHungerAlerts() {
     }
 }
 
-#define NUMBER_HEALTH_THRESHOLDS	4
+void flashCreatureAlert(creature *monst, char msg[200], color *foreColor, color *backColor) {
+    short x, y;
+    if (monst->yLoc > DROWS / 2) {
+        y = mapToWindowY(monst->yLoc - 2);
+    } else {
+        y = mapToWindowY(monst->yLoc + 2);
+    }
+    x = mapToWindowX(monst->xLoc - strLenWithoutEscapes(msg) / 2);
+    if (x > COLS - strLenWithoutEscapes(msg)) {
+        x = COLS - strLenWithoutEscapes(msg);
+    }
+    flashMessage(msg, x, y, (rogue.playbackMode ? 100 : 1000), foreColor, backColor);
+    rogue.disturbed = true;
+}
 
 void handleHealthAlerts() {
-	short i, x, y, currentPercent, thresholds[] = {5, 10, 25, 40};
+	short i, currentPercent,
+    thresholds[] = {5, 10, 25, 40},
+    pThresholds[] = {100, 90, 50};
 	char buf[DCOLS];
+    
+    const short healthThresholdsCount = 4,
+    poisonThresholdsCount = 3;
 	
 	currentPercent = player.currentHP * 100 / player.info.maxHP;
 	
 	if (currentPercent < rogue.previousHealthPercent && !rogue.gameHasEnded) {
-		for (i=0; i < NUMBER_HEALTH_THRESHOLDS; i++) {
+		for (i=0; i < healthThresholdsCount; i++) {
 			if (currentPercent < thresholds[i] && rogue.previousHealthPercent >= thresholds[i]) {
-				if (player.yLoc > DROWS / 2) {
-					y = mapToWindowY(player.yLoc - 2);
-				} else {
-					y = mapToWindowY(player.yLoc + 2);
-				}
-				sprintf(buf, " <%i%% health ", thresholds[i]);
-				x = mapToWindowX(player.xLoc - strLenWithoutEscapes(buf) / 2);
-				if (x > COLS - strLenWithoutEscapes(buf)) {
-					x = COLS - strLenWithoutEscapes(buf);
-				}
-				flashMessage(buf, x, y, (rogue.playbackMode ? 100 : 1000), &badMessageColor, &darkRed);
-                rogue.disturbed = true;
+                sprintf(buf, " <%i%% health ", thresholds[i]);
+                flashCreatureAlert(&player, buf, &badMessageColor, &darkRed);
 				break;
 			}
 		}
 	}
 	rogue.previousHealthPercent = currentPercent;
+	
+	currentPercent = player.status[STATUS_POISONED] * 100 / player.currentHP;
+	
+	if (currentPercent > rogue.previousPoisonPercent && !rogue.gameHasEnded) {
+		for (i=0; i < poisonThresholdsCount; i++) {
+			if (currentPercent > pThresholds[i] && rogue.previousPoisonPercent <= pThresholds[i]) {
+                if (currentPercent < 100) {
+                sprintf(buf, " >%i%% poisoned ", pThresholds[i]);
+                } else {
+                    strcpy(buf, " Fatally poisoned ");
+                }
+                flashCreatureAlert(&player, buf, &yellow, &darkGreen);
+				break;
+			}
+		}
+	}
+	rogue.previousPoisonPercent = currentPercent;
 }
 
 // Call this periodically (when haste/slow wears off and when moving between depths)

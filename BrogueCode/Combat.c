@@ -511,14 +511,7 @@ void specialHit(creature *attacker, creature *defender, short damage) {
         && damage > 0
         && !(defender->info.flags & MONST_INANIMATE)) {
         
-        if (defender == &player && !player.status[STATUS_POISONED]) {
-            combatMessage("scalding poison fills your veins", &badMessageColor);
-        }
-        if (!defender->status[STATUS_POISONED]) {
-            defender->maxStatus[STATUS_POISONED] = 0;
-        }
-        defender->status[STATUS_POISONED] += damage;
-        defender->maxStatus[STATUS_POISONED] = defender->info.maxHP;
+        addPoison(defender, damage);
 	}
 	if ((attacker->info.abilityFlags & MA_CAUSES_WEAKNESS)
         && damage > 0
@@ -1475,6 +1468,23 @@ boolean inflictDamage(creature *defender, short damage, const color *flashColor,
 	refreshSideBar(-1, -1, false);
 	return killed;
 }
+
+boolean addPoison(creature *monst, short damage) {
+    extern const color poisonColor;
+    if (monst == &player && !player.status[STATUS_POISONED]) {
+        combatMessage("scalding poison fills your veins", &badMessageColor);
+    }
+    if (!monst->status[STATUS_POISONED]) {
+        monst->maxStatus[STATUS_POISONED] = 0;
+    }
+    monst->status[STATUS_POISONED] += damage;
+    monst->maxStatus[STATUS_POISONED] = monst->info.maxHP;
+    
+    if (canSeeMonster(monst)) {
+        flashMonster(monst, &poisonColor, 100);
+    }
+}
+
 
 // Removes the decedent from the screen and from the monster chain; inserts it into the graveyard chain; does NOT free the memory.
 // Use "administrativeDeath" if the monster is being deleted for administrative purposes, as opposed to dying as a result of physical actions.

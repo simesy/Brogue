@@ -355,6 +355,7 @@ void initializeRogue(unsigned long seed) {
 	player.status[STATUS_NUTRITION] = player.maxStatus[STATUS_NUTRITION] = STOMACH_SIZE;
 	player.currentHP = player.info.maxHP;
 	rogue.previousHealthPercent = 100;
+    rogue.previousPoisonPercent = 0;
 	player.creatureState = MONSTER_ALLY;
 	player.ticksUntilTurn = 0;
     player.mutationIndex = -1;

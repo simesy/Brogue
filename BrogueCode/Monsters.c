@@ -1508,7 +1508,10 @@ void decrementMonsterStatus(creature *monst) {
 	
 	monst->bookkeepingFlags &= ~MONST_JUST_SUMMONED;
 	
-	if (monst->currentHP < monst->info.maxHP && monst->info.turnsBetweenRegen > 0 && !monst->status[STATUS_POISONED]) {
+	if (monst->currentHP < monst->info.maxHP
+        && monst->info.turnsBetweenRegen > 0
+        && !monst->status[STATUS_POISONED]) {
+        
 		if ((monst->turnsUntilRegen -= 1000) <= 0) {
 			monst->currentHP++;
 			monst->turnsUntilRegen += monst->info.turnsBetweenRegen;

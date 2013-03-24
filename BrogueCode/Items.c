@@ -4049,9 +4049,7 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 		case BOLT_POISON:
 			if (monst && !(monst->info.flags & MONST_INANIMATE)) {
 				poisonDamage = staffPoison(boltLevel);
-				monst->status[STATUS_POISONED] += poisonDamage;
-				monst->maxStatus[STATUS_POISONED] = monst->info.maxHP;
-				//refreshSideBar(-1, -1, false);
+                addPoison(monst, poisonDamage);
 				if (canSeeMonster(monst)) {
 					flashMonster(monst, boltColors[BOLT_POISON], 100);
 					autoID = true;

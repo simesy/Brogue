@@ -35,7 +35,7 @@
 
 // debug macros -- define DEBUGGING as 1 to enable debugging.
 
-#define DEBUGGING						0
+#define DEBUGGING						1
 
 #define DEBUG							if (DEBUGGING)
 #define MONSTERS_ENABLED				(!DEBUGGING || 1) // Quest room monsters can be generated regardless.
@@ -2018,8 +2018,9 @@ typedef struct playerCharacter {
     unsigned long absoluteTurnNumber;   // number of turns since the beginning of time. Always increments.
 	signed long milliseconds;			// milliseconds since launch, to decide whether to engage cautious mode
 	short xpxpThisTurn;					// how many squares the player explored this turn
-	short previousHealthPercent;		// remembers what your health proportion was at the start of the turn,
-										// to display percentage alerts
+    
+	short previousHealthPercent;        // remembers what your health proportion was at the start of the turn,
+    short previousPoisonPercent;        // and your poison proportion, to display percentage alerts for each
 	
 	short upLoc[2];						// upstairs location this level
 	short downLoc[2];					// downstairs location this level
@@ -2633,6 +2634,7 @@ extern "C" {
     boolean attack(creature *attacker, creature *defender, boolean lungeAttack);
 	void inflictLethalDamage(creature *defender);
 	boolean inflictDamage(creature *defender, short damage, const color *flashColor, boolean ignoresProtectionShield);
+    boolean addPoison(creature *monst, short damage);
 	void killCreature(creature *decedent, boolean administrativeDeath);
 	void addScentToCell(short x, short y, short distance);
 	void populateItems(short upstairsX, short upstairsY);
