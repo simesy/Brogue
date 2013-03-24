@@ -1547,7 +1547,7 @@ void decrementMonsterStatus(creature *monst) {
                         monst->status[i]--;
                     }
                     damage = rand_range(1, 3);
-                    if (!(monst->status[STATUS_IMMUNE_TO_FIRE]) && inflictDamage(monst, damage, &orange)) {
+                    if (!(monst->status[STATUS_IMMUNE_TO_FIRE]) && inflictDamage(monst, damage, &orange, true)) {
                         if (canSeeMonster(monst)) {
                             monsterName(buf, monst, true);
                             sprintf(buf2, "%s burns %s.",
@@ -1579,7 +1579,7 @@ void decrementMonsterStatus(creature *monst) {
             case STATUS_POISONED:
                 if (monst->status[i]) {
                     monst->status[i]--;
-                    if (inflictDamage(monst, 1, &green)) {
+                    if (inflictDamage(monst, 1, &green, true)) {
                         if (canSeeMonster(monst)) {
                             monsterName(buf, monst, true);
                             sprintf(buf2, "%s dies of poison.", buf);

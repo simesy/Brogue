@@ -2632,7 +2632,7 @@ extern "C" {
 	void applyArmorRunicEffect(char returnString[DCOLS], creature *attacker, short *damage, boolean melee);
     boolean attack(creature *attacker, creature *defender, boolean lungeAttack);
 	void inflictLethalDamage(creature *defender);
-	boolean inflictDamage(creature *defender, short damage, const color *flashColor);
+	boolean inflictDamage(creature *defender, short damage, const color *flashColor, boolean ignoresProtectionShield);
 	void killCreature(creature *decedent, boolean administrativeDeath);
 	void addScentToCell(short x, short y, short distance);
 	void populateItems(short upstairsX, short upstairsY);

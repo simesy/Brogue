@@ -622,7 +622,7 @@ void forceWeaponHit(creature *defender, item *theItem) {
         forceDamage = distanceBetween(oldLoc[0], oldLoc[1], defender->xLoc, defender->yLoc);
         
         if (!(defender->info.flags & MONST_IMMUNE_TO_WEAPONS)
-            && inflictDamage(defender, forceDamage, &white)) {
+            && inflictDamage(defender, forceDamage, &white, false)) {
             
             if (canDirectlySeeMonster(defender)) {
                 knowFirstMonsterDied = true;
@@ -646,7 +646,7 @@ void forceWeaponHit(creature *defender, item *theItem) {
         if (otherMonster
             && !(defender->info.flags & MONST_IMMUNE_TO_WEAPONS)) {
             
-            if (inflictDamage(otherMonster, forceDamage, &white)) {
+            if (inflictDamage(otherMonster, forceDamage, &white, false)) {
                 if (canDirectlySeeMonster(otherMonster)) {
                     sprintf(buf, "%s %s%s when %s slams into $HIMHER",
                             buf2,
@@ -934,7 +934,7 @@ void applyArmorRunicEffect(char returnString[DCOLS], creature *attacker, short *
 					for (i=0; i<8; i++) {
 						if (hitList[i] && !(hitList[i]->bookkeepingFlags & MONST_IS_DYING)) {
 							monsterName(monstName, hitList[i], true);
-							if (inflictDamage(hitList[i], (*damage + count) / (count + 1), &blue)
+							if (inflictDamage(hitList[i], (*damage + count) / (count + 1), &blue, true)
 								&& canSeeMonster(hitList[i])) {
                                 
 								sprintf(buf, "%s %s", monstName, ((hitList[i]->info.flags & MONST_INANIMATE) ? "is destroyed" : "dies"));
@@ -965,7 +965,7 @@ void applyArmorRunicEffect(char returnString[DCOLS], creature *attacker, short *
 		case A_REPRISAL:
 			if (melee && !(attacker->info.flags & MONST_INANIMATE)) {
 				newDamage = max(1, armorReprisalPercent(enchant) * (*damage) / 100); // 5% reprisal per armor level
-				if (inflictDamage(attacker, newDamage, &blue)) {
+				if (inflictDamage(attacker, newDamage, &blue, true)) {
 					if (canSeeMonster(attacker)) {
 						sprintf(returnString, "your %s pulses and %s drops dead!", armorName, attackerName);
 						runicDiscovered = true;
@@ -1158,7 +1158,7 @@ boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
 			damage = 1;
 		}
 		
-		if (inflictDamage(defender, damage, &red)) { // if the attack killed the defender
+		if (inflictDamage(defender, damage, &red, false)) { // if the attack killed the defender
 			if (defenderWasAsleep || sneakAttack || defenderWasParalyzed || lungeAttack) {
 				sprintf(buf, "%s %s %s%s", attackerName,
 						((defender->info.flags & MONST_INANIMATE) ? "destroyed" : "dispatched"),
@@ -1405,13 +1405,12 @@ boolean anyoneWantABite(creature *decedent) {
 #define MIN_FLASH_STRENGTH	50
 
 void inflictLethalDamage(creature *defender) {
-    defender->status[STATUS_SHIELDED] = 0;
-    inflictDamage(defender, defender->currentHP, NULL);
+    inflictDamage(defender, defender->currentHP, NULL, true);
 }
 
 // returns true if this was a killing stroke; does NOT free the pointer, but DOES remove it from the monster chain
 // flashColor indicates the color that the damage will cause the creature to flash
-boolean inflictDamage(creature *defender, short damage, const color *flashColor) {
+boolean inflictDamage(creature *defender, short damage, const color *flashColor, boolean ignoresProtectionShield) {
 	boolean killed = false;
 	dungeonFeature theBlood;
 	
@@ -1419,7 +1418,9 @@ boolean inflictDamage(creature *defender, short damage, const color *flashColor)
 		return false;
 	}
 	
-	if (defender->status[STATUS_SHIELDED]) {
+	if (!ignoresProtectionShield
+        && defender->status[STATUS_SHIELDED]) {
+        
 		if (defender->status[STATUS_SHIELDED] > damage * 10) {
 			defender->status[STATUS_SHIELDED] -= damage * 10;
 			damage = 0;

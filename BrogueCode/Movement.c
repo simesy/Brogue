@@ -719,7 +719,7 @@ void applyInstantTileEffectsToCreature(creature *monst) {
                 sprintf(buf, "Your %s pulses and absorbs the damage.", buf2);
                 messageWithColor(buf, &goodMessageColor, false);
                 rogue.armor->flags |= ITEM_RUNIC_IDENTIFIED;
-            } else if (inflictDamage(&player, damage, &yellow)) {
+            } else if (inflictDamage(&player, damage, &yellow, false)) {
 				strcpy(buf2, tileCatalog[pmap[*x][*y].layers[layerWithFlag(*x, *y, T_CAUSES_EXPLOSIVE_DAMAGE)]].description);
 				sprintf(buf, "Killed by %s", buf2);
 				gameOver(buf, true);
@@ -730,7 +730,7 @@ void applyInstantTileEffectsToCreature(creature *monst) {
 				monst->creatureState = MONSTER_TRACKING_SCENT;
 			}
 			monsterName(buf, monst, true);
-			if (inflictDamage(monst, damage, &yellow)) {
+			if (inflictDamage(monst, damage, &yellow, false)) {
 				// if killed
 				sprintf(buf2, "%s dies in %s.", buf,
 						tileCatalog[pmap[*x][*y].layers[layerWithFlag(*x, *y, T_CAUSES_EXPLOSIVE_DAMAGE)]].description);
@@ -899,7 +899,7 @@ void applyGradualTileEffectsToCreature(creature *monst, short ticks) {
             } else {
                 rogue.disturbed = true;
                 messageWithColor(tileCatalog[pmap[x][y].layers[layer]].flavorText, &badMessageColor, false);
-                if (inflictDamage(&player, damage, tileCatalog[pmap[x][y].layers[layer]].backColor)) {
+                if (inflictDamage(&player, damage, tileCatalog[pmap[x][y].layers[layer]].backColor, true)) {
                     sprintf(buf, "Killed by %s", tileCatalog[pmap[x][y].layers[layer]].description);
                     gameOver(buf, true);
                     return;
@@ -909,7 +909,7 @@ void applyGradualTileEffectsToCreature(creature *monst, short ticks) {
 			if (monst->creatureState == MONSTER_SLEEPING) {
 				monst->creatureState = MONSTER_TRACKING_SCENT;
 			}
-			if (inflictDamage(monst, damage, tileCatalog[pmap[x][y].layers[layer]].backColor)) {
+			if (inflictDamage(monst, damage, tileCatalog[pmap[x][y].layers[layer]].backColor, true)) {
 				if (canSeeMonster(monst)) {
 					monsterName(buf, monst, true);
 					sprintf(buf2, "%s dies.", buf);
@@ -2798,7 +2798,7 @@ void monstersFall() {
             if (monst->info.flags & MONST_GETS_TURN_ON_ACTIVATION) {
                 // Guardians and mirrored totems never survive the fall. If they did, they might block the level below.
                 killCreature(monst, false);
-            } else if (!inflictDamage(monst, randClumpedRange(6, 12, 2), &red)) {
+            } else if (!inflictDamage(monst, randClumpedRange(6, 12, 2), &red, false)) {
 				demoteMonsterFromLeadership(monst);
 				
 				// remove from monster chain
@@ -3278,7 +3278,7 @@ void monsterEntersLevel(creature *monst, short n) {
     if (pit) {
         monsterName(monstName, monst, true);
         if (!monst->status[STATUS_LEVITATING]) {
-            if (inflictDamage(monst, randClumpedRange(6, 12, 2), &red)) {
+            if (inflictDamage(monst, randClumpedRange(6, 12, 2), &red, false)) {
                 if (canSeeMonster(monst)) {
                     sprintf(buf, "%s plummets from above and splatters against the ground!", monstName);
                     messageWithColor(buf, messageColorFromVictim(monst), false);
@@ -3662,7 +3662,7 @@ void playerFalls() {
         startLevel(rogue.depthLevel - 1, 0);
         damage = randClumpedRange(FALL_DAMAGE_MIN, FALL_DAMAGE_MAX, 2);
         messageWithColor("You are damaged by the fall.", &badMessageColor, false);
-        if (inflictDamage(&player, damage, &red)) {
+        if (inflictDamage(&player, damage, &red, false)) {
             gameOver("Killed by a fall", true);
         } else if (rogue.depthLevel > rogue.deepestLevel) {
             rogue.deepestLevel = rogue.depthLevel;
@@ -3816,7 +3816,7 @@ void playerTurnEnded() {
 		
 		if (player.status[STATUS_BURNING] > 0) {
 			damage = rand_range(1, 3);
-			if (!(player.status[STATUS_IMMUNE_TO_FIRE]) && inflictDamage(&player, damage, &orange)) {
+			if (!(player.status[STATUS_IMMUNE_TO_FIRE]) && inflictDamage(&player, damage, &orange, true)) {
 				gameOver("Burned to death", true);
 			}
 			if (!--player.status[STATUS_BURNING]) {
@@ -3827,7 +3827,7 @@ void playerTurnEnded() {
 		
 		if (player.status[STATUS_POISONED] > 0) {
 			player.status[STATUS_POISONED]--;
-			if (inflictDamage(&player, 1, &green)) {
+			if (inflictDamage(&player, 1, &green, true)) {
 				gameOver("Died from poison", true);
 			}
 		}

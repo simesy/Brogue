@@ -3113,7 +3113,7 @@ boolean tunnelize(short x, short y) {
                 // Kill turrets and sentinels if you tunnelize them.
                 monst = monsterAtLoc(x, y);
                 if (monst->info.flags & MONST_ATTACKABLE_THRU_WALLS) {
-                    inflictDamage(monst, monst->currentHP, NULL);
+                    inflictLethalDamage(monst);
                 }
             }
         }
@@ -3482,7 +3482,7 @@ void crystalize(short radius) {
 					if (pmap[i][j].flags & HAS_MONSTER) {
 						monst = monsterAtLoc(i, j);
 						if (monst->info.flags & MONST_ATTACKABLE_THRU_WALLS) {
-							inflictDamage(monst, monst->currentHP, NULL);
+                            inflictLethalDamage(monst);
 						} else {
 							freeCaptivesEmbeddedAt(i, j);
 						}
@@ -3808,7 +3808,7 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 			
 			autoID = true;
 			
-			if (inflictDamage(monst, staffDamage(boltLevel), &lightningColor)) {
+			if (inflictDamage(monst, staffDamage(boltLevel), &lightningColor, false)) {
 				// killed monster
 				if (player.currentHP <= 0) {
 					if (shootingMonst == &player) {
@@ -4077,7 +4077,7 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 								canSeeMonster(shootingMonst) ? "the" : "a");
 						combatMessage(buf, 0);
 					}
-				} else if (inflictDamage(monst, staffDamage(boltLevel), &orange)) {
+				} else if (inflictDamage(monst, staffDamage(boltLevel), &orange, false)) {
 					// killed creature
 					
 					if (player.currentHP <= 0) {
@@ -4963,7 +4963,7 @@ boolean hitMonsterWithProjectileWeapon(creature *thrower, creature *monst, item 
 			applyArmorRunicEffect(armorRunicString, thrower, &damage, false);
 		}
 		
-		if (inflictDamage(monst, damage, &red)) { // monster killed
+		if (inflictDamage(monst, damage, &red, false)) { // monster killed
 			sprintf(buf, "the %s %s %s.",
                     theItemName,
                     (monst->info.flags & MONST_INANIMATE) ? "destroyed" : "killed",
