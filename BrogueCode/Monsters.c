@@ -1395,7 +1395,7 @@ boolean awareOfTarget(creature *observer, creature *target) {
 }
 
 void updateMonsterState(creature *monst) {
-	short x, y, maximumInvisibilityDetectionRadius, shortestDistanceToEnemy;
+	short x, y, maximumInvisibilityDetectionRadius, closestFearedEnemy;
 	boolean awareOfPlayer, lostToInvisibility;
 	//char buf[DCOLS*3], monstName[DCOLS];
     creature *monst2;
@@ -1439,17 +1439,15 @@ void updateMonsterState(creature *monst) {
 		monst->creatureState = MONSTER_FLEEING;
 	}
     
-    if (monst->info.flags & MONST_MAINTAINS_DISTANCE) {
-        shortestDistanceToEnemy = DCOLS+DROWS;
+    closestFearedEnemy = DCOLS+DROWS;
         CYCLE_MONSTERS_AND_PLAYERS(monst2) {
-            if (monstersAreEnemies(monst, monst2)
-                && distanceBetween(x, y, monst2->xLoc, monst2->yLoc) < shortestDistanceToEnemy
+            if (monsterFleesFrom(monst, monst2)
+                && distanceBetween(x, y, monst2->xLoc, monst2->yLoc) < closestFearedEnemy
                 && traversiblePathBetween(monst2, x, y)
                 && openPathBetween(x, y, monst2->xLoc, monst2->yLoc)) {
                 
-                shortestDistanceToEnemy = distanceBetween(x, y, monst2->xLoc, monst2->yLoc);
+                closestFearedEnemy = distanceBetween(x, y, monst2->xLoc, monst2->yLoc);
             }
-        }
     }
 	
 	if ((monst->creatureState == MONSTER_WANDERING)
@@ -1476,14 +1474,12 @@ void updateMonsterState(creature *monst) {
 		monst->creatureState = MONSTER_WANDERING;
 		chooseNewWanderDestination(monst);
 	} else if (monst->creatureState == MONSTER_TRACKING_SCENT
-			   && (monst->info.flags & MONST_MAINTAINS_DISTANCE)
-			   && shortestDistanceToEnemy < 3) {
+			   && closestFearedEnemy < 3) {
 		monst->creatureState = MONSTER_FLEEING;
 	} else if (monst->creatureMode == MODE_NORMAL
 			   && monst->creatureState == MONSTER_FLEEING
-			   && (monst->info.flags & MONST_MAINTAINS_DISTANCE)
 			   && !(monst->status[STATUS_MAGICAL_FEAR])
-			   && shortestDistanceToEnemy >= 3) {
+			   && closestFearedEnemy >= 3) {
 		monst->creatureState = MONSTER_TRACKING_SCENT;
 	} else if (monst->creatureMode == MODE_PERM_FLEEING
 			   && monst->creatureState == MONSTER_FLEEING
@@ -2529,6 +2525,35 @@ void unAlly(creature *monst) {
 	}
 }
 
+boolean monsterFleesFrom(creature *monst, creature *defender) {
+    const short x = monst->xLoc;
+    const short y = monst->yLoc;
+    
+    if (!monstersAreEnemies(monst, defender)) {
+        return false;
+    }
+    
+    if (distanceBetween(x, y, defender->xLoc, defender->yLoc) >= 4) {
+        return false;
+    }
+    
+    if ((monst->info.flags & MONST_MAINTAINS_DISTANCE)
+        || (defender->info.flags & MONST_IMMUNE_TO_WEAPONS)
+        || (defender->info.abilityFlags & MA_KAMIKAZE)) {
+        
+        // Don't charge if you maintain distance, if the monster is damage-immune or if it's a kamikaze monster.
+        return true;
+    }
+    
+    if (monst->info.abilityFlags & MA_POISONS
+        && defender->status[STATUS_POISONED] > defender->currentHP) {
+        
+        return true;
+    }
+    
+    return false;
+}
+
 boolean allyFlees(creature *ally, creature *closestEnemy) {
     const short x = ally->xLoc;
     const short y = ally->yLoc;
@@ -2552,8 +2577,7 @@ boolean allyFlees(creature *ally, creature *closestEnemy) {
     }
     
     // so do allies that keep their distance or while in the presence of damage-immune or kamikaze enemies
-    if (distanceBetween(x, y, closestEnemy->xLoc, closestEnemy->yLoc) < 4
-        && ((ally->info.flags & MONST_MAINTAINS_DISTANCE) || (closestEnemy->info.flags & MONST_IMMUNE_TO_WEAPONS) || (closestEnemy->info.abilityFlags & MA_KAMIKAZE))) {
+    if (monsterFleesFrom(ally, closestEnemy)) {
         // Flee if you're within 3 spaces and you either flee near death or the closest enemy is a bloat, revenant or guardian.
         return true;
     }
@@ -2622,11 +2646,10 @@ void moveAlly(creature *monst) {
 			&& (!(target->bookkeepingFlags & MONST_SUBMERGED) || (monst->bookkeepingFlags & MONST_SUBMERGED))
 			&& monstersAreEnemies(target, monst)
 			&& !(target->bookkeepingFlags & MONST_CAPTIVE)
-			&& !(target->info.flags & MONST_IMMUNE_TO_WEAPONS)
             && !target->status[STATUS_ENTRANCED]
 			&& distanceBetween(x, y, target->xLoc, target->yLoc) < shortestDistance
 			&& traversiblePathBetween(monst, target->xLoc, target->yLoc)
-			&& (!monsterAvoids(monst, target->xLoc, target->yLoc) || (target->info.flags & MONST_ATTACKABLE_THRU_WALLS))
+			&& (!cellHasTerrainFlag(target->xLoc, target->yLoc, T_OBSTRUCTS_PASSABILITY) || (target->info.flags & MONST_ATTACKABLE_THRU_WALLS))
 			&& (!target->status[STATUS_INVISIBLE] || rand_percent(33))) {
 			
 			shortestDistance = distanceBetween(x, y, target->xLoc, target->yLoc);

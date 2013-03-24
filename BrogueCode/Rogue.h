@@ -2604,6 +2604,7 @@ extern "C" {
 	void perimeterCoords(short returnCoords[2], short n);
 	boolean monsterBlinkToPreferenceMap(creature *monst, short **preferenceMap, boolean blinkUphill);
 	void unAlly(creature *monst);
+    boolean monsterFleesFrom(creature *monst, creature *defender);
 	void monstersTurn(creature *monst);
 	void spawnPeriodicHorde();
 	void clearStatus(creature *monst);
