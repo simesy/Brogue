@@ -2764,6 +2764,7 @@ extern "C" {
 	void updateRingBonuses();
 	void updatePlayerRegenerationDelay();
 	boolean removeItemFromChain(item *theItem, item *theChain);
+    void addItemToChain(item *theItem, item *theChain);
 	void drinkPotion(item *theItem);
 	item *promptForItemOfType(unsigned short category,
 							  unsigned long requiredFlags,

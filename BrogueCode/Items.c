@@ -338,9 +338,7 @@ item *placeItem(item *theItem, short x, short y) {
 	}
 	
 	removeItemFromChain(theItem, floorItems); // just in case; double-placing an item will result in game-crashing loops in the item list
-	
-	theItem->nextItem = floorItems->nextItem;
-	floorItems->nextItem = theItem;
+    addItemToChain(theItem, floorItems);
 	pmap[theItem->xLoc][theItem->yLoc].flags |= HAS_ITEM;
 	if ((theItem->flags & ITEM_MAGIC_DETECTED) && itemMagicChar(theItem)) {
 		pmap[theItem->xLoc][theItem->yLoc].flags |= ITEM_DETECTED;
@@ -6551,6 +6549,11 @@ boolean removeItemFromChain(item *theItem, item *theChain) {
 		}
 	}
 	return false;
+}
+
+void addItemToChain(item *theItem, item *theChain) {
+    theItem->nextItem = theChain->nextItem;
+    theChain->nextItem = theItem;
 }
 
 void deleteItem(item *theItem) {

@@ -1017,25 +1017,23 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 			&& !playerCanSeeOrSense(x, y)
 			&& (!monst || monsterRevealed(monst)) && !monsterWithDetectedItem) {
 			
-			bakeTerrainColors(&cellForeColor, &cellBackColor, x, y);
-			
 			// store memory
 			storeColorComponents(pmap[x][y].rememberedAppearance.foreColorComponents, &cellForeColor);
 			storeColorComponents(pmap[x][y].rememberedAppearance.backColorComponents, &cellBackColor);
 			
 			applyColorAugment(&lightMultiplierColor, &basicLightColor, 100);
-			
 			if (!rogue.trueColorMode || !needDistinctness) {
 				applyColorMultiplier(&cellForeColor, &lightMultiplierColor);
 			}
-			
 			applyColorMultiplier(&cellBackColor, &lightMultiplierColor);
+			bakeTerrainColors(&cellForeColor, &cellBackColor, x, y);
 			
 			pmap[x][y].rememberedAppearance.character = cellChar;
 			pmap[x][y].flags |= STABLE_MEMORY;
 			pmap[x][y].rememberedTerrain = pmap[x][y].layers[highestPriorityLayer(x, y, false)];
 			if (pmap[x][y].flags & HAS_ITEM) {
                 theItem = itemAtLoc(x, y);
+                //addItemToPack(<#item *theItem#>)
 				pmap[x][y].rememberedItemCategory = theItem->category;
 			} else {
 				pmap[x][y].rememberedItemCategory = 0;
