@@ -3124,7 +3124,7 @@ boolean tunnelize(short x, short y) {
 }
 
 void negate(creature *monst) {
-    monst->info.abilityFlags = 0; // negated monsters lose all special abilities
+    monst->info.abilityFlags &= MA_NON_NEGATABLE_ABILITIES; // negated monsters lose all special abilities
     
 	if (monst->info.flags & MONST_DIES_IF_NEGATED) {
 		char buf[DCOLS * 3], monstName[DCOLS];
@@ -3165,7 +3165,7 @@ void negate(creature *monst) {
 		monst->info.flags &= ~MONST_IMMUNE_TO_FIRE;
 		monst->movementSpeed = monst->info.movementSpeed;
 		monst->attackSpeed = monst->info.attackSpeed;
-		if (monst != &player && monst->info.flags & NEGATABLE_TRAITS) {
+		if (monst != &player && (monst->info.flags & NEGATABLE_TRAITS)) {
 			if ((monst->info.flags & MONST_FIERY) && monst->status[STATUS_BURNING]) {
 				extinguishFireOnCreature(monst);
 			}
