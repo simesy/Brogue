@@ -314,9 +314,13 @@ void describeLocation(char *buf, short x, short y) {
 		}
 		
 		subjectMoving = (monst->turnsSpentStationary == 0
-                         && !(monst->info.flags & MONST_GETS_TURN_ON_ACTIVATION));
-		
-		if (cellHasTerrainFlag(x, y, T_OBSTRUCTS_PASSABILITY)) {
+                         && !(monst->info.flags & (MONST_GETS_TURN_ON_ACTIVATION | MONST_IMMOBILE))
+                         && monst->creatureState != MONSTER_SLEEPING
+                         && !(monst->bookkeepingFlags & (MONST_SEIZED | MONST_CAPTIVE)));
+		if ((monst->info.flags & MONST_ATTACKABLE_THRU_WALLS)
+            && cellHasTerrainFlag(x, y, T_OBSTRUCTS_PASSABILITY)) {
+            strcpy(verb, "is embedded");
+        } else if (cellHasTerrainFlag(x, y, T_OBSTRUCTS_PASSABILITY)) {
 			strcpy(verb, "is trapped");
 			subjectMoving = false;
 		} else if (monst->bookkeepingFlags & MONST_CAPTIVE) {
