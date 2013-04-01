@@ -1121,7 +1121,7 @@ boolean cellHasTerrainFlag(short x, short y, unsigned long flagMask);
 #define charmShattering(enchant)            ((int) (4 + (enchant) + FLOAT_FUDGE))
 
 #define wandDominate(monst)					(((monst)->currentHP * 5 < (monst)->info.maxHP) ? 100 : \
-											100 * ((monst)->info.maxHP - (monst)->currentHP) / (monst)->info.maxHP)
+											max(0, 100 * ((monst)->info.maxHP - (monst)->currentHP) / (monst)->info.maxHP))
 
 #define weaponParalysisDuration(enchant)	(max(2, (int) (2 + ((enchant) / 2) + FLOAT_FUDGE)))
 #define weaponConfusionDuration(enchant)	(max(3, (int) (1.5 * (enchant) + FLOAT_FUDGE)))

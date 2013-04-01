@@ -3835,6 +3835,9 @@ void monsterDetails(char buf[], creature *monst) {
 			if (monst->info.flags & MONST_INANIMATE) {
 				sprintf(newText, "\n     A wand of domination will have no effect on inanimate objects like %s.",
 						monstName);
+            } else if (wandDominate(monst) <= 0) {
+				sprintf(newText, "\n     A wand of domination will have no chance of success at %s's current health level.",
+						monstName);
 			} else {
 				sprintf(newText, "\n     A wand of domination will have a %i%% chance of success at %s's current health level.",
 						wandDominate(monst),
