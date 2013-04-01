@@ -2638,7 +2638,7 @@ extern "C" {
     boolean attack(creature *attacker, creature *defender, boolean lungeAttack);
 	void inflictLethalDamage(creature *defender);
 	boolean inflictDamage(creature *defender, short damage, const color *flashColor, boolean ignoresProtectionShield);
-    boolean addPoison(creature *monst, short damage);
+    void addPoison(creature *monst, short damage);
 	void killCreature(creature *decedent, boolean administrativeDeath);
 	void addScentToCell(short x, short y, short distance);
 	void populateItems(short upstairsX, short upstairsY);

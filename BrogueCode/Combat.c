@@ -1469,7 +1469,7 @@ boolean inflictDamage(creature *defender, short damage, const color *flashColor,
 	return killed;
 }
 
-boolean addPoison(creature *monst, short damage) {
+void addPoison(creature *monst, short damage) {
     extern const color poisonColor;
     if (monst == &player && !player.status[STATUS_POISONED]) {
         combatMessage("scalding poison fills your veins", &badMessageColor);
