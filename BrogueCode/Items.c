@@ -2827,6 +2827,10 @@ void equip(item *theItem) {
 		}
 		command[c] = '\0';
 		recordKeystrokeSequence(command);
+        
+        if (theItem->category & ARMOR) {
+            player.status[STATUS_DONNING] = player.maxStatus[STATUS_DONNING] = rogue.armor->armor / 10;
+        }
 		
 		equipItem(theItem, false);
 		
@@ -6396,7 +6400,6 @@ void equipItem(item *theItem, boolean force) {
 		recalculateEquipmentBonuses();
 	} else if (theItem->category & ARMOR) {
 		rogue.armor = theItem;
-        player.status[STATUS_DONNING] = player.maxStatus[STATUS_DONNING] = rogue.armor->armor / 10;
 		recalculateEquipmentBonuses();
 	} else if (theItem->category & RING) {
 		if (rogue.ringLeft && rogue.ringRight) {
