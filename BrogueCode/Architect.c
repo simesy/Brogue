@@ -3297,8 +3297,9 @@ void restoreMonster(creature *monst, short **mapToStairs, short **mapToPit) {
                                  avoidedFlagsForMonster(&(monst->info)), (HAS_MONSTER | HAS_PLAYER | HAS_UP_STAIRS | HAS_DOWN_STAIRS), true);
 	}
 	pmap[*x][*y].flags |= HAS_MONSTER;
-	monst->bookkeepingFlags &= ~(MONST_PREPLACED | MONST_APPROACHING_DOWNSTAIRS | MONST_APPROACHING_UPSTAIRS | MONST_APPROACHING_PIT);
+	monst->bookkeepingFlags &= ~(MONST_PREPLACED | MONST_APPROACHING_DOWNSTAIRS | MONST_APPROACHING_UPSTAIRS | MONST_APPROACHING_PIT | MONST_ABSORBING);
     monst->status[STATUS_ENTERS_LEVEL_IN] = 0;
+    monst->corpseAbsorptionCounter = 0;
 	
 	if ((monst->bookkeepingFlags & MONST_SUBMERGED) && !cellHasTMFlag(*x, *y, TM_ALLOWS_SUBMERGING)) {
 		monst->bookkeepingFlags &= ~MONST_SUBMERGED;
