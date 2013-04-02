@@ -454,7 +454,7 @@ void populateItems(short upstairsX, short upstairsY) {
 	unsigned short itemSpawnHeatMap[DCOLS][DROWS];
 	short i, j, numberOfItems, numberOfGoldPiles, goldBonusProbability, x = 0, y = 0;
 	unsigned long totalHeat;
-	short theCategory, theKind;
+	short theCategory, theKind, depthOffsetForFood = 0;
 	
 #ifdef AUDIT_RNG
 	char RNGmessage[100];
@@ -549,6 +549,11 @@ void populateItems(short upstairsX, short upstairsY) {
 		freeGrid(map);
 		temporaryMessage("Item spawn heat map:", true);
 	}
+    
+    if (rogue.depthLevel > 2) {
+        // Include a random factor in food generation to make things slightly less predictable.
+        depthOffsetForFood = rand_range(-1, 1) + rand_range(-1, 1);
+    }
 	
 	for (i=0; i<numberOfItems; i++) {
 		theCategory = ALL_ITEMS & ~GOLD; // gold is placed separately, below, so it's not a punishment
@@ -559,13 +564,13 @@ void populateItems(short upstairsX, short upstairsY) {
         potionTable[POTION_LIFE].frequency = rogue.lifePotionFrequency;
 		
 		// Adjust the desired item category if necessary.
-		if ((rogue.foodSpawned + foodTable[RATION].strengthRequired / 2) * 4
-			<= pow(rogue.depthLevel, 1.3) * foodTable[RATION].strengthRequired * 0.45) {
+		if ((rogue.foodSpawned + foodTable[RATION].strengthRequired / 3) * 4
+			<= pow(rogue.depthLevel + depthOffsetForFood, 1.3) * foodTable[RATION].strengthRequired * 0.45) {
 			// Guarantee a certain nutrition minimum of the approximate equivalent of one ration every four levels,
 			// with more food on deeper levels since they generally take more turns to complete.
 			theCategory = FOOD;
 			if (rogue.depthLevel > AMULET_LEVEL) {
-				numberOfItems++; // Food isn't at the expense of gems.
+				numberOfItems++; // Food isn't at the expense of lumenstones.
 			}
 		} else if (rogue.depthLevel > AMULET_LEVEL) {
 			theCategory = GEM;
