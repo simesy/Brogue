@@ -209,6 +209,9 @@ short actionMenu(short x, short y, boolean playingBack) {
 	sprintf(buttons[buttonCount].text, "  %sD: %sDiscovered items  ",	yellowColorEscape, whiteColorEscape);
 	buttons[buttonCount].hotkey[0] = DISCOVERIES_KEY;
 	buttonCount++;
+	sprintf(buttons[buttonCount].text, "  %s~: %sView dungeon seed  ",	yellowColorEscape, whiteColorEscape);
+	buttons[buttonCount].hotkey[0] = SEED_KEY;
+	buttonCount++;
 	sprintf(buttons[buttonCount].text, "  %s\\: %s%s color effects  ",	yellowColorEscape, whiteColorEscape, rogue.trueColorMode ? "Enable" : "Disable");
 	buttons[buttonCount].hotkey[0] = TRUE_COLORS_KEY;
 	buttonCount++;

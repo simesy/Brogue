@@ -3605,7 +3605,7 @@ void addXPXPToAlly(short XPXP, creature *monst) {
                 monst->bookkeepingFlags |= MONST_TELEPATHICALLY_REVEALED;
                 updateVision(true);
                 monsterName(theMonsterName, monst, false);
-                sprintf(buf, "you have developed a bond with your %s.", theMonsterName);
+                sprintf(buf, "you have developed a telepathic bond with your %s.", theMonsterName);
                 messageWithColor(buf, &advancementMessageColor, false);
             }
             //				if (canSeeMonster(monst)) {
