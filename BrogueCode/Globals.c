@@ -2168,14 +2168,14 @@ itemTable potionTable[NUMBER_POTION_KINDS] = {
 };
 
 itemTable wandTable[NUMBER_WAND_KINDS] = {
-	{"teleportation",	itemMetals[0], "",	1,	800,	0,{2,5,1}, false, false, "A blast from this wand will teleport a creature to a random place on the level. This can be particularly effective against aquatic or mud-bound creatures, which are helpless on dry land."},
-	{"slowness",		itemMetals[1], "",	1,	800,	0,{2,5,1}, false, false, "This wand will cause a creature to move at half its ordinary speed for several turns."},
-	{"polymorphism",	itemMetals[2], "",	1,	700,	0,{3,5,1}, false, false, "This mischievous magic can transform any creature into another creature at random. Beware: the tamest of creatures might turn into the most fearsome. The horror of the transformation will turn any affected allies against you."},
-	{"negation",		itemMetals[3], "",	1,	550,	0,{4,6,1}, false, false, "This powerful anti-magic will strip a creature of a host of magical traits, including flight, invisibility, acidic corrosiveness, telepathy, magical speed or slowness, hypnosis, magical fear, immunity to physical attack, fire resistance and the ability to blink at will. Spellcasters will lose their magical abilities and magical totems will be rendered inert. Creatures animated purely by magic will die."},
+	{"teleportation",	itemMetals[0], "",	3,	800,	0,{2,5,1}, false, false, "A blast from this wand will teleport a creature to a random place on the level. This can be particularly effective against aquatic or mud-bound creatures, which are helpless on dry land."},
+	{"slowness",		itemMetals[1], "",	3,	800,	0,{2,5,1}, false, false, "This wand will cause a creature to move at half its ordinary speed for several turns."},
+	{"polymorphism",	itemMetals[2], "",	3,	700,	0,{3,5,1}, false, false, "This mischievous magic can transform any creature into another creature at random. Beware: the tamest of creatures might turn into the most fearsome. The horror of the transformation will turn any affected allies against you."},
+	{"negation",		itemMetals[3], "",	3,	550,	0,{4,6,1}, false, false, "This powerful anti-magic will strip a creature of a host of magical traits, including flight, invisibility, acidic corrosiveness, telepathy, magical speed or slowness, hypnosis, magical fear, immunity to physical attack, fire resistance and the ability to blink at will. Spellcasters will lose their magical abilities and magical totems will be rendered inert. Creatures animated purely by magic will die."},
 	{"domination",		itemMetals[4], "",	1,	1000,	0,{1,2,1}, false, false, "This wand can forever bind an enemy to the caster's will, turning it into a steadfast ally. However, the magic works only against enemies that are near death."},
-	{"beckoning",		itemMetals[5], "",	1,	500,	0,{2,4,1}, false, false, "The force of this wand will yank the targeted creature into direct proximity."},
-	{"plenty",			itemMetals[6], "",	1,	700,	0,{1,2,1}, false, false, "The creature at the other end of this mischievous bit of metal will be beside itself -- literally! Cloning an enemy is ill-advised, but the effect can be invaluable on a powerful ally."},
-	{"invisibility",	itemMetals[7], "",	1,	100,	0,{3,5,1}, false, false, "A charge from this wand will render a creature temporarily invisible to the naked eye. Only with telepathy or in the silhouette of a thick gas will an observer discern the creature's hazy outline."},
+	{"beckoning",		itemMetals[5], "",	3,	500,	0,{2,4,1}, false, false, "The force of this wand will yank the targeted creature into direct proximity."},
+	{"plenty",			itemMetals[6], "",	2,	700,	0,{1,2,1}, false, false, "The creature at the other end of this mischievous bit of metal will be beside itself -- literally! Cloning an enemy is ill-advised, but the effect can be invaluable on a powerful ally."},
+	{"invisibility",	itemMetals[7], "",	3,	100,	0,{3,5,1}, false, false, "A charge from this wand will render a creature temporarily invisible to the naked eye. Only with telepathy or in the silhouette of a thick gas will an observer discern the creature's hazy outline."},
 };
 
 itemTable staffTable[NUMBER_STAFF_KINDS] = {
