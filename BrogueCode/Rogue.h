@@ -2111,8 +2111,8 @@ enum machineFeatureFlags {
 	// unused                       = Fl(7),	// 
 	MF_PERMIT_BLOCKING				= Fl(8),	// permit the feature to block the map's passability (e.g. to add a locked door)
 	MF_TREAT_AS_BLOCKING			= Fl(9),	// treat this terrain as though it blocks, for purposes of deciding whether it can be placed there
-	MF_NEAR_ORIGIN					= Fl(10),	// feature must spawn in the rough quarter of tiles closest to the door
-	MF_FAR_FROM_ORIGIN				= Fl(11),	// feature must spawn in the rough quarter of tiles farthest from the door
+	MF_NEAR_ORIGIN					= Fl(10),	// feature must spawn in the rough quarter of tiles closest to the origin
+	MF_FAR_FROM_ORIGIN				= Fl(11),	// feature must spawn in the rough quarter of tiles farthest from the origin
 	MF_MONSTER_TAKE_ITEM			= Fl(12),	// the item associated with this feature (including if adopted) will be in possession of the horde leader that's generated
 	MF_MONSTER_SLEEPING				= Fl(13),	// the monsters should be asleep when generated
     MF_MONSTER_FLEEING              = Fl(14),   // the monsters should be permanently fleeing when generated
@@ -2121,7 +2121,7 @@ enum machineFeatureFlags {
 	MF_ALTERNATIVE_2				= Fl(17),	// same as MF_ALTERNATIVE, but provides for a second set of alternatives of which only one will be chosen
 	MF_REQUIRE_GOOD_RUNIC			= Fl(18),	// generated item must be uncursed runic
 	MF_MONSTERS_DORMANT				= Fl(19),	// monsters are dormant, and appear when a dungeon feature with DFF_ACTIVATE_DORMANT_MONSTER spawns on their tile
-	MF_GENERATE_MONSTER				= Fl(20),	// generate a single monster
+	// unused                       = Fl(20),	// 
 	MF_BUILD_IN_WALLS				= Fl(21),	// build in an impassable tile that is adjacent to the interior
 	MF_BUILD_ANYWHERE_ON_LEVEL		= Fl(22),	// build anywhere on the level that is not inside the machine
 	MF_REPEAT_UNTIL_NO_PROGRESS		= Fl(23),	// keep trying to build this feature set until no changes are made

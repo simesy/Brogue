@@ -1443,7 +1443,9 @@ boolean buildAMachine(enum machineTypes bp,
                     }
 					
 					// Generate a horde as necessary.
-					if (feature->flags & (MF_GENERATE_HORDE | MF_GENERATE_MONSTER)) {
+					if ((feature->flags & MF_GENERATE_HORDE)
+                        || feature->monsterID) {
+                        
 						if (feature->flags & MF_GENERATE_HORDE) {
 							monst = spawnHorde(0,
 											   featX,
@@ -1455,7 +1457,7 @@ boolean buildAMachine(enum machineTypes bp,
 							}
 						}
 						
-						if (feature->flags & MF_GENERATE_MONSTER) {
+						if (feature->monsterID) {
 							monst = generateMonster(feature->monsterID, true, true);
 							if (monst) {
 								monst->xLoc = featX;

@@ -162,7 +162,7 @@ void updateDisplayDetail() {
 		for (j = 0; j < DROWS; j++) {
 			if (tmap[i][j].light[0] < -10
 				&& tmap[i][j].light[1] < -10
-				&& tmap[i][j].light[0] < -10) {
+				&& tmap[i][j].light[2] < -10) {
 				
 				displayDetail[i][j] = DV_DARK;
 			} else if (pmap[i][j].flags & IS_IN_SHADOW) {
