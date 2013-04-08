@@ -5407,7 +5407,7 @@ void useCharm(item *theItem) {
 void apply(item *theItem, boolean recordCommands) {
 	char buf[COLS], buf2[COLS];
 	boolean commandsRecorded, revealItemType;
-	unsigned char command[10];
+	unsigned char command[10] = "";
 	short c;
 	
 	commandsRecorded = !recordCommands;
@@ -5466,8 +5466,10 @@ void apply(item *theItem, boolean recordCommands) {
 			break;
 		case POTION:
 			command[c] = '\0';
-			recordKeystrokeSequence(command);
-			commandsRecorded = true;
+            if (!commandsRecorded) {
+                recordKeystrokeSequence(command);
+                commandsRecorded = true;
+            }
 			if (!potionTable[theItem->kind].identified) {
 				revealItemType = true;
 			}
@@ -5475,8 +5477,10 @@ void apply(item *theItem, boolean recordCommands) {
 			break;
 		case SCROLL:
 			command[c] = '\0';
-			recordKeystrokeSequence(command);
-			commandsRecorded = true; // have to record in case further keystrokes are necessary (e.g. enchant scroll)
+            if (!commandsRecorded) {
+                recordKeystrokeSequence(command);
+                commandsRecorded = true; // have to record in case further keystrokes are necessary (e.g. enchant scroll)
+            }
 			if (!scrollTable[theItem->kind].identified
 				&& theItem->kind != SCROLL_ENCHANTING
 				&& theItem->kind != SCROLL_IDENTIFY) {
@@ -5498,9 +5502,11 @@ void apply(item *theItem, boolean recordCommands) {
 				messageWithColor(buf, &itemMessageColor, false);
 				return;
 			}
-			command[c] = '\0';
-			recordKeystrokeSequence(command);
-			commandsRecorded = true;
+            if (!commandsRecorded) {
+                command[c] = '\0';
+                recordKeystrokeSequence(command);
+                commandsRecorded = true;
+            }
             useCharm(theItem);
             break;
 		default:
@@ -5513,6 +5519,7 @@ void apply(item *theItem, boolean recordCommands) {
 	if (!commandsRecorded) { // to make sure we didn't already record the keystrokes above with staff/wand targeting
 		command[c] = '\0';
 		recordKeystrokeSequence(command);
+        commandsRecorded = true;
 	}
 	
 	// Reveal the item type if appropriate.
@@ -5869,11 +5876,15 @@ void detectMagicOnItem(item *theItem) {
 }
 
 void drinkPotion(item *theItem) {
-	item *tempItem;
-	creature *monst;
+	item *tempItem = NULL;
+	creature *monst = NULL;
 	boolean hadEffect = false;
 	boolean hadEffect2 = false;
-    char buf[1000];
+    char buf[1000] = "";
+    
+#ifdef BROGUE_ASSERTS
+    assert(rogue.RNG == RNG_SUBSTANTIVE);
+#endif
 	
 	switch (theItem->kind) {
 		case POTION_LIFE:
