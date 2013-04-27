@@ -2834,7 +2834,7 @@ void equip(item *theItem) {
 		recordKeystrokeSequence(command);
         
         if (theItem->category & ARMOR) {
-            player.status[STATUS_DONNING] = player.maxStatus[STATUS_DONNING] = rogue.armor->armor / 10;
+            player.status[STATUS_DONNING] = player.maxStatus[STATUS_DONNING] = theItem->armor / 10;
         }
 		
 		equipItem(theItem, false);
