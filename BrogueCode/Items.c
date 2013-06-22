@@ -5961,6 +5961,7 @@ void drinkPotion(item *theItem) {
 			colorFlash(&darkBlue, 0, IN_FIELD_OF_VIEW, 3, 3, player.xLoc, player.yLoc);
 			message("vapor pours out of the flask and causes the floor to disappear!", false);
 			spawnDungeonFeature(player.xLoc, player.yLoc, &dungeonFeatureCatalog[DF_HOLE_POTION], true, false);
+            player.bookkeepingFlags |= MONST_IS_FALLING;
 			break;
 		case POTION_STRENGTH:
 			rogue.strength++;
