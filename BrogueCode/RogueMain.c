@@ -868,8 +868,8 @@ void startLevel(short oldLevelNumber, short stairDirection) {
 	}
 	
 	updateMapToShore();
-	
 	updateVision(true);
+    rogue.aggroRange = currentStealthValue();
 	
 	// update monster states so none are hunting if there is no scent and they can't see the player
 	for (monst=monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {

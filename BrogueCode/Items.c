@@ -6432,7 +6432,8 @@ void equipItem(item *theItem, boolean force) {
 			updateClairvoyance();
 			displayLevel();
             identifyItemKind(theItem);
-		} else if (theItem->kind == RING_LIGHT) {
+		} else if (theItem->kind == RING_LIGHT
+                   || theItem->kind == RING_STEALTH) {
             identifyItemKind(theItem);
 		}
 	}

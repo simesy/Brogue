@@ -3733,10 +3733,10 @@ short estimatedArmorValue() {
 
 // returns the y-coordinate after the last line printed
 short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight) {
-	char buf[COLS], buf2[COLS], monstName[COLS], redColorEscape[5], grayColorEscape[5];
+	char buf[COLS], buf2[COLS], monstName[COLS], tempColorEscape[5], grayColorEscape[5];
 	uchar monstChar;
 	color monstForeColor, monstBackColor, healthBarColor, tempColor;
-	short initialY, i, j, highlightStrength, displayedArmor;
+	short initialY, i, j, highlightStrength, displayedArmor, percent;
 	boolean inPath;
 	
 	const char hallucinationStrings[10][COLS] = {
@@ -3938,14 +3938,14 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 			}
 		} else if (monst == &player) {
 			if (y < ROWS - 1) {
-				redColorEscape[0] = '\0';
+				tempColorEscape[0] = '\0';
 				grayColorEscape[0] = '\0';
 				if (player.status[STATUS_WEAKENED]) {
 					tempColor = red;
 					if (dim) {
 						applyColorAverage(&tempColor, &black, 50);
 					}
-					encodeMessageColor(redColorEscape, 0, &tempColor);
+					encodeMessageColor(tempColorEscape, 0, &tempColor);
 					encodeMessageColor(grayColorEscape, 0, (dim ? &darkGray : &gray));
 				}
                 
@@ -3954,13 +3954,13 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 				if (!rogue.armor || rogue.armor->flags & ITEM_IDENTIFIED || rogue.playbackOmniscience) {
 					
 					sprintf(buf, "Str: %s%i%s  Armor: %i",
-							redColorEscape,
+							tempColorEscape,
 							rogue.strength - player.weaknessAmount,
 							grayColorEscape,
 							displayedArmor);
 				} else {
 					sprintf(buf, "Str: %s%i%s  Armor: %i?",
-							redColorEscape,
+							tempColorEscape,
 							rogue.strength - player.weaknessAmount,
 							grayColorEscape,
 							estimatedArmorValue());
@@ -3975,6 +3975,25 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 				printString("                    ", 0, y, &white, &black, 0);
 				printString(buf, (20 - strLenWithoutEscapes(buf)) / 2, y++, (dim ? &darkGray : &gray), &black, 0);
 			}
+            if (y < ROWS - 1) {
+				tempColorEscape[0] = '\0';
+				grayColorEscape[0] = '\0';
+                tempColor = playerInShadowColor;
+                percent = (rogue.aggroRange - 2) * 100 / 28;
+                applyColorAverage(&tempColor, &black, percent);
+                applyColorAugment(&tempColor, &playerInLightColor, percent);
+                if (dim) {
+                    applyColorAverage(&tempColor, &black, 50);
+                }
+                encodeMessageColor(tempColorEscape, 0, &tempColor);
+                encodeMessageColor(grayColorEscape, 0, (dim ? &darkGray : &gray));
+                sprintf(buf, "%sStealth range: %i%s",
+                        tempColorEscape,
+                        rogue.aggroRange,
+                        grayColorEscape);
+				printString("                    ", 0, y, &white, &black, 0);
+				printString(buf, 1, y++, (dim ? &darkGray : &gray), &black, 0);
+            }
 		}
 	
 	if (y < ROWS - 1) {

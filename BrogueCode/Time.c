@@ -592,6 +592,44 @@ void updateScent() {
 	addScentToCell(player.xLoc, player.yLoc, 0);
 }
 
+short currentStealthValue() {
+    // Default value of 10.
+    short stealthVal = 10;
+    
+    // In light, add 10.
+    if (!(pmap[player.xLoc][player.yLoc].flags & IS_IN_SHADOW)) {
+        stealthVal += 10;
+    } else if (playerInDarkness()) {
+        // In darkness, subtract 5.
+        stealthVal -= 5;
+    }
+    
+    if (player.status[STATUS_INVISIBLE]) {
+        stealthVal -= 20;
+    }
+    
+    // Add 1 for each point of your armor's natural (unenchanted) strength requirement above 12.
+    if (rogue.armor) {
+        stealthVal += max(0, armorTable[rogue.armor->kind].strengthRequired - 12);
+    }
+    
+    // Halve (rounded up) if you just rested.
+    if (rogue.justRested) {
+        stealthVal = (stealthVal + 1) / 2;
+    }
+    
+    // Subtract your bonuses from rings of stealth.
+    // (Cursed rings of stealth will end up adding here.)
+    stealthVal -= rogue.stealthBonus;
+    
+    // Can't go below 2, ever.
+    if (stealthVal < 2) {
+        stealthVal = 2;
+    }
+    
+    return stealthVal;
+}
+
 void demoteVisibility() {
 	short i, j;
 	
@@ -1992,6 +2030,7 @@ void playerTurnEnded() {
 		}
 		
 		updateScent();
+        rogue.aggroRange = currentStealthValue();
 		rogue.updatedSafetyMapThisTurn			= false;
 		rogue.updatedAllySafetyMapThisTurn		= false;
 		rogue.updatedMapToSafeTerrainThisTurn	= false;

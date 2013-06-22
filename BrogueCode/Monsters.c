@@ -1304,8 +1304,9 @@ void wakeUp(creature *monst) {
 }
 
 // Assumes that observer is not the player.
+// Returns approximately triple the actual (quasi-euclidian) distance.
 short awarenessDistance(creature *observer, creature *target) {
-	long perceivedDistance, bonus = 0;
+	long perceivedDistance;//, bonus = 0;
 	
 	// start with base distance
 	
@@ -1325,6 +1326,7 @@ short awarenessDistance(creature *observer, creature *target) {
 		perceivedDistance = 1000;
 	}
 	
+    /*
 	// calculate bonus modifiers
     
     if (target->status[STATUS_INVISIBLE]) {
@@ -1363,6 +1365,7 @@ short awarenessDistance(creature *observer, creature *target) {
 	if (perceivedDistance < 0 || perceivedDistance > 10000) {
 		return 10000;
 	}
+    */
 	return ((short) perceivedDistance);
 }
 
@@ -1370,26 +1373,29 @@ short awarenessDistance(creature *observer, creature *target) {
 // takes into account whether it is ALREADY aware of the target.
 boolean awareOfTarget(creature *observer, creature *target) {
 	short perceivedDistance = awarenessDistance(observer, target);
-	short awareness = observer->info.scentThreshold * 3; // forget sight, it sucks
+	short awareness = rogue.aggroRange * 3; // forget sight, it sucks
     boolean retval;
     
 #ifdef BROGUE_ASSERTS
     assert(perceivedDistance >= 0 && awareness >= 0);
 #endif
 	
-	if (perceivedDistance > awareness) {
+	if (perceivedDistance > awareness * 3 / 2) {
 		// out of awareness range
 		retval = false;
-	} else if (observer->creatureState == MONSTER_TRACKING_SCENT) {
+	} else if (observer->creatureState == MONSTER_TRACKING_SCENT
+               && perceivedDistance <= awareness * 3 / 2) {
 		// already aware of the target
 		retval = true;
 	} else if (target == &player
 		&& !(pmap[observer->xLoc][observer->yLoc].flags & IN_FIELD_OF_VIEW)) {
 		// observer not hunting and player-target not in field of view
 		retval = false;
-	} else {
+	} else if (perceivedDistance <= awareness) {
 	// within range but currently unaware
-        retval = ((rand_range(0, perceivedDistance) == 0) ? true : false);
+        retval = rand_percent(25);//((rand_range(0, perceivedDistance) == 0) ? true : false);
+    } else {
+        retval = false;
     }
     return retval;
 }

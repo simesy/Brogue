@@ -2020,6 +2020,7 @@ typedef struct playerCharacter {
     unsigned long absoluteTurnNumber;   // number of turns since the beginning of time. Always increments.
 	signed long milliseconds;			// milliseconds since launch, to decide whether to engage cautious mode
 	short xpxpThisTurn;					// how many squares the player explored this turn
+    short aggroRange;                   // distance from which monsters will notice you
     
 	short previousHealthPercent;        // remembers what your health proportion was at the start of the turn,
     short previousPoisonPercent;        // and your poison proportion, to display percentage alerts for each
@@ -2811,6 +2812,7 @@ extern "C" {
 	void promoteTile(short x, short y, enum dungeonLayers layer, boolean useFireDF);
 	void autoPlayLevel(boolean fastForward);
 	void updateClairvoyance();
+    short currentStealthValue();
 	
 	void initRecording();
 	void flushBufferToFile();
