@@ -35,7 +35,7 @@
 
 // debug macros -- define DEBUGGING as 1 to enable debugging.
 
-#define DEBUGGING						0
+#define DEBUGGING						1
 
 #define DEBUG							if (DEBUGGING)
 #define MONSTERS_ENABLED				(!DEBUGGING || 1) // Quest room monsters can be generated regardless.
@@ -2508,9 +2508,12 @@ extern "C" {
 	void describedItemCategory(short theCategory, char *buf);
 	void describeLocation(char buf[DCOLS], short x, short y);
 	void printLocationDescription(short x, short y);
+    void useKeyAt(item *theItem, short x, short y);
 	void playerRuns(short direction);
 	void exposeCreatureToFire(creature *monst);
 	void updateFlavorText();
+    void updatePlayerUnderwaterness();
+    boolean monsterShouldFall(creature *monst);
 	void applyInstantTileEffectsToCreature(creature *monst);
 	void vomit(creature *monst);
 	void becomeAllyWith(creature *monst);

@@ -839,7 +839,7 @@ void executePlaybackInput(rogueEvent *recordingInput) {
                             rogue.RNG = RNG_SUBSTANTIVE;
                             executeEvent(&theEvent);
                         }
-                        rogue.playbackPaused = true;
+                        //rogue.playbackPaused = true;
                         if (rogue.playbackFastForward) {
                             rogue.playbackFastForward = false;
                             displayLevel();

@@ -27,6 +27,7 @@
 		694753061672E75D003BE7CB /* Grid.c in Sources */ = {isa = PBXBuildFile; fileRef = 694753051672E75D003BE7CB /* Grid.c */; };
 		696F73E814C27D9F00CF8C90 /* MainMenu.c in Sources */ = {isa = PBXBuildFile; fileRef = 696F73E714C27D9F00CF8C90 /* MainMenu.c */; };
 		69A642211476EC76006246FB /* Buttons.c in Sources */ = {isa = PBXBuildFile; fileRef = 69A642201476EC76006246FB /* Buttons.c */; };
+		69C7414A1775466100CD2D5F /* Time.c in Sources */ = {isa = PBXBuildFile; fileRef = 69C741491775466100CD2D5F /* Time.c */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 /* End PBXBuildFile section */
@@ -62,6 +63,7 @@
 		694753051672E75D003BE7CB /* Grid.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Grid.c; path = BrogueCode/Grid.c; sourceTree = "<group>"; };
 		696F73E714C27D9F00CF8C90 /* MainMenu.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = MainMenu.c; path = BrogueCode/MainMenu.c; sourceTree = "<group>"; };
 		69A642201476EC76006246FB /* Buttons.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Buttons.c; path = BrogueCode/Buttons.c; sourceTree = "<group>"; };
+		69C741491775466100CD2D5F /* Time.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = Time.c; path = BrogueCode/Time.c; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Brogue.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Brogue.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -148,6 +150,7 @@
 				5852BB46118650A10064384E /* Light.c */,
 				5852BB47118650A10064384E /* Monsters.c */,
 				5852BB48118650A10064384E /* Movement.c */,
+				69C741491775466100CD2D5F /* Time.c */,
 				694753051672E75D003BE7CB /* Grid.c */,
 			);
 			name = "Brogue Code";
@@ -257,6 +260,7 @@
 				69A642211476EC76006246FB /* Buttons.c in Sources */,
 				696F73E814C27D9F00CF8C90 /* MainMenu.c in Sources */,
 				694753061672E75D003BE7CB /* Grid.c in Sources */,
+				69C7414A1775466100CD2D5F /* Time.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
