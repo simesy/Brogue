@@ -540,6 +540,11 @@ void initializeRogue(unsigned long seed) {
 		identify(theItem);
 		theItem = addItemToPack(theItem);
 		
+		theItem = generateItem(POTION, POTION_INVISIBILITY);
+		theItem->flags &= ~ITEM_CURSED;
+		identify(theItem);
+		theItem = addItemToPack(theItem);
+		
 //		short i;
 //		for (i=0; i < NUMBER_CHARM_KINDS && i < 4; i++) {
 //			theItem = generateItem(CHARM, i);
@@ -869,7 +874,7 @@ void startLevel(short oldLevelNumber, short stairDirection) {
 	
 	updateMapToShore();
 	updateVision(true);
-    rogue.aggroRange = currentStealthValue();
+    rogue.aggroRange = currentAggroValue();
 	
 	// update monster states so none are hunting if there is no scent and they can't see the player
 	for (monst=monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {

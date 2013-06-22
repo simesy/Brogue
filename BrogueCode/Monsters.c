@@ -1304,9 +1304,9 @@ void wakeUp(creature *monst) {
 }
 
 // Assumes that observer is not the player.
-// Returns approximately triple the actual (quasi-euclidian) distance.
+// Returns approximately double the actual (quasi-euclidian) distance.
 short awarenessDistance(creature *observer, creature *target) {
-	long perceivedDistance;//, bonus = 0;
+	long perceivedDistance;
 	
 	// start with base distance
 	
@@ -1315,9 +1315,9 @@ short awarenessDistance(creature *observer, creature *target) {
 		&& ((target == &player && (pmap[observer->xLoc][observer->yLoc].flags & IN_FIELD_OF_VIEW)) ||
 			(target != &player && openPathBetween(observer->xLoc, observer->yLoc, target->xLoc, target->yLoc)))) {
 			// if monster flies or is waterbound or is underwater or can cross pits with webs:
-			perceivedDistance = distanceBetween(observer->xLoc, observer->yLoc, target->xLoc, target->yLoc) * 3;
+			perceivedDistance = scentDistance(observer->xLoc, observer->yLoc, target->xLoc, target->yLoc);
 		} else {
-			perceivedDistance = (rogue.scentTurnNumber - scentMap[observer->xLoc][observer->yLoc]); // this value is triple the apparent distance
+			perceivedDistance = (rogue.scentTurnNumber - scentMap[observer->xLoc][observer->yLoc]); // this value is double the apparent distance
 		}
 	
 	perceivedDistance = min(perceivedDistance, 1000);
@@ -1325,47 +1325,6 @@ short awarenessDistance(creature *observer, creature *target) {
 	if (perceivedDistance < 0) {
 		perceivedDistance = 1000;
 	}
-	
-    /*
-	// calculate bonus modifiers
-    
-    if (target->status[STATUS_INVISIBLE]) {
-        bonus += 10;
-    }
-	
-	if ((target != &player
-		 && tmap[target->xLoc][target->yLoc].light[0] < 0
-		 && tmap[target->xLoc][target->yLoc].light[1] < 0
-		 && tmap[target->xLoc][target->yLoc].light[2] < 0)
-		|| (target == &player && playerInDarkness())) {
-		
-		// super-darkness
-		bonus += 5;
-	}
-	if (observer->creatureState == MONSTER_SLEEPING) {
-		bonus += 3;
-	}
-	
-	if (target == &player) {
-		bonus += rogue.stealthBonus;
-		if (rogue.justRested) {
-			bonus = (bonus + 1) * 2;
-		}
-		if (observer->creatureState == MONSTER_TRACKING_SCENT) {
-			bonus -= 4;
-		}
-	}
-	if (pmap[target->xLoc][target->yLoc].flags & IS_IN_SHADOW
-		|| target == &player && playerInDarkness()) {
-		bonus = (bonus + 1) * 2;
-	}
-	
-	// apply bonus -- each marginal point increases perceived distance by a compounding 10%
-	perceivedDistance *= pow(1.1, bonus);
-	if (perceivedDistance < 0 || perceivedDistance > 10000) {
-		return 10000;
-	}
-    */
 	return ((short) perceivedDistance);
 }
 
@@ -1373,18 +1332,17 @@ short awarenessDistance(creature *observer, creature *target) {
 // takes into account whether it is ALREADY aware of the target.
 boolean awareOfTarget(creature *observer, creature *target) {
 	short perceivedDistance = awarenessDistance(observer, target);
-	short awareness = rogue.aggroRange * 3; // forget sight, it sucks
+	short awareness = rogue.aggroRange * 2;
     boolean retval;
     
 #ifdef BROGUE_ASSERTS
     assert(perceivedDistance >= 0 && awareness >= 0);
 #endif
 	
-	if (perceivedDistance > awareness * 3 / 2) {
-		// out of awareness range
+	if (perceivedDistance > (awareness + 1) * 2) {
+		// out of awareness range, even if hunting
 		retval = false;
-	} else if (observer->creatureState == MONSTER_TRACKING_SCENT
-               && perceivedDistance <= awareness * 3 / 2) {
+	} else if (observer->creatureState == MONSTER_TRACKING_SCENT) {
 		// already aware of the target
 		retval = true;
 	} else if (target == &player
@@ -1401,8 +1359,8 @@ boolean awareOfTarget(creature *observer, creature *target) {
 }
 
 void updateMonsterState(creature *monst) {
-	short x, y, maximumInvisibilityDetectionRadius, closestFearedEnemy;
-	boolean awareOfPlayer, lostToInvisibility;
+	short x, y, closestFearedEnemy;
+	boolean awareOfPlayer;
 	//char buf[DCOLS*3], monstName[DCOLS];
     creature *monst2;
 	
@@ -1412,27 +1370,6 @@ void updateMonsterState(creature *monst) {
 		monst->creatureState = MONSTER_TRACKING_SCENT;
 		return;
 	}
-    
-    if (player.status[STATUS_INVISIBLE]) {
-        lostToInvisibility = true;
-        if (monst->creatureState == MONSTER_TRACKING_SCENT) {
-            maximumInvisibilityDetectionRadius = 2;
-        } else {
-            maximumInvisibilityDetectionRadius = 1;
-        }
-        CYCLE_MONSTERS_AND_PLAYERS(monst2) {
-            if ((monst2 == &player || monstersAreEnemies(monst, monst2))
-                && (monst2 != &player || (pmap[player.xLoc][player.yLoc].flags & IN_FIELD_OF_VIEW))
-                && monst != monst2
-                && distanceBetween(monst->xLoc, monst->yLoc, monst2->xLoc, monst2->yLoc) <= maximumInvisibilityDetectionRadius) {
-                
-                lostToInvisibility = false;
-                break;
-            }
-        }
-    } else {
-        lostToInvisibility = false;
-    }
 	
 	x = monst->xLoc;
 	y = monst->yLoc;
@@ -1458,7 +1395,6 @@ void updateMonsterState(creature *monst) {
 	
 	if ((monst->creatureState == MONSTER_WANDERING)
         && awareOfPlayer
-        && !lostToInvisibility
         && (pmap[player.xLoc][player.yLoc].flags & IN_FIELD_OF_VIEW)) {
         
 		// If wandering, but the scent is stronger than the scent detection threshold, start tracking the scent.
@@ -1475,7 +1411,7 @@ void updateMonsterState(creature *monst) {
 //				combatMessage(buf, 0);
 //			}
 		}
-	} else if (monst->creatureState == MONSTER_TRACKING_SCENT && (!awareOfPlayer || lostToInvisibility)) {
+	} else if (monst->creatureState == MONSTER_TRACKING_SCENT && !awareOfPlayer) {
 		// if tracking scent, but the scent is weaker than the scent detection threshold, begin wandering.
 		monst->creatureState = MONSTER_WANDERING;
 		chooseNewWanderDestination(monst);
@@ -2999,7 +2935,6 @@ void monstersTurn(creature *monst) {
 		
 		if ((monst->status[STATUS_LEVITATING] || monst->info.flags & MONST_RESTRICTED_TO_LIQUID || monst->bookkeepingFlags & MONST_SUBMERGED
 			 || (monst->info.flags & MONST_IMMUNE_TO_WEBS && monst->info.abilityFlags & MA_SHOOTS_WEBS))
-			&& (distanceBetween(x, y, player.xLoc, player.yLoc)) / 100 < monst->info.sightRadius
 			&& pmap[x][y].flags & IN_FIELD_OF_VIEW) {
 			playerLoc[0] = player.xLoc;
 			playerLoc[1] = player.yLoc;

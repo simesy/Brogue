@@ -914,6 +914,16 @@ void executePlaybackInput(rogueEvent *recordingInput) {
                     messageWithColor("Color effects enabled. Press '\\' again to disable.", &teal, false);
                 }
                 break;
+            case AGGRO_DISPLAY_KEY:
+                rogue.displayAggroRangeMode = !rogue.displayAggroRangeMode;
+                displayLevel();
+                refreshSideBar(-1, -1, false);
+                if (rogue.displayAggroRangeMode) {
+                    messageWithColor("Stealth range displayed. Press ']' again to hide.", &teal, false);
+                } else {
+                    messageWithColor("Stealth range hidden. Press ']' again to display.", &teal, false);
+                }
+                break;
 			case SEED_KEY:
 				//rogue.playbackMode = false;
 				//DEBUG {displayGrid(safetyMap); displayMoreSign(); displayLevel();}

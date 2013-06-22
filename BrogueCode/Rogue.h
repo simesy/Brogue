@@ -35,7 +35,7 @@
 
 // debug macros -- define DEBUGGING as 1 to enable debugging.
 
-#define DEBUGGING						1
+#define DEBUGGING						0
 
 #define DEBUG							if (DEBUGGING)
 #define MONSTERS_ENABLED				(!DEBUGGING || 1) // Quest room monsters can be generated regardless.
@@ -1015,6 +1015,7 @@ enum tileFlags {
 #define APPLY_KEY			'a'
 #define THROW_KEY			't'
 #define TRUE_COLORS_KEY		'\\'
+#define AGGRO_DISPLAY_KEY   ']'
 #define DROP_KEY			'd'
 #define CALL_KEY			'c'
 #define QUIT_KEY			'Q'
@@ -1842,8 +1843,6 @@ typedef struct creatureType {
 	short accuracy;
 	randomRange damage;
 	long turnsBetweenRegen;		// turns to wait before regaining 1 HP
-	short sightRadius;
-	short scentThreshold;
 	short movementSpeed;
 	short attackSpeed;
 	enum dungeonFeatureTypes bloodType;
@@ -1995,6 +1994,7 @@ typedef struct playerCharacter {
 	boolean alreadyFell;				// so the player can fall only one depth per turn
 	boolean eligibleToUseStairs;		// so the player uses stairs only when he steps onto them
 	boolean trueColorMode;				// whether lighting effects are disabled
+    boolean displayAggroRangeMode;      // whether your stealth range is displayed
 	boolean quit;						// to skip the typical end-game theatrics when the player quits
 	unsigned long seed;					// the master seed for generating the entire dungeon
 	short RNG;							// which RNG are we currently using?
@@ -2812,7 +2812,9 @@ extern "C" {
 	void promoteTile(short x, short y, enum dungeonLayers layer, boolean useFireDF);
 	void autoPlayLevel(boolean fastForward);
 	void updateClairvoyance();
-    short currentStealthValue();
+    short scentDistance(short x1, short y1, short x2, short y2);
+    short armorAggroAdjustment(item *theArmor);
+    short currentAggroValue();
 	
 	void initRecording();
 	void flushBufferToFile();

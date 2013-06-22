@@ -1751,9 +1751,28 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 			
 			// protected?
 			if (theItem->flags & ITEM_PROTECTED) {
-				sprintf(buf2, "%sThe %s cannot be corroded by acid.%s",
+				sprintf(buf2, "%sThe %s cannot be corroded by acid.%s ",
                         goodColorEscape,
 						theName,
+                        whiteColorEscape);
+				strcat(buf, buf2);
+			}
+			
+			// heavy armor?
+            current = armorAggroAdjustment(rogue.armor);
+			if ((theItem->category & ARMOR)
+                && !(theItem->flags & ITEM_EQUIPPED)
+                && (current != armorAggroAdjustment(theItem))) {
+                
+                new = armorAggroAdjustment(theItem);
+                if (rogue.armor) {
+                    new -= armorAggroAdjustment(rogue.armor);
+                }
+				sprintf(buf2, "Equipping the %s will %s%s your stealth range by %i%s. ",
+						theName,
+                        new > 0 ? badColorEscape : goodColorEscape,
+                        new > 0 ? "increase" : "decrease",
+                        abs(new),
                         whiteColorEscape);
 				strcat(buf, buf2);
 			}

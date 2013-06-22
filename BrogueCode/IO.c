@@ -215,7 +215,10 @@ short actionMenu(short x, short y, boolean playingBack) {
 	sprintf(buttons[buttonCount].text, "  %s\\: %s%s color effects  ",	yellowColorEscape, whiteColorEscape, rogue.trueColorMode ? "Enable" : "Disable");
 	buttons[buttonCount].hotkey[0] = TRUE_COLORS_KEY;
 	buttonCount++;
-	sprintf(buttons[buttonCount].text, "  %s?: %sHelp  ",						yellowColorEscape, whiteColorEscape);
+	sprintf(buttons[buttonCount].text, "  %s]: %s%s stealth range  ",	yellowColorEscape, whiteColorEscape, rogue.displayAggroRangeMode ? "Hide" : "Display");
+	buttons[buttonCount].hotkey[0] = AGGRO_DISPLAY_KEY;
+	buttonCount++;
+	sprintf(buttons[buttonCount].text, "  %s?: %sHelp  ", yellowColorEscape, whiteColorEscape);
 	buttons[buttonCount].hotkey[0] = HELP_KEY;
 	buttonCount++;
 	sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
@@ -814,6 +817,7 @@ boolean separateColors(color *fore, color *back) {
 // okay, this is kind of a beast...
 void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeColor, color *returnBackColor) {
 	short bestBCPriority, bestFCPriority, bestCharPriority;
+    short distance;
 	uchar cellChar = 0;
 	color cellForeColor, cellBackColor, lightMultiplierColor = black, gasAugmentColor;
 	boolean monsterWithDetectedItem = false, needDistinctness = false;
@@ -1139,6 +1143,14 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 	}
 	
 	bakeTerrainColors(&cellForeColor, &cellBackColor, x, y);
+    
+    if (rogue.displayAggroRangeMode && (pmap[x][y].flags & IN_FIELD_OF_VIEW)) {
+        distance = min(rogue.scentTurnNumber - scentMap[x][y], scentDistance(x, y, player.xLoc, player.yLoc));
+        if (distance <= rogue.aggroRange * 2) {
+            applyColorAugment(&cellForeColor, &orange, 15);
+            applyColorAugment(&cellBackColor, &orange, 15);
+        }
+    }
 	
 	if (needDistinctness) {
 		separateColors(&cellForeColor, &cellBackColor);
@@ -2183,6 +2195,16 @@ void executeKeystroke(signed long keystroke, boolean controlKey, boolean shiftKe
 				messageWithColor("Color effects disabled. Press '\\' again to enable.", &teal, false);
 			} else {
 				messageWithColor("Color effects enabled. Press '\\' again to disable.", &teal, false);
+			}
+			break;
+		case AGGRO_DISPLAY_KEY:
+			rogue.displayAggroRangeMode = !rogue.displayAggroRangeMode;
+			displayLevel();
+			refreshSideBar(-1, -1, false);
+			if (rogue.displayAggroRangeMode) {
+                messageWithColor("Stealth range displayed. Press ']' again to hide.", &teal, false);
+            } else {
+                messageWithColor("Stealth range hidden. Press ']' again to display.", &teal, false);
 			}
 			break;
 //		case FIGHT_KEY:
@@ -3303,7 +3325,7 @@ char nextKeyPress(boolean textInput) {
 	return theEvent.param1;
 }
 
-#define BROGUE_HELP_LINE_COUNT	32
+#define BROGUE_HELP_LINE_COUNT	33
 
 void printHelpScreen() {
 	short i, j;
@@ -3338,6 +3360,7 @@ void printHelpScreen() {
 		"             Q  ****quit to title screen",
         "",
 		"             \\  ****disable/enable color effects",
+		"             ]  ****display/hide stealth range",
 		"   <space/esc>  ****clear message or cancel command",
 		"",
 		"        -- press space or click to continue --"
