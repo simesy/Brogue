@@ -5779,7 +5779,7 @@ void readScroll(item *theItem) {
             createFlare(player.xLoc, player.yLoc, SCROLL_ENCHANTMENT_LIGHT);
 			break;
 		case SCROLL_RECHARGING:
-            rechargeItems(STAFF | WAND | CHARM);
+            rechargeItems(STAFF | CHARM);
 			break;
 		case SCROLL_PROTECT_ARMOR:
 			if (rogue.armor) {
