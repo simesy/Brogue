@@ -1146,9 +1146,11 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
     
     if (rogue.displayAggroRangeMode && (pmap[x][y].flags & IN_FIELD_OF_VIEW)) {
         distance = min(rogue.scentTurnNumber - scentMap[x][y], scentDistance(x, y, player.xLoc, player.yLoc));
-        if (distance <= rogue.aggroRange * 2) {
-            applyColorAugment(&cellForeColor, &orange, 15);
-            applyColorAugment(&cellBackColor, &orange, 15);
+        if (distance > rogue.aggroRange * 2) {
+            applyColorAverage(&cellForeColor, &orange, 8);
+            applyColorAverage(&cellBackColor, &orange, 8);
+            applyColorAugment(&cellForeColor, &orange, 8);
+            applyColorAugment(&cellBackColor, &orange, 8);
         }
     }
 	
