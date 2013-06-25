@@ -552,7 +552,8 @@ void populateItems(short upstairsX, short upstairsY) {
     
     if (rogue.depthLevel > 2) {
         // Include a random factor in food generation to make things slightly less predictable.
-        depthOffsetForFood = rand_range(-1, 1) + rand_range(-1, 1);
+        depthOffsetForFood = rand_range(-1, 1);
+        depthOffsetForFood += rand_range(-1, 1);
     }
 	
 	for (i=0; i<numberOfItems; i++) {

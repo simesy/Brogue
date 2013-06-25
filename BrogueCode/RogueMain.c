@@ -246,7 +246,8 @@ void initializeRogue(unsigned long seed) {
 	
 	// initialize the levels list
 	for (i=0; i<DEEPEST_LEVEL+1; i++) {
-		levels[i].levelSeed = (unsigned long) rand_range(0, 9999) + 10000 * rand_range(0, 9999);
+		levels[i].levelSeed = (unsigned long) rand_range(0, 9999);
+        levels[i].levelSeed += (unsigned long) 10000 * rand_range(0, 9999);
 		levels[i].monsters = NULL;
 		levels[i].dormantMonsters = NULL;
 		levels[i].items = NULL;
@@ -688,7 +689,8 @@ void startLevel(short oldLevelNumber, short stairDirection) {
         scentMap = levels[rogue.depthLevel - 1].scentMap;
         fillGrid(levels[rogue.depthLevel - 1].scentMap, 0);
 		// generate new level
-		oldSeed = (unsigned long) rand_range(0, 9999) + 10000 * rand_range(0, 9999);
+		oldSeed = (unsigned long) rand_range(0, 9999);
+        oldSeed += (unsigned long) 10000 * rand_range(0, 9999);
 		seedRandomGenerator(levels[rogue.depthLevel - 1].levelSeed);
 		
 		// Load up next level's monsters and items, since one might have fallen from above.

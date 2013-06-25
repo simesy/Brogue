@@ -948,7 +948,10 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 				   && (!(monst->bookkeepingFlags & MONST_SUBMERGED) || rogue.inWater || rogue.playbackOmniscience)) {
 			needDistinctness = true;
 			if (player.status[STATUS_HALLUCINATING] > 0 && !(monst->info.flags & MONST_INANIMATE) && !rogue.playbackOmniscience) {
-				cellChar = rand_range('a', 'z') + (rand_range(0, 1) ? 'A' - 'a' : 0);
+				cellChar = rand_range('a', 'z');
+                if (rand_range(0, 1)) {
+                    cellChar += 'A' - 'a';
+                }
 				cellForeColor = *(monsterCatalog[rand_range(1, NUMBER_MONSTER_KINDS - 1)].foreColor);
 			} else {
 				cellChar = monst->info.displayChar;
@@ -1147,10 +1150,10 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
     if (rogue.displayAggroRangeMode && (pmap[x][y].flags & IN_FIELD_OF_VIEW)) {
         distance = min(rogue.scentTurnNumber - scentMap[x][y], scentDistance(x, y, player.xLoc, player.yLoc));
         if (distance > rogue.aggroRange * 2) {
-            applyColorAverage(&cellForeColor, &orange, 8);
-            applyColorAverage(&cellBackColor, &orange, 8);
-            applyColorAugment(&cellForeColor, &orange, 8);
-            applyColorAugment(&cellBackColor, &orange, 8);
+            applyColorAverage(&cellForeColor, &orange, 12);
+            applyColorAverage(&cellBackColor, &orange, 12);
+            applyColorAugment(&cellForeColor, &orange, 12);
+            applyColorAugment(&cellBackColor, &orange, 12);
         }
     }
 	

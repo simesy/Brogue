@@ -253,10 +253,10 @@ boolean monstersAreEnemies(creature *monst1, creature *monst2) {
 			!= (monst2->creatureState == MONSTER_ALLY || monst2 == &player));
 }
 
-// Every program should have a function called initializeGender().
+
 void initializeGender(creature *monst) {
-	if ((monst->info.flags & MONST_MALE) && (monst->info.flags & MONST_FEMALE)) {	// If it's male and female,
-		monst->info.flags &= ~(rand_percent(50) ? MONST_MALE : MONST_FEMALE);		// identify as one or the other.
+	if ((monst->info.flags & MONST_MALE) && (monst->info.flags & MONST_FEMALE)) {
+		monst->info.flags &= ~(rand_percent(50) ? MONST_MALE : MONST_FEMALE);
 	}
 }
 
@@ -1350,8 +1350,8 @@ boolean awareOfTarget(creature *observer, creature *target) {
 		// observer not hunting and player-target not in field of view
 		retval = false;
 	} else if (perceivedDistance <= awareness) {
-	// within range but currently unaware
-        retval = rand_percent(25);//((rand_range(0, perceivedDistance) == 0) ? true : false);
+        // within range but currently unaware
+        retval = rand_percent(25);
     } else {
         retval = false;
     }
