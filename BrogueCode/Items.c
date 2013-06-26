@@ -4494,6 +4494,7 @@ boolean moveCursor(boolean *targetConfirmed,
 	short buttonInput;
 	boolean cursorMovementCommand, again, movementKeystroke, sidebarHighlighted;
 	rogueEvent theEvent;
+    short oldRNG;
 	
 	short *cursor = rogue.cursorLoc; // shorthand
 	
@@ -4508,7 +4509,9 @@ boolean moveCursor(boolean *targetConfirmed,
 		cursorMovementCommand = false;
 		movementKeystroke = false;
 		
-		assureCosmeticRNG;
+        oldRNG = rogue.RNG;
+        rogue.RNG = RNG_COSMETIC;
+		//assureCosmeticRNG;
 		
 		if (state) { // Also running a button loop.
 			
@@ -4716,6 +4719,7 @@ boolean chooseTarget(short returnLoc[2],
 	creature *monst;
 	boolean canceled, targetConfirmed, tabKey, cursorInTrajectory, focusedOnSomething = false;
 	rogueEvent event;
+    short oldRNG;
 		
 	if (rogue.playbackMode) {
 		// In playback, pull the next event (a mouseclick) and use that location as the target.
@@ -4724,7 +4728,9 @@ boolean chooseTarget(short returnLoc[2],
 		return true;
 	}
 	
-	assureCosmeticRNG;
+    oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
+	//assureCosmeticRNG;
 	
 	originLoc[0] = player.xLoc;
 	originLoc[1] = player.yLoc;

@@ -825,7 +825,7 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 	creature *monst = NULL;
 	item *theItem = NULL;
     enum tileType tile = NOTHING;
-	uchar itemChars[] = {POTION_CHAR, SCROLL_CHAR, FOOD_CHAR, WAND_CHAR,
+	const uchar itemChars[] = {POTION_CHAR, SCROLL_CHAR, FOOD_CHAR, WAND_CHAR,
 						STAFF_CHAR, GOLD_CHAR, ARMOR_CHAR, WEAPON_CHAR, RING_CHAR, CHARM_CHAR};
 	enum dungeonLayers layer, maxLayer;
 	
@@ -1429,6 +1429,7 @@ void colorMultiplierFromDungeonLight(short x, short y, color *editColor) {
 }
 
 void plotCharWithColor(uchar inputChar, short xLoc, short yLoc, const color *cellForeColor, const color *cellBackColor) {
+    short oldRNG;
 	
 	short foreRed = cellForeColor->red,
 	foreGreen = cellForeColor->green,
@@ -1448,7 +1449,9 @@ void plotCharWithColor(uchar inputChar, short xLoc, short yLoc, const color *cel
 		return;
 	}
 	
-	assureCosmeticRNG;
+    //assureCosmeticRNG;
+	oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
 	
 	foreRand = rand_range(0, cellForeColor->rand);
 	backRand = rand_range(0, cellBackColor->rand);
@@ -1497,7 +1500,9 @@ void plotCharWithColor(uchar inputChar, short xLoc, short yLoc, const color *cel
 }
 
 void plotCharToBuffer(uchar inputChar, short x, short y, color *foreColor, color *backColor, cellDisplayBuffer dbuf[COLS][ROWS]) {
-	if (!dbuf) {
+	short oldRNG;
+    
+    if (!dbuf) {
 		plotCharWithColor(inputChar, x, y, foreColor, backColor);
 		return;
 	}
@@ -1505,8 +1510,10 @@ void plotCharToBuffer(uchar inputChar, short x, short y, color *foreColor, color
 #ifdef BROGUE_ASSERTS
 	assert(coordinatesAreInWindow(x, y));
 #endif
-	
-	assureCosmeticRNG;
+    
+	oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
+	//assureCosmeticRNG;
 	dbuf[x][y].foreColorComponents[0] = foreColor->red + rand_range(0, foreColor->redRand) + rand_range(0, foreColor->rand);
 	dbuf[x][y].foreColorComponents[1] = foreColor->green + rand_range(0, foreColor->greenRand) + rand_range(0, foreColor->rand);
 	dbuf[x][y].foreColorComponents[2] = foreColor->blue + rand_range(0, foreColor->blueRand) + rand_range(0, foreColor->rand);
@@ -1699,12 +1706,15 @@ void flashForeground(short *x, short *y, color **flashColor, short *flashStrengt
 	short i, j, percent;
 	uchar *displayChar;
 	color *bColor, *fColor, newColor;
+    short oldRNG;
 	
 	if (count <= 0) {
 		return;
 	}
 	
-	assureCosmeticRNG;
+	oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
+	//assureCosmeticRNG;
 	
 	displayChar = (uchar *) malloc(count * sizeof(uchar));
 	fColor = (color *) malloc(count * sizeof(color));
@@ -2429,12 +2439,15 @@ void flashMessage(char *message, short x, short y, int time, color *fColor, colo
 	color backColors[COLS], backColor, foreColor;
 	cellDisplayBuffer dbufs[COLS];
 	uchar dchar;
+    short oldRNG;
 	
 	if (rogue.playbackFastForward) {
 		return;
 	}
-	
-	assureCosmeticRNG;
+    
+	oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
+	//assureCosmeticRNG;
 	
 	messageLength = strLenWithoutEscapes(message);
 	fastForward = false;
@@ -2557,6 +2570,7 @@ void displayMonsterFlashes(boolean flashingEnabled) {
 	creature *monst;
 	short x[100], y[100], strength[100], count = 0;
 	color *flashColor[100];
+    short oldRNG;
 	
 	rogue.creaturesWillFlashThisTurn = false;
 	
@@ -2564,7 +2578,9 @@ void displayMonsterFlashes(boolean flashingEnabled) {
 		return;
 	}
 	
-	assureCosmeticRNG;
+    oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
+	//assureCosmeticRNG;
 	
 	CYCLE_MONSTERS_AND_PLAYERS(monst) {
 		if (monst->bookkeepingFlags & MONST_WILL_FLASH) {
@@ -2972,12 +2988,15 @@ void refreshSideBar(short focusX, short focusY, boolean focusedEntityMustGoFirst
     short terrainLocationMap[ROWS][2];
 	boolean gotFocusedEntityOnScreen = (focusX >= 0 ? false : true);
 	char addedEntity[DCOLS][DROWS];
+    short oldRNG;
 	
 	if (rogue.gameHasEnded || rogue.playbackFastForward) {
 		return;
 	}
 	
-	assureCosmeticRNG;
+    oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
+	//assureCosmeticRNG;
 	
 	if (focusX < 0) {
 		focusedEntityMustGoFirst = false; // just in case!
@@ -3766,6 +3785,7 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 	color monstForeColor, monstBackColor, healthBarColor, tempColor;
 	short initialY, i, j, highlightStrength, displayedArmor, percent;
 	boolean inPath;
+    short oldRNG;
 	
 	const char hallucinationStrings[10][COLS] = {
 		"     (Dancing)      ",
@@ -3812,7 +3832,9 @@ short printMonsterInfo(creature *monst, short y, boolean dim, boolean highlight)
 	
 	initialY = y;
 	
-	assureCosmeticRNG;
+    oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
+	//assureCosmeticRNG;
 	
 	if (y < ROWS - 1) {
 		printString("                    ", 0, y, &white, &black, 0); // Start with a blank line
@@ -4048,6 +4070,7 @@ short printItemInfo(item *theItem, short y, boolean dim, boolean highlight) {
 	color itemForeColor, itemBackColor;
 	short initialY, i, j, highlightStrength, lineCount;
 	boolean inPath;
+    short oldRNG;
 	
 	if (y >= ROWS - 1) {
 		return ROWS - 1;
@@ -4055,7 +4078,9 @@ short printItemInfo(item *theItem, short y, boolean dim, boolean highlight) {
 	
 	initialY = y;
 	
-	assureCosmeticRNG;
+    oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
+	//assureCosmeticRNG;
 	
 	if (y < ROWS - 1) {
 		// Unhighlight if it's highlighted as part of the path.
@@ -4108,6 +4133,7 @@ short printTerrainInfo(short x, short y, short py, const char *description, bool
 	boolean inPath;
     char name[DCOLS*2];
     color textColor;
+    short oldRNG;
 	
 	if (py >= ROWS - 1) {
 		return ROWS - 1;
@@ -4115,7 +4141,9 @@ short printTerrainInfo(short x, short y, short py, const char *description, bool
 	
 	initialY = py;
 	
-	assureCosmeticRNG;
+    oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
+	//assureCosmeticRNG;
 	
 	if (py < ROWS - 1) {
 		// Unhighlight if it's highlighted as part of the path.

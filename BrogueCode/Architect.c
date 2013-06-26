@@ -1787,7 +1787,8 @@ void insertRoomAt(short **dungeonMap, short **roomMap, const short roomToDungeon
     for (dir = 0; dir < 4; dir++) {
         newX = xRoom + nbDirs[dir][0];
         newY = yRoom + nbDirs[dir][1];
-        if (roomMap[newX][newY]
+        if (coordinatesAreInMap(newX, newY)
+            && roomMap[newX][newY]
             && coordinatesAreInMap(newX + roomToDungeonX, newY + roomToDungeonY)
             && dungeonMap[newX + roomToDungeonX][newY + roomToDungeonY] == 0) {
             

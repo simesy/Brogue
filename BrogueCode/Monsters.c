@@ -190,7 +190,8 @@ boolean canDirectlySeeMonster(creature *monst) {
 }
 
 void monsterName(char *buf, creature *monst, boolean includeArticle) {
-	
+	short oldRNG;
+    
 	if (monst == &player) {
 		strcpy(buf, "you");
 		return;
@@ -198,7 +199,9 @@ void monsterName(char *buf, creature *monst, boolean includeArticle) {
 	if (canSeeMonster(monst) || rogue.playbackOmniscience) {
 		if (player.status[STATUS_HALLUCINATING] && !rogue.playbackOmniscience) {
 			
-			assureCosmeticRNG;
+            oldRNG = rogue.RNG;
+            rogue.RNG = RNG_COSMETIC;
+			//assureCosmeticRNG;
 			sprintf(buf, "%s%s", (includeArticle ? "the " : ""),
 					monsterCatalog[rand_range(1, NUMBER_MONSTER_KINDS - 1)].monsterName);
 			restoreRNG;

@@ -144,6 +144,7 @@ void initializeRogue(unsigned long seed) {
 	item *theItem;
 	uchar k;
 	boolean playingback, playbackFF, playbackPaused;
+    short oldRNG;
 	
 	// generate libtcod font bitmap
 	// add any new unicode characters here to include them
@@ -274,7 +275,9 @@ void initializeRogue(unsigned long seed) {
 	rogue.rewardRoomsGenerated = 0;
 	
 	// pre-shuffle the random terrain colors
-	assureCosmeticRNG;
+    oldRNG = rogue.RNG;
+    rogue.RNG = RNG_COSMETIC;
+	//assureCosmeticRNG;
 	for (i=0; i<DCOLS; i++) {
 		for( j=0; j<DROWS; j++ ) {
 			for (k=0; k<8; k++) {

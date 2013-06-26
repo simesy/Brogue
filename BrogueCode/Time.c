@@ -1938,6 +1938,7 @@ void playerTurnEnded() {
 	char buf[COLS], buf2[COLS];
 	creature *monst, *monst2, *nextMonst;
 	boolean fastForward = false;
+    short oldRNG;
 	
 #ifdef BROGUE_ASSERTS
 	assert(rogue.RNG == RNG_SUBSTANTIVE);
@@ -2172,7 +2173,9 @@ void playerTurnEnded() {
 				if (monst->creatureState != MONSTER_ALLY) {
 					rogue.disturbed = true;
 					if (rogue.cautiousMode || rogue.automationActive) {
-						assureCosmeticRNG;
+                        oldRNG = rogue.RNG;
+                        rogue.RNG = RNG_COSMETIC;
+						//assureCosmeticRNG;
 						monsterName(buf2, monst, false);
 						sprintf(buf, "you %s a%s %s",
 								playerCanDirectlySee(monst->xLoc, monst->yLoc) ? "see" : "sense",
