@@ -1011,6 +1011,7 @@ void call(item *theItem) {
 				recordKeystrokeSequence(command);
 				recordKeystroke(RETURN_KEY, false, false);
 			}
+            return;
         } else if (confirm("Inscribe this particular item instead of all similar items?", true)) {
 			command[c++] = 'y'; // y means yes, since the recording also needs to negotiate the above confirmation prompt.
 			if (inscribeItem(theItem)) {

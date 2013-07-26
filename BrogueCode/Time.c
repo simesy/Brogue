@@ -840,22 +840,24 @@ void handleHealthAlerts() {
 	}
 	rogue.previousHealthPercent = currentPercent;
 	
-	currentPercent = player.status[STATUS_POISONED] * 100 / player.currentHP;
-	
-	if (currentPercent > rogue.previousPoisonPercent && !rogue.gameHasEnded) {
-		for (i=0; i < poisonThresholdsCount; i++) {
-			if (currentPercent > pThresholds[i] && rogue.previousPoisonPercent <= pThresholds[i]) {
-                if (currentPercent < 100) {
-                    sprintf(buf, " >%i%% poisoned ", pThresholds[i]);
-                } else {
-                    strcpy(buf, " Fatally poisoned ");
+    if (!rogue.gameHasEnded) {
+        currentPercent = player.status[STATUS_POISONED] * 100 / player.currentHP;
+        
+        if (currentPercent > rogue.previousPoisonPercent && !rogue.gameHasEnded) {
+            for (i=0; i < poisonThresholdsCount; i++) {
+                if (currentPercent > pThresholds[i] && rogue.previousPoisonPercent <= pThresholds[i]) {
+                    if (currentPercent < 100) {
+                        sprintf(buf, " >%i%% poisoned ", pThresholds[i]);
+                    } else {
+                        strcpy(buf, " Fatally poisoned ");
+                    }
+                    flashCreatureAlert(&player, buf, &yellow, &darkGreen);
+                    break;
                 }
-                flashCreatureAlert(&player, buf, &yellow, &darkGreen);
-				break;
-			}
-		}
-	}
-	rogue.previousPoisonPercent = currentPercent;
+            }
+        }
+        rogue.previousPoisonPercent = currentPercent;
+    }
 }
 
 
@@ -1949,7 +1951,9 @@ void playerTurnEnded() {
 	
 	if (player.bookkeepingFlags & MONST_IS_FALLING) {
 		playerFalls();
-		handleHealthAlerts();
+        if (!rogue.gameHasEnded) {
+            handleHealthAlerts();
+        }
 		return;
 	}
 	
@@ -2040,11 +2044,11 @@ void playerTurnEnded() {
 		}
 		
 		updateScent();
-		updateVision(true);
-        rogue.aggroRange = currentAggroValue();
-        if (rogue.displayAggroRangeMode) {
-            displayLevel();
-        }
+//		updateVision(true);
+//        rogue.aggroRange = currentAggroValue();
+//        if (rogue.displayAggroRangeMode) {
+//            displayLevel();
+//        }
 		rogue.updatedSafetyMapThisTurn			= false;
 		rogue.updatedAllySafetyMapThisTurn		= false;
 		rogue.updatedMapToSafeTerrainThisTurn	= false;
@@ -2162,10 +2166,11 @@ void playerTurnEnded() {
 		// DEBUG displayLevel();
 		//checkForDungeonErrors();
 		
-//		updateVision(true);
-//        if (rogue.displayAggroRangeMode) {
-//            displayLevel();^^
-//        }
+        updateVision(true);
+        rogue.aggroRange = currentAggroValue();
+        if (rogue.displayAggroRangeMode) {
+            displayLevel();
+        }
 		
 		for(monst = monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
 			if (canSeeMonster(monst) && !(monst->bookkeepingFlags & (MONST_WAS_VISIBLE))) {
