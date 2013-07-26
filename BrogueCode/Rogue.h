@@ -796,6 +796,7 @@ enum charmKind {
     CHARM_TELEPATHY,
     CHARM_LEVITATION,
     CHARM_SHATTERING,
+    CHARM_GUARDIAN,
     CHARM_TELEPORTATION,
     CHARM_RECHARGING,
     CHARM_NEGATION,
@@ -883,6 +884,7 @@ enum monsterTypes {
 	MK_SPECTRAL_IMAGE,
     MK_GUARDIAN,
     MK_WINGED_GUARDIAN,
+    MK_CHARM_GUARDIAN,
     MK_ELDRITCH_TOTEM,
     MK_MIRRORED_TOTEM,
 	
@@ -1120,6 +1122,7 @@ boolean cellHasTerrainFlag(short x, short y, unsigned long flagMask);
 #define charmHealing(enchant)               ((int) (clamp(20 * (enchant), 0, 100) + FLOAT_FUDGE))
 #define charmProtection(enchant)			((int) (150 * pow(1.35, (double) (enchant) - 1) + FLOAT_FUDGE))
 #define charmShattering(enchant)            ((int) (4 + (enchant) + FLOAT_FUDGE))
+#define charmGuardianLifespan(enchant)      ((int) (4 + (2 * (enchant)) + FLOAT_FUDGE))
 
 #define wandDominate(monst)					(((monst)->currentHP * 5 < (monst)->info.maxHP) ? 100 : \
 											max(0, 100 * ((monst)->info.maxHP - (monst)->currentHP) / (monst)->info.maxHP))

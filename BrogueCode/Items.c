@@ -1412,6 +1412,7 @@ short charmEffectDuration(short charmKind, short enchant) {
         25, // Telepathy
         10, // Levitation
         0,  // Shattering
+        18, // Guardian
         0,  // Teleportation
         0,  // Recharging
         0,  // Negation
@@ -1425,6 +1426,7 @@ short charmEffectDuration(short charmKind, short enchant) {
         25, // Telepathy
         25, // Levitation
         0,  // Shattering
+        0,  // Guardian
         0,  // Teleportation
         0,  // Recharging
         0,  // Negation
@@ -1443,22 +1445,12 @@ short charmRechargeDelay(short charmKind, short enchant) {
         800,    // Telepathy
         800,    // Levitation
         2500,   // Shattering
+        700,    // Guardian
         1000,   // Teleportation
         10000,  // Recharging
         2500,   // Negation
     };
     const short increment[NUMBER_CHARM_KINDS] = {
-//        35, // Health
-//        30, // Protection
-//        25, // Haste
-//        25, // Fire immunity
-//        20, // Invisibility
-//        30, // Telepathy
-//        25, // Levitation
-//        40, // Shattering
-//        20, // Teleportation
-//        30, // Recharging
-//        25, // Negation
         45, // Health
         40, // Protection
         35, // Haste
@@ -1467,6 +1459,7 @@ short charmRechargeDelay(short charmKind, short enchant) {
         35, // Telepathy
         35, // Levitation
         40, // Shattering
+        30, // Guardian
         45, // Teleportation
         40, // Recharging
         40, // Negation
@@ -2228,81 +2221,87 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 			}
 			break;
         case CHARM:
-			enchant = theItem->enchant1;
             switch (theItem->kind) {
                 case CHARM_HEALTH:
                     sprintf(buf2, "\n\nWhen used, the charm will heal %i%% of your health and recharge in %i turns. (If the charm is enchanted, it will heal %i%% of your health and recharge in %i turns.)",
-                            charmHealing(enchant),
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmHealing(enchant + 1),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmHealing(theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmHealing(theItem->enchant1 + 1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 case CHARM_PROTECTION:
                     sprintf(buf2, "\n\nWhen used, the charm will shield you for up to 20 turns against up to %i damage and recharge in %i turns. (If the charm is enchanted, this will change to %i damage and %i turns.)",
-                            charmProtection(enchant) / 10,
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmProtection(enchant + 1) / 10,
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmProtection(theItem->enchant1) / 10,
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmProtection(theItem->enchant1 + 1) / 10,
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 case CHARM_HASTE:
                     sprintf(buf2, "\n\nWhen used, the charm will haste you for %i turns and recharge in %i turns. (If the charm is enchanted, the haste will last %i turns and it will recharge in %i turns.)",
-                            charmEffectDuration(theItem->kind, enchant),
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmEffectDuration(theItem->kind, enchant + 1),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmEffectDuration(theItem->kind, theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmEffectDuration(theItem->kind, theItem->enchant1 + 1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 case CHARM_FIRE_IMMUNITY:
                     sprintf(buf2, "\n\nWhen used, the charm will grant you immunity to fire for %i turns and recharge in %i turns. (If the charm is enchanted, the immunity will last %i turns and it will recharge in %i turns.)",
-                            charmEffectDuration(theItem->kind, enchant),
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmEffectDuration(theItem->kind, enchant + 1),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmEffectDuration(theItem->kind, theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmEffectDuration(theItem->kind, theItem->enchant1 + 1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 case CHARM_INVISIBILITY:
                     sprintf(buf2, "\n\nWhen used, the charm will turn you invisible for %i turns and recharge in %i turns. While invisible, monsters more than two spaces away cannot track you. (If the charm is enchanted, the invisibility will last %i turns and it will recharge in %i turns.)",
-                            charmEffectDuration(theItem->kind, enchant),
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmEffectDuration(theItem->kind, enchant + 1),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmEffectDuration(theItem->kind, theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmEffectDuration(theItem->kind, theItem->enchant1 + 1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 case CHARM_TELEPATHY:
                     sprintf(buf2, "\n\nWhen used, the charm will grant you telepathy for %i turns and recharge in %i turns. (If the charm is enchanted, the telepathy will last %i turns and it will recharge in %i turns.)",
-                            charmEffectDuration(theItem->kind, enchant),
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmEffectDuration(theItem->kind, enchant + 1),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmEffectDuration(theItem->kind, theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmEffectDuration(theItem->kind, theItem->enchant1 + 1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 case CHARM_LEVITATION:
                     sprintf(buf2, "\n\nWhen used, the charm will lift you off the ground for %i turns and recharge in %i turns. (If the charm is enchanted, the levitation will last %i turns and it will recharge in %i turns.)",
-                            charmEffectDuration(theItem->kind, enchant),
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmEffectDuration(theItem->kind, enchant + 1),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmEffectDuration(theItem->kind, theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmEffectDuration(theItem->kind, theItem->enchant1 + 1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 case CHARM_SHATTERING:
                     sprintf(buf2, "\n\nWhen used, the charm will dissolve the nearby walls and recharge in %i turns. (If the charm is enchanted, it will recharge in %i turns.)",
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
+                    break;
+                case CHARM_GUARDIAN:
+                    sprintf(buf2, "\n\nWhen used, a guardian will materialize for %i turns, and the charm will recharge in %i turns. (If the charm is enchanted, the guardian will last for %i turns and the charm will recharge in %i turns.)",
+                            charmGuardianLifespan(theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmGuardianLifespan(theItem->enchant1 + 1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
 //                case CHARM_CAUSE_FEAR:
 //                    sprintf(buf2, "\n\nWhen used, the charm will terrify all visible creatures and recharge in %i turns. (If the charm is enchanted, it will recharge in %i turns.)",
-//                            charmRechargeDelay(theItem->kind, enchant),
-//                            charmRechargeDelay(theItem->kind, enchant + 1));
+//                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+//                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
 //                    break;
                 case CHARM_TELEPORTATION:
                     sprintf(buf2, "\n\nWhen used, the charm will teleport you elsewhere in the dungeon and recharge in %i turns. (If the charm is enchanted, it will recharge in %i turns.)",
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 case CHARM_RECHARGING:
                     sprintf(buf2, "\n\nWhen used, the charm will recharge your staffs (though not your wands or charms), after which it will recharge in %i turns. (If the charm is enchanted, it will recharge in %i turns.)",
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 case CHARM_NEGATION:
                     sprintf(buf2, "\n\nWhen used, the charm will negate all magical effects on the creatures in your field of view and the items on the ground, and recharge in %i turns. (If the charm is enchanted, it will recharge in %i turns.)",
-                            charmRechargeDelay(theItem->kind, enchant),
-                            charmRechargeDelay(theItem->kind, enchant + 1));
+                            charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 default:
                     break;
@@ -5374,6 +5373,24 @@ boolean useStaffOrWand(item *theItem, boolean *commandsRecorded) {
     return true;
 }
 
+void summonGuardian(item *theItem) {
+    short x = player.xLoc, y = player.yLoc;
+    creature *monst;
+    
+    monst = generateMonster(MK_CHARM_GUARDIAN, false, false);
+    getQualifyingPathLocNear(&(monst->xLoc), &(monst->yLoc), x, y, true,
+                             T_DIVIDES_LEVEL & avoidedFlagsForMonster(&(monst->info)) & ~T_SPONTANEOUSLY_IGNITES, HAS_PLAYER,
+                             avoidedFlagsForMonster(&(monst->info)) & ~T_SPONTANEOUSLY_IGNITES, (HAS_PLAYER | HAS_MONSTER | HAS_UP_STAIRS | HAS_DOWN_STAIRS), false);
+    monst->bookkeepingFlags |= (MONST_FOLLOWER | MONST_BOUND_TO_LEADER | MONST_DOES_NOT_TRACK_LEADER);
+    monst->bookkeepingFlags &= ~MONST_JUST_SUMMONED;
+    monst->leader = &player;
+    monst->creatureState = MONSTER_ALLY;
+    monst->ticksUntilTurn = monst->info.attackSpeed + 1; // So they don't move before the player's next turn.
+    monst->status[STATUS_LIFESPAN_REMAINING] = monst->maxStatus[STATUS_LIFESPAN_REMAINING] = charmGuardianLifespan(theItem->enchant1);
+    pmap[monst->xLoc][monst->yLoc].flags |= HAS_MONSTER;
+    fadeInMonster(monst);
+}
+
 void useCharm(item *theItem) {
     switch (theItem->kind) {
         case CHARM_HEALTH:
@@ -5413,6 +5430,10 @@ void useCharm(item *theItem) {
         case CHARM_SHATTERING:
             messageWithColor("your charm emits a wave of turquoise light that pierces the nearby walls!", &itemMessageColor, false);
             crystalize(charmShattering(theItem->enchant1));
+            break;
+        case CHARM_GUARDIAN:
+            messageWithColor("your charm flashes and the form of a mythical guardian coalesces!", &itemMessageColor, false);
+            summonGuardian(theItem);
             break;
 //        case CHARM_CAUSE_FEAR:
 //            causeFear("your charm");
