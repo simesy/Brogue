@@ -1123,6 +1123,7 @@ boolean cellHasTerrainFlag(short x, short y, unsigned long flagMask);
 #define charmProtection(enchant)			((int) (150 * pow(1.35, (double) (enchant) - 1) + FLOAT_FUDGE))
 #define charmShattering(enchant)            ((int) (4 + (enchant) + FLOAT_FUDGE))
 #define charmGuardianLifespan(enchant)      ((int) (4 + (2 * (enchant)) + FLOAT_FUDGE))
+#define charmNegationRadius(enchant)        ((int) (1 + (3 * (enchant)) + FLOAT_FUDGE))
 
 #define wandDominate(monst)					(((monst)->currentHP * 5 < (monst)->info.maxHP) ? 100 : \
 											max(0, 100 * ((monst)->info.maxHP - (monst)->currentHP) / (monst)->info.maxHP))

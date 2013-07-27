@@ -544,12 +544,6 @@ void initializeRogue(unsigned long seed) {
 		identify(theItem);
 		theItem = addItemToPack(theItem);
 		
-		theItem = generateItem(CHARM, CHARM_GUARDIAN);
-		theItem->enchant1 = 14;
-		theItem->flags &= ~ITEM_CURSED;
-		identify(theItem);
-		theItem = addItemToPack(theItem);
-		
 //		short i;
 //		for (i=0; i < NUMBER_CHARM_KINDS && i < 4; i++) {
 //			theItem = generateItem(CHARM, i);

@@ -824,6 +824,8 @@ void handleHealthAlerts() {
     pThresholds[] = {100, 90, 50};
 	char buf[DCOLS];
     
+    assureCosmeticRNG;
+    
     const short healthThresholdsCount = 4,
     poisonThresholdsCount = 3;
 	
@@ -858,6 +860,8 @@ void handleHealthAlerts() {
         }
         rogue.previousPoisonPercent = currentPercent;
     }
+    
+    restoreRNG;
 }
 
 

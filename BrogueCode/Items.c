@@ -2299,8 +2299,10 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
                             charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 case CHARM_NEGATION:
-                    sprintf(buf2, "\n\nWhen used, the charm will negate all magical effects on the creatures in your field of view and the items on the ground, and recharge in %i turns. (If the charm is enchanted, it will recharge in %i turns.)",
+                    sprintf(buf2, "\n\nWhen used, the charm will negate all magical effects on the creatures in your field of view and the items on the ground up to %i spaces away, and recharge in %i turns. (If the charm is enchanted, it will reach up to %i spaces and recharge in %i turns.)",
+                            charmNegationRadius(theItem->enchant1),
                             charmRechargeDelay(theItem->kind, theItem->enchant1),
+                            charmNegationRadius(theItem->enchant1 + 1),
                             charmRechargeDelay(theItem->kind, theItem->enchant1 + 1));
                     break;
                 default:
@@ -3439,19 +3441,21 @@ void rechargeItems(unsigned long categories) {
 //    colorFlash(&redFlashColor, 0, IN_FIELD_OF_VIEW, 15, DCOLS, player.xLoc, player.yLoc);
 //}
 
-void negationBlast(const char *emitterName) {
+void negationBlast(const char *emitterName, const short distance) {
     creature *monst, *nextMonst;
     item *theItem;
     char buf[DCOLS];
     
     sprintf(buf, "%s emits a numbing torrent of anti-magic!", emitterName);
     messageWithColor(buf, &itemMessageColor, false);
-    colorFlash(&pink, 0, IN_FIELD_OF_VIEW, 15, DCOLS, player.xLoc, player.yLoc);
+    colorFlash(&pink, 0, IN_FIELD_OF_VIEW, 3 + distance / 5, distance, player.xLoc, player.yLoc);
     negate(&player);
     flashMonster(&player, &pink, 100);
     for (monst = monsters->nextCreature; monst != NULL;) {
         nextMonst = monst->nextCreature;
-        if (pmap[monst->xLoc][monst->yLoc].flags & IN_FIELD_OF_VIEW) {
+        if ((pmap[monst->xLoc][monst->yLoc].flags & IN_FIELD_OF_VIEW)
+            && (player.xLoc - monst->xLoc) * (player.xLoc - monst->xLoc) + (player.yLoc - monst->yLoc) * (player.yLoc - monst->yLoc) <= distance * distance) {
+
             if (canSeeMonster(monst)) {
                 flashMonster(monst, &pink, 100);
             }
@@ -3460,7 +3464,9 @@ void negationBlast(const char *emitterName) {
         monst = nextMonst;
     }
     for (theItem = floorItems; theItem != NULL; theItem = theItem->nextItem) {
-        if (pmap[theItem->xLoc][theItem->yLoc].flags & IN_FIELD_OF_VIEW) {
+        if ((pmap[theItem->xLoc][theItem->yLoc].flags & IN_FIELD_OF_VIEW)
+            && (player.xLoc - theItem->xLoc) * (player.xLoc - theItem->xLoc) + (player.yLoc - theItem->yLoc) * (player.yLoc - theItem->yLoc) <= distance * distance) {
+            
             theItem->flags &= ~(ITEM_MAGIC_DETECTED | ITEM_CURSED);
             switch (theItem->category) {
                 case WEAPON:
@@ -5445,7 +5451,7 @@ void useCharm(item *theItem) {
             rechargeItems(STAFF);
             break;
         case CHARM_NEGATION:
-            negationBlast("your charm");
+            negationBlast("your charm", charmNegationRadius(theItem->enchant1) + 1); // Add 1 because otherwise radius 1 would affect only the player.
             break;
         default:
             break;
@@ -5904,7 +5910,7 @@ void readScroll(item *theItem) {
 //            causeFear("the scroll");
 //			break;
 		case SCROLL_NEGATION:
-            negationBlast("the scroll");
+            negationBlast("the scroll", DCOLS);
 			break;
 		case SCROLL_SHATTERING:
 			messageWithColor("the scroll emits a wave of turquoise light that pierces the nearby walls!", &itemMessageColor, false);
