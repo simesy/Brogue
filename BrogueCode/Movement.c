@@ -642,9 +642,9 @@ boolean diagonalBlocked(short x1, short y1, short x2, short y2) {
 boolean playerMoves(short direction) {
 	short initialDirection = direction, i, layer;
 	short x = player.xLoc, y = player.yLoc;
-	short newX, newY, newestX, newestY, newDir;
+	short newX, newY, newestX, newestY;
 	boolean playerMoved = false, alreadyRecorded = false;
-	creature *defender = NULL, *tempMonst = NULL, *hitList[8] = {NULL};
+	creature *defender = NULL, *tempMonst = NULL, *hitList[16] = {NULL};
 	char monstName[COLS];
 	char buf[COLS*3];
 	const uchar directionKeys[8] = {UP_KEY, DOWN_KEY, LEFT_KEY, RIGHT_KEY, UPLEFT_KEY, DOWNLEFT_KEY, UPRIGHT_KEY, DOWNRIGHT_KEY};
@@ -774,43 +774,9 @@ boolean playerMoves(short direction) {
 				// We separate this tallying phase from the actual attacking phase because sometimes the attacks themselves
 				// create more monsters, and those shouldn't be attacked in the same turn.
 				
-				if (rogue.weapon && (rogue.weapon->flags & ITEM_ATTACKS_PENETRATE)) {
-					hitList[0] = defender;
-					newestX = newX + nbDirs[direction][0];
-					newestY = newY + nbDirs[direction][1];
-					if (coordinatesAreInMap(newestX, newestY) && (pmap[newestX][newestY].flags & HAS_MONSTER)) {
-						defender = monsterAtLoc(newestX, newestY);
-						if (defender
-							&& monstersAreEnemies(&player, defender)
-                            && defender->creatureState != MONSTER_ALLY
-							&& !(defender->bookkeepingFlags & MONST_IS_DYING)
-                            && (!cellHasTerrainFlag(defender->xLoc, defender->yLoc, T_OBSTRUCTS_PASSABILITY) || (defender->info.flags & MONST_ATTACKABLE_THRU_WALLS))) {
-							
-                            // Attack the outermost monster first, so that spears of force can potentially send both of them flying.
-                            hitList[1] = hitList[0];
-                            hitList[0] = defender;
-						}
-					}
-				} else if (rogue.weapon && (rogue.weapon->flags & ITEM_ATTACKS_ALL_ADJACENT)) {
-					for (i=0; i<8; i++) {
-						newDir = (direction + i) % 8;
-						newestX = x + cDirs[newDir][0];
-						newestY = y + cDirs[newDir][1];
-						if (coordinatesAreInMap(newestX, newestY) && (pmap[newestX][newestY].flags & HAS_MONSTER)) {
-							defender = monsterAtLoc(newestX, newestY);
-							if (defender
-								&& monstersAreEnemies(&player, defender)
-                                && defender->creatureState != MONSTER_ALLY
-								&& !(defender->bookkeepingFlags & MONST_IS_DYING)
-                                && (!cellHasTerrainFlag(defender->xLoc, defender->yLoc, T_OBSTRUCTS_PASSABILITY) || (defender->info.flags & MONST_ATTACKABLE_THRU_WALLS))) {
-                                
-								hitList[i] = defender;
-							}
-						}
-					}
-				} else {
-					hitList[0] = defender;
-				}
+				buildHitList(hitList, &player, defender,
+                             rogue.weapon && (rogue.weapon->flags & ITEM_ATTACKS_PENETRATE),
+                             rogue.weapon && (rogue.weapon->flags & ITEM_ATTACKS_ALL_ADJACENT));
 				
 				if (abortAttackAgainstAcidicTarget(hitList)) { // Acid mound attack confirmation.
 #ifdef BROGUE_ASSERTS
@@ -847,10 +813,11 @@ boolean playerMoves(short direction) {
 				}
 				
 				// Attack!
-				for (i=0; i<8; i++) {
+				for (i=0; i<16; i++) {
 					if (hitList[i]
 						&& monstersAreEnemies(&player, hitList[i])
-						&& !(hitList[i]->bookkeepingFlags & MONST_IS_DYING)) {
+						&& !(hitList[i]->bookkeepingFlags & MONST_IS_DYING)
+                        && !rogue.gameHasEnded) {
 						
 						attack(&player, hitList[i], false);
 					}

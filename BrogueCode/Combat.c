@@ -752,6 +752,12 @@ void magicWeaponHit(creature *defender, item *theItem, boolean backstabbed) {
 					if (theItem->flags & ITEM_ATTACKS_QUICKLY) {
 						newMonst->info.attackSpeed /= 2;
 					}
+                    if (theItem->flags & ITEM_ATTACKS_PENETRATE) {
+                        newMonst->info.abilityFlags |= MA_ATTACKS_PENETRATE;
+                    }
+                    if (theItem->flags & ITEM_ATTACKS_ALL_ADJACENT) {
+                        newMonst->info.abilityFlags |= MA_ATTACKS_ALL_ADJACENT;
+                    }
 					newMonst->ticksUntilTurn = 100;
 					newMonst->info.accuracy = player.info.accuracy + 5 * netEnchant(theItem);
 					newMonst->info.damage = player.info.damage;
@@ -773,6 +779,7 @@ void magicWeaponHit(creature *defender, item *theItem, boolean backstabbed) {
 								strcpy(newMonst->info.monsterName, "spectral axe");
 								break;
 							default:
+								strcpy(newMonst->info.monsterName, "spectral weapon");
 								break;
 						}
 					}
@@ -1574,6 +1581,69 @@ void killCreature(creature *decedent, boolean administrativeDeath) {
 	}
 	decedent->currentHP = 0;
 	demoteMonsterFromLeadership(decedent);
+}
+
+void buildHitList(creature **hitList,
+                  const creature *attacker, creature *defender,
+                  const boolean penetrate, const boolean sweep) {
+    short i, x, y, newX, newY, newestX, newestY;
+    enum directions dir, newDir;
+    
+    x = attacker->xLoc;
+    y = attacker->yLoc;
+    newX = defender->xLoc;
+    newY = defender->yLoc;
+    
+    dir = NO_DIRECTION;
+    for (i = 0; i < 8; i++) {
+        if (nbDirs[i][0] == newX - x
+            && nbDirs[i][1] == newY - y) {
+            
+            dir = i;
+            break;
+        }
+    }
+    
+    if (penetrate && dir != NO_DIRECTION) {
+        hitList[0] = defender;
+        newestX = newX + nbDirs[dir][0];
+        newestY = newY + nbDirs[dir][1];
+        if (coordinatesAreInMap(newestX, newestY) && (pmap[newestX][newestY].flags & HAS_MONSTER)) {
+            defender = monsterAtLoc(newestX, newestY);
+            if (defender
+                && monstersAreEnemies(attacker, defender)
+                && !monstersAreTeammates(attacker, defender)
+                && !(defender->bookkeepingFlags & MONST_IS_DYING)
+                && (!cellHasTerrainFlag(defender->xLoc, defender->yLoc, T_OBSTRUCTS_PASSABILITY) || (defender->info.flags & MONST_ATTACKABLE_THRU_WALLS))) {
+                
+                // Attack the outermost monster first, so that spears of force can potentially send both of them flying.
+                hitList[1] = hitList[0];
+                hitList[0] = defender;
+            }
+        }
+    } else if (sweep) {
+        if (dir == NO_DIRECTION) {
+            dir = UP; // Just pick one.
+        }
+        for (i=0; i<8; i++) {
+            newDir = (dir + i) % 8;
+            newestX = x + cDirs[newDir][0];
+            newestY = y + cDirs[newDir][1];
+            if (coordinatesAreInMap(newestX, newestY) && (pmap[newestX][newestY].flags & HAS_MONSTER)) {
+                defender = monsterAtLoc(newestX, newestY);
+                if (defender
+                    && monstersAreEnemies(attacker, defender)
+                    && !monstersAreTeammates(attacker, defender)
+                    && !(defender->bookkeepingFlags & MONST_IS_DYING)
+                    && (!cellHasTerrainFlag(defender->xLoc, defender->yLoc, T_OBSTRUCTS_PASSABILITY) || (defender->info.flags & MONST_ATTACKABLE_THRU_WALLS))) {
+                    
+                    hitList[i] = defender;
+                }
+            }
+        }
+    } else {
+        hitList[0] = defender;
+    }
 }
 
 // Basically runs a simplified deterministic melee combat simulation against a hypothetical

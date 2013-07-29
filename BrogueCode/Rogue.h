@@ -1803,6 +1803,9 @@ enum monsterAbilityFlags {
 	MA_KAMIKAZE						= Fl(22),	// monster dies instead of attacking
 	MA_TRANSFERENCE					= Fl(23),	// monster recovers 40 or 90% of the damage that it inflicts as health
 	MA_CAUSES_WEAKNESS				= Fl(24),	// monster attacks cause weakness status in target
+    
+    MA_ATTACKS_PENETRATE            = Fl(25),   // monster attacks all adjacent enemies, like an axe
+    MA_ATTACKS_ALL_ADJACENT         = Fl(26),   // monster attacks penetrate one layer of enemies, like a spear
 	
 	MAGIC_ATTACK					= (MA_CAST_HEAL | MA_CAST_HASTE | MA_CAST_PROTECTION | MA_CAST_NEGATION | MA_CAST_SPARK | MA_CAST_FIRE | MA_CAST_SUMMON
 									   | MA_CAST_SLOW | MA_CAST_DISCORD | MA_BREATHES_FIRE | MA_SHOOTS_WEBS | MA_ATTACKS_FROM_DISTANCE | MA_CAST_BECKONING),
@@ -1810,7 +1813,7 @@ enum monsterAbilityFlags {
 	LEARNABLE_ABILITIES				= (MA_CAST_HEAL | MA_CAST_HASTE | MA_CAST_PROTECTION | MA_CAST_BLINK | MA_CAST_NEGATION | MA_CAST_SPARK | MA_CAST_FIRE
 									   | MA_CAST_SLOW | MA_CAST_DISCORD | MA_TRANSFERENCE | MA_CAUSES_WEAKNESS),
     
-    MA_NON_NEGATABLE_ABILITIES      = (MA_ATTACKS_FROM_DISTANCE),
+    MA_NON_NEGATABLE_ABILITIES      = (MA_ATTACKS_FROM_DISTANCE | MA_ATTACKS_PENETRATE | MA_ATTACKS_ALL_ADJACENT),
     MA_NEVER_VORPAL_ENEMY           = (MA_KAMIKAZE),
     MA_NEVER_MUTATED                = (MA_KAMIKAZE),
 };
@@ -2597,8 +2600,8 @@ extern "C" {
 	creature *spawnHorde(short hordeID, short x, short y, unsigned long forbiddenFlags, unsigned long requiredFlags);
 	void fadeInMonster(creature *monst);
 	boolean removeMonsterFromChain(creature *monst, creature *theChain);
-	boolean monstersAreTeammates(creature *monst1, creature *monst2);
-	boolean monstersAreEnemies(creature *monst1, creature *monst2);
+	boolean monstersAreTeammates(const creature *monst1, const creature *monst2);
+	boolean monstersAreEnemies(const creature *monst1, const creature *monst2);
 	void initializeGender(creature *monst);
     boolean stringsMatch(const char *str1, const char *str2);
 	void resolvePronounEscapes(char *text, creature *monst);
@@ -2653,6 +2656,9 @@ extern "C" {
 	boolean inflictDamage(creature *defender, short damage, const color *flashColor, boolean ignoresProtectionShield);
     void addPoison(creature *monst, short damage);
 	void killCreature(creature *decedent, boolean administrativeDeath);
+    void buildHitList(creature **hitList,
+                      const creature *attacker, creature *defender,
+                      const boolean penetrate, const boolean sweep);
 	void addScentToCell(short x, short y, short distance);
 	void populateItems(short upstairsX, short upstairsY);
 	item *placeItem(item *theItem, short x, short y);

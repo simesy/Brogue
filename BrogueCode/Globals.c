@@ -1376,9 +1376,10 @@ creatureType monsterCatalog[NUMBER_MONSTER_KINDS] = {
 		(MONST_FLIES | MONST_FLITS), (MA_KAMIKAZE | MA_DF_ON_DEATH)},
 	{0, "pit bloat",	'b',	&lightBlue,     4,		0,		100,	{0, 0, 0},		5,	100,	100,	DF_PURPLE_BLOOD,0,		0,		DF_HOLE_POTION,
 		(MONST_FLIES | MONST_FLITS), (MA_KAMIKAZE | MA_DF_ON_DEATH)},
-	{0, "goblin",		'g',	&goblinColor,	15,		10,		70,		{2, 5, 1},		20,	100,	100,	DF_RED_BLOOD,	0,		0,		0},
+	{0, "goblin",		'g',	&goblinColor,	15,		10,		70,		{2, 5, 1},		20,	100,	100,	DF_RED_BLOOD,	0,		0,		0,
+        (0),  (MA_ATTACKS_PENETRATE)},
 	{0, "goblin conjurer",'g',	&goblinConjurerColor, 10,10,	70,		{2, 4, 1},		20,	100,	100,	DF_RED_BLOOD,	0,		0,		0,
-		(MONST_MAINTAINS_DISTANCE | MONST_CAST_SPELLS_SLOWLY | MONST_CARRY_ITEM_25), (MA_CAST_SUMMON)},
+		(MONST_MAINTAINS_DISTANCE | MONST_CAST_SPELLS_SLOWLY | MONST_CARRY_ITEM_25), (MA_CAST_SUMMON | MA_ATTACKS_PENETRATE)},
 	{0, "goblin mystic",'g',	&goblinMysticColor, 10,	10,		70,		{2, 4, 1},		20,	100,	100,	DF_RED_BLOOD,	0,		0,		0,
 		(MONST_MAINTAINS_DISTANCE | MONST_CARRY_ITEM_25), (MA_CAST_PROTECTION)},
 	{0, "goblin totem",	TOTEM_CHAR,	&orange,	30,		0,		0,		{0, 0, 0},		0,	100,	300,	DF_RUBBLE_BLOOD,IMP_LIGHT,0,	0,
@@ -1415,7 +1416,7 @@ creatureType monsterCatalog[NUMBER_MONSTER_KINDS] = {
 	{0,	"ogre shaman",	'O',	&green,			45,		40,		100,	{5, 9, 1},		20,	100,	200,	DF_RED_BLOOD,	0,		0,		0,
 		(MONST_MAINTAINS_DISTANCE | MONST_CAST_SPELLS_SLOWLY | MONST_MALE | MONST_FEMALE), (MA_CAST_HASTE | MA_CAST_SPARK | MA_CAST_SUMMON)},
 	{0, "naga",			'N',	&trollColor,	75,		70,     150,	{7, 11, 4},		10,	100,	100,	DF_GREEN_BLOOD,	0,		100,	DF_PUDDLE,
-		(MONST_IMMUNE_TO_WATER | MONST_SUBMERGES | MONST_NEVER_SLEEPS | MONST_FEMALE)},
+		(MONST_IMMUNE_TO_WATER | MONST_SUBMERGES | MONST_NEVER_SLEEPS | MONST_FEMALE), (MA_ATTACKS_ALL_ADJACENT)},
 	{0, "salamander",	'S',	&salamanderColor,60,	70,     150,	{7, 13, 3},		10,	100,	100,	DF_ASH_BLOOD,	SALAMANDER_LIGHT, 100, DF_SALAMANDER_FLAME,
 		(MONST_IMMUNE_TO_FIRE | MONST_SUBMERGES | MONST_NEVER_SLEEPS | MONST_FIERY | MONST_INTRINSIC_LIGHT | MONST_MALE)},
 	{0, "explosive bloat",'b',	&orange,		10,		0,		100,	{0, 0, 0},		5,	100,	100,	DF_RED_BLOOD,	EMBER_LIGHT,0,	DF_BLOAT_EXPLOSION,
@@ -1460,11 +1461,11 @@ creatureType monsterCatalog[NUMBER_MONSTER_KINDS] = {
 	{0, "golem",		'G',	&gray,			400,	70,     225,	{4, 8, 1},		0,	100,	100,	DF_RUBBLE_BLOOD,0,		0,		0,
 		(MONST_REFLECT_4 | MONST_DIES_IF_NEGATED)},
 	{0, "dragon",		'D',	&dragonColor,	150,	90,     250,	{25, 50, 4},	20,	50,		200,	DF_GREEN_BLOOD,	0,		0,		0,
-		(MONST_IMMUNE_TO_FIRE | MONST_CARRY_ITEM_100), (MA_BREATHES_FIRE)},
+		(MONST_IMMUNE_TO_FIRE | MONST_CARRY_ITEM_100), (MA_BREATHES_FIRE | MA_ATTACKS_ALL_ADJACENT)},
 	
 	// bosses
 	{0, "goblin warlord",'g',	&blue,			30,		17,		100,	{3, 6, 1},		20,	100,	100,	DF_RED_BLOOD,	0,		0,		0,
-		(MONST_MAINTAINS_DISTANCE | MONST_CARRY_ITEM_25), (MA_CAST_SUMMON)},
+		(MONST_MAINTAINS_DISTANCE | MONST_CARRY_ITEM_25), (MA_CAST_SUMMON | MA_ATTACKS_PENETRATE)},
 	{0,	"black jelly",	'J',	&black,			120,	0,		130,	{3, 8, 1},		0,	100,	100,	DF_PURPLE_BLOOD,0,		0,		0,
 		(0), (MA_CLONE_SELF_ON_DEFEND)},
 	{0, "vampire",		'V',	&white,			75,		60,     120,	{4, 15, 2},		6,	50,		100,	DF_RED_BLOOD,	0,		0,		DF_BLOOD_EXPLOSION,
@@ -1528,9 +1529,9 @@ const monsterWords monsterText[NUMBER_MONSTER_KINDS] = {
 		"gazing at", "Gazing",
 		{"bumps", {0}},
 		"bursts, causing the floor underneath $HIMHER to disappear!"},
-	{"A filthy little primate, the tribalistic goblin often travels in packs and carries a makeshift stone blade.",
+	{"A filthy little primate, the tribalistic goblin often travels in packs and carries a makeshift stone spear.",
 		"chanting over", "Chanting",
-		{"slashes", "cuts", "stabs", {0}}},
+		{"cuts", "stabs", "skewers", {0}}},
 	{"This goblin is covered with glowing sigils that pulse with power. $HESHE can call into existence phantom blades to attack $HISHER foes.",
 		"performing a ritual on", "Performing ritual",
 		{"thumps", "whacks", "wallops", {0}},
@@ -1668,11 +1669,11 @@ const monsterWords monsterText[NUMBER_MONSTER_KINDS] = {
 		{"backhands", "punches", "kicks", {0}}},
 	{"An ancient serpent of the world's deepest places, the dragon's immense form belies its lightning-quick speed and testifies to $HISHER breathtaking strength. An undying furnace of white-hot flames burns within $HISHER scaly hide, and few could withstand a single moment under $HISHER infernal lash.",
 		"consuming", "Consuming",
-		{"claws", "bites", {0}}},
+		{"claws", "tail-whips", "bites", {0}}},
 	
 	{"Taller, stronger and smarter than other goblins, the warlord commands the loyalty of $HISHER kind and can summon them into battle.",
 		"chanting over", "Chanting",
-		{"slashes", "cuts", "stabs", {0}},
+		{"slashes", "cuts", "stabs", "skewers", {0}},
 		{0},
 		"lets loose a deafening war cry!"},
 	{"This blob of jet-black goo is as rare as $HESHE is deadly. Few creatures of the dungeon can withstand $HISHER poisonous assault. Beware.",
@@ -2312,6 +2313,9 @@ const char monsterAbilityFlagDescriptions[33][COLS] = {
 	"dies when $HESHE attacks",					// MA_KAMIKAZE
 	"recovers health when $HESHE inflicts damage",// MA_TRANSFERENCE
     "saps strength when $HESHE inflicts damage",// MA_CAUSE_WEAKNESS
+    
+    "attacks up to two opponents in a line",    // MA_ATTACKS_PENETRATE
+    "attacks all adjacent opponents simultaneously", // MA_ATTACKS_ALL_ADJACENT
 };
 
 const char monsterBookkeepingFlagDescriptions[32][COLS] = {

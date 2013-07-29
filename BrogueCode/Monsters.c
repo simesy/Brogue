@@ -218,7 +218,7 @@ void monsterName(char *buf, creature *monst, boolean includeArticle) {
 	}
 }
 
-boolean monstersAreTeammates(creature *monst1, creature *monst2) {
+boolean monstersAreTeammates(const creature *monst1, const creature *monst2) {
 	// if one follows the other, or the other follows the one, or they both follow the same
 	return ((((monst1->bookkeepingFlags & MONST_FOLLOWER) && monst1->leader == monst2)
 			 || ((monst2->bookkeepingFlags & MONST_FOLLOWER) && monst2->leader == monst1)
@@ -229,7 +229,7 @@ boolean monstersAreTeammates(creature *monst1, creature *monst2) {
 				 && monst1->leader == monst2->leader)) ? true : false);
 }
 
-boolean monstersAreEnemies(creature *monst1, creature *monst2) {
+boolean monstersAreEnemies(const creature *monst1, const creature *monst2) {
 	if ((monst1->bookkeepingFlags | monst2->bookkeepingFlags) & MONST_CAPTIVE) {
 		return false;
 	}
@@ -3174,8 +3174,10 @@ void executeMonsterMovement(creature *monst, short newX, short newY) {
 boolean moveMonster(creature *monst, short dx, short dy) {
 	short x = monst->xLoc, y = monst->yLoc;
 	short newX, newY;
+    short i;
 	short confusedDirection, swarmDirection;
 	creature *defender = NULL;
+    creature *hitList[16] = {NULL};
 	
 	newX = x + dx;
 	newY = y + dy;
@@ -3303,7 +3305,20 @@ boolean moveMonster(creature *monst, short dx, short dy) {
                         monst->bookkeepingFlags &= ~MONST_SUBMERGED;
                     }
                     refreshDungeonCell(x, y);
-                    attack(monst, defender, false);
+                    
+                    buildHitList(hitList, monst, defender,
+                                 (monst->info.abilityFlags & MA_ATTACKS_PENETRATE) ? true : false,
+                                 (monst->info.abilityFlags & MA_ATTACKS_ALL_ADJACENT) ? true : false);
+                    // Attack!
+                    for (i=0; i<16; i++) {
+                        if (hitList[i]
+                            && monstersAreEnemies(monst, hitList[i])
+                            && !(hitList[i]->bookkeepingFlags & MONST_IS_DYING)
+                            && !rogue.gameHasEnded) {
+                            
+                            attack(monst, hitList[i], false);
+                        }
+                    }
                 }
                 return true;
 			} else {
