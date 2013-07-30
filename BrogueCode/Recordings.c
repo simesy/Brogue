@@ -33,7 +33,10 @@
 void recordChar(unsigned char c) {
 	inputRecordBuffer[locationInRecordingBuffer++] = c;
 	recordingLocation++;
-	if (locationInRecordingBuffer >= INPUT_RECORD_BUFFER) {
+}
+
+void considerFlushingBufferToFile() {
+    if (locationInRecordingBuffer >= INPUT_RECORD_BUFFER) {
 		flushBufferToFile();
 	}
 }
@@ -520,12 +523,16 @@ void OOSCheck(unsigned long x, short numberOfBytes) {
 		if (eventType != RNG_CHECK || recordedNumber != x) {
 			if (eventType != RNG_CHECK) {
 				message("Event type mismatch in RNG check.", false);
-			}
-			playbackPanic();
+                playbackPanic();
+			} else if (recordedNumber != x) {
+                printf("\nExpected RNG output of %li; got %i.", recordedNumber, (int) x);
+                playbackPanic();
+            }
 		}
 	} else {
 		recordChar(RNG_CHECK);
 		recordNumber(x, numberOfBytes);
+        considerFlushingBufferToFile();
 	}
 }
 

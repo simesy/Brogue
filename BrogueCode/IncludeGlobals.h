@@ -59,7 +59,7 @@ extern char displayDetail[DCOLS][DROWS];
 extern FILE *RNGLogFile;
 #endif
 
-extern unsigned char inputRecordBuffer[INPUT_RECORD_BUFFER + 10];
+extern unsigned char inputRecordBuffer[INPUT_RECORD_BUFFER + 100];
 extern unsigned short locationInRecordingBuffer;
 
 extern unsigned long positionInPlaybackFile;
