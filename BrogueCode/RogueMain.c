@@ -877,7 +877,7 @@ void startLevel(short oldLevelNumber, short stairDirection) {
     rogue.aggroRange = currentAggroValue();
 	
 	// update monster states so none are hunting if there is no scent and they can't see the player
-	for (monst=monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
+	for (monst = monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
 		updateMonsterState(monst);
 	}
 	

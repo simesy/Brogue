@@ -609,8 +609,8 @@ const floorTileType tileCatalog[NUMBER_TILETYPES] = {
     
     // goblin warren
     {FLOOR_CHAR,    &mudBackColor,          &refuseBackColor,       85,	0,	DF_STENCH_SMOLDER,0,		0,				0,				NO_LIGHT,		(T_IS_FLAMMABLE), (TM_VANISHES_UPON_PROMOTION),                                                     "the mud floor",		"Rotting animal matter has been ground into the mud floor; the stench is awful."},
-    {WALL_CHAR,		&mudWallForeColor,		&mudWallBackColor,		0,	0,	DF_PLAIN_FIRE,	0,			0,				0,				NO_LIGHT,		(T_OBSTRUCTS_EVERYTHING), (TM_STAND_IN_TILE),														"a mud-covered wall",	"A malodorous layer of clay and fecal matter has been smeared over the wall."},
-    {OMEGA_CHAR,	&mudWallForeColor,      &refuseBackColor,		25,	50,	DF_EMBERS,		0,			0,              0,				NO_LIGHT,		(T_OBSTRUCTS_VISION | T_OBSTRUCTS_GAS | T_IS_FLAMMABLE), (TM_STAND_IN_TILE | TM_VISUALLY_DISTINCT), "hanging animal skins",	"you push through the animal skins that hang over the threshold."},
+    {WALL_CHAR,		&mudWallForeColor,		&mudWallBackColor,		0,	0,	DF_PLAIN_FIRE,	0,			0,				0,				NO_LIGHT,		(T_OBSTRUCTS_EVERYTHING), (TM_STAND_IN_TILE),														"a mud-covered wall",	"A malodorous layer of clay and fecal matter coats the wall."},
+    {OMEGA_CHAR,	&mudWallForeColor,      &refuseBackColor,		25,	50,	DF_EMBERS,		0,			0,              0,				NO_LIGHT,		(T_OBSTRUCTS_VISION | T_OBSTRUCTS_GAS | T_IS_FLAMMABLE), (TM_STAND_IN_TILE | TM_VISUALLY_DISTINCT), "hanging animal skins",	"you push through the animal skins that hang across the threshold."},
 };
 
 #pragma mark Dungeon Feature definitions
@@ -1042,7 +1042,7 @@ const blueprint blueprintCatalog[NUMBER_BLUEPRINTS] = {
 		{DF_LUMINESCENT_FUNGUS,	ALTAR_KEYHOLE, DUNGEON,	{1,1}, 1,		KEY,		KEY_PORTAL,	0,				0,				2,				0,			(ITEM_IS_KEY | ITEM_PLAYER_AVOIDS),(MF_GENERATE_ITEM | MF_NOT_IN_HALLWAY | MF_NEAR_ORIGIN | MF_OUTSOURCE_ITEM_TO_MACHINE | MF_KEY_DISPOSABLE)},
 		{DF_LUMINESCENT_FUNGUS,	PORTAL,	DUNGEON,{1,1},		1,			0,			-1,			0,				0,				2,				HORDE_MACHINE_LEGENDARY_ALLY,0,	(MF_GENERATE_HORDE | MF_MONSTERS_DORMANT | MF_FAR_FROM_ORIGIN)}}},
     // Goblin warren
-	{{5, AMULET_LEVEL},{100, 200},	0,    9,			(BP_ROOM | BP_REWARD | BP_MAXIMIZE_INTERIOR | BP_REDESIGN_INTERIOR),	{
+	{{5, AMULET_LEVEL},{100, 200},	0,      9,			(BP_ROOM | BP_REWARD | BP_MAXIMIZE_INTERIOR | BP_REDESIGN_INTERIOR),	{
 		{0,			MUD_FLOOR,	DUNGEON,		{0,0},		0,			0,			-1,			0,				0,				0,				0,			0,			(MF_EVERYWHERE)},
         {0,         MUD_DOORWAY,DUNGEON,        {1,1},      1,          0,          -1,         0,              0,              1,              0,          0,          (MF_BUILD_AT_ORIGIN)},
         {0,         MUD_WALL,   DUNGEON,        {1,1},      100,        0,			-1,			0,				0,				1,				0,			0,			(MF_BUILD_IN_WALLS | MF_EVERYWHERE)},

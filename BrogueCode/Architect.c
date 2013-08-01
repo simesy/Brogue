@@ -792,6 +792,7 @@ void prepareInteriorWithMachineFlags(char interior[DCOLS][DROWS], short originX,
         }
         attachRooms(grid, roomFrequencies, 50, 40, 40);
         addLoops(grid, 10);
+        // ^^ Gotta add a thing to connect to preexisting rooms
 		for(i=0; i<DCOLS; i++) {
 			for(j=0; j<DROWS; j++) {
                 if (interior[i][j]) {
