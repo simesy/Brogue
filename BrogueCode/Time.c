@@ -606,17 +606,17 @@ short armorAggroAdjustment(item *theArmor) {
 }
 
 short currentAggroValue() {
-    // Default value of 10.
-    short stealthVal = 10;
+    // Default value of 8.
+    short stealthVal = 8;
     
     if (player.status[STATUS_INVISIBLE]) {
-        stealthVal -= 10;
-    } else if (!(pmap[player.xLoc][player.yLoc].flags & IS_IN_SHADOW)) {
-        // In light, add 10.
-        stealthVal += 10;
+        stealthVal = 1;
     } else if (playerInDarkness()) {
-        // In darkness, subtract 5.
-        stealthVal -= 5;
+        // In darkness, halve.
+        stealthVal = (stealthVal + 1) / 2;
+    } else if (!(pmap[player.xLoc][player.yLoc].flags & IS_IN_SHADOW)) {
+        // In light, double.
+        stealthVal *= 2;
     }
     
     // Add 1 for each point of your armor's natural (unenchanted) strength requirement above 12.
