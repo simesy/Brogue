@@ -1629,7 +1629,7 @@ void buildHitList(creature **hitList,
             newDir = (dir + i) % 8;
             newestX = x + cDirs[newDir][0];
             newestY = y + cDirs[newDir][1];
-            if (coordinatesAreInMap(newestX, newestY) && (pmap[newestX][newestY].flags & HAS_MONSTER)) {
+            if (coordinatesAreInMap(newestX, newestY) && (pmap[newestX][newestY].flags & (HAS_MONSTER | HAS_PLAYER))) {
                 defender = monsterAtLoc(newestX, newestY);
                 if (defender
                     && monstersAreEnemies(attacker, defender)
