@@ -1548,6 +1548,19 @@ void decrementMonsterStatus(creature *monst) {
                     }
                 }
                 break;
+            case STATUS_DISCORDANT:
+                if (monst->status[i] && !--monst->status[i]) {
+                    if (monst->creatureState == MONSTER_FLEEING
+                        && !monst->status[STATUS_MAGICAL_FEAR]
+                        && monst->leader == &player) {
+                        
+                        monst->creatureState = MONSTER_ALLY;
+                        if (monst->carriedItem) {
+                            makeMonsterDropItem(monst);
+                        }
+                    }
+                }
+                break;
             case STATUS_MAGICAL_FEAR:
                 if (monst->status[i]) {
                     if (!--monst->status[i]) {
@@ -1944,6 +1957,14 @@ boolean monsterBlinkToPreferenceMap(creature *monst, short **preferenceMap, bool
 	return false;
 }
 
+boolean fleeingMonsterAwareOfPlayer(creature *monst) {
+    if (player.status[STATUS_INVISIBLE]) {
+        return (distanceBetween(monst->xLoc, monst->yLoc, player.xLoc, player.yLoc) <= 1);
+    } else {
+        return (pmap[monst->xLoc][monst->yLoc].flags & IN_FIELD_OF_VIEW) ? true : false;
+    }
+}
+
 // returns whether the monster did something (and therefore ended its turn)
 boolean monsterBlinkToSafety(creature *monst) {
 	short **blinkSafetyMap;
@@ -1953,7 +1974,7 @@ boolean monsterBlinkToSafety(creature *monst) {
 			updateAllySafetyMap();
 		}
 		blinkSafetyMap = allySafetyMap;
-	} else if (pmap[monst->xLoc][monst->yLoc].flags & IN_FIELD_OF_VIEW) {
+	} else if (fleeingMonsterAwareOfPlayer(monst)) {
 		if (monst->safetyMap) {
 			freeGrid(monst->safetyMap);
 			monst->safetyMap = NULL;
@@ -2973,7 +2994,7 @@ void monstersTurn(creature *monst) {
             return;
         }
 		
-		if (pmap[x][y].flags & IN_FIELD_OF_VIEW) {
+		if (fleeingMonsterAwareOfPlayer(monst)) {
 			if (monst->safetyMap) {
 				freeGrid(monst->safetyMap);
 				monst->safetyMap = NULL;

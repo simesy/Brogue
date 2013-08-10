@@ -1078,7 +1078,9 @@ boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
 	monsterName(attackerName, attacker, true);
 	monsterName(defenderName, defender, true);
 	
-	if (attacker->info.abilityFlags & MA_SEIZES && (!(attacker->bookkeepingFlags & MONST_SEIZING) || !(defender->bookkeepingFlags & MONST_SEIZED))) {
+	if ((attacker->info.abilityFlags & MA_SEIZES)
+        && (!(attacker->bookkeepingFlags & MONST_SEIZING) || !(defender->bookkeepingFlags & MONST_SEIZED))) {
+        
 		attacker->bookkeepingFlags |= MONST_SEIZING;
 		defender->bookkeepingFlags |= MONST_SEIZED;
 		if (canSeeMonster(attacker) || canSeeMonster(defender)) {

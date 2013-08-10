@@ -348,6 +348,7 @@ enum directions {
 
 enum textEntryTypes {
 	TEXT_INPUT_NORMAL = 0,
+	TEXT_INPUT_FILENAME,
 	TEXT_INPUT_NUMBERS,
 	TEXT_INPUT_TYPES,
 };
@@ -2846,6 +2847,7 @@ extern "C" {
 	void RNGCheck();
 	void executePlaybackInput(rogueEvent *recordingInput);
 	void getAvailableFilePath(char *filePath, const char *defaultPath, const char *suffix);
+    boolean characterForbiddenInFilename(const char theChar);
 	void saveGame();
 	void saveRecording();
 	void parseFile();

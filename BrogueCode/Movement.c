@@ -563,7 +563,7 @@ void becomeAllyWith(creature *monst) {
 	monst->creatureState = MONSTER_ALLY;
 	monst->bookkeepingFlags |= MONST_FOLLOWER;
 	monst->leader = &player;
-	monst->bookkeepingFlags &= ~MONST_CAPTIVE;
+	monst->bookkeepingFlags &= ~(MONST_CAPTIVE | MONST_SEIZED);
 	refreshDungeonCell(monst->xLoc, monst->yLoc);
 }
 

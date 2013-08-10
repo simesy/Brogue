@@ -2354,7 +2354,7 @@ boolean getInputTextString(char *inputText,
 						   boolean useDialogBox) {
 	short charNum, i, x, y;
 	char keystroke, suffix[100];
-	const short textEntryBounds[TEXT_INPUT_TYPES][2] = {{' ', '~'}, {'0', '9'}};
+	const short textEntryBounds[TEXT_INPUT_TYPES][2] = {{' ', '~'}, {' ', '~'}, {'0', '9'}};
 	cellDisplayBuffer dbuf[COLS][ROWS], rbuf[COLS][ROWS];
 	
 	// x and y mark the origin for text entry.
@@ -2404,6 +2404,12 @@ boolean getInputTextString(char *inputText,
 			inputText[charNum] = ' ';
 		} else if (keystroke >= textEntryBounds[textEntryType][0]
 				   && keystroke <= textEntryBounds[textEntryType][1]) { // allow only permitted input
+            
+            if (textEntryType == TEXT_INPUT_FILENAME
+                && characterForbiddenInFilename(keystroke)) {
+                
+                keystroke = '-';
+            }
 			
 			inputText[charNum] = keystroke;
 			plotCharWithColor(keystroke, x + charNum, y, &white, &black);

@@ -1259,6 +1259,7 @@ void monstersFall() {
 			}
 			monst->bookkeepingFlags |= MONST_PREPLACED;
 			monst->bookkeepingFlags &= ~(MONST_IS_FALLING | MONST_SEIZED | MONST_SEIZING);
+            monst->targetCorpseLoc[0] = monst->targetCorpseLoc[1] = 0;
             if (monst->info.flags & MONST_GETS_TURN_ON_ACTIVATION) {
                 // Guardians and mirrored totems never survive the fall. If they did, they might block the level below.
                 killCreature(monst, false);
@@ -1696,6 +1697,7 @@ void monsterEntersLevel(creature *monst, short n) {
 #endif
     }
     monst->depth = rogue.depthLevel;
+    monst->targetCorpseLoc[0] = monst->targetCorpseLoc[1] = 0;
     
     if (!pit) {
         getQualifyingPathLocNear(&(monst->xLoc), &(monst->yLoc), monst->xLoc, monst->yLoc, true,

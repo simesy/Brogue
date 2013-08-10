@@ -62,7 +62,7 @@ boolean chooseFile(char *path, char *prompt, char *defaultName, char *suffix) {
 						   min(DCOLS-25, BROGUE_FILENAME_MAX - strlen(suffix)),
 						   defaultName,
 						   suffix,
-						   TEXT_INPUT_NORMAL,
+						   TEXT_INPUT_FILENAME,
 						   false)
 		&& path[0] != '\0') {
 		

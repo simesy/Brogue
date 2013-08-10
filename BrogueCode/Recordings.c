@@ -976,6 +976,14 @@ void getAvailableFilePath(char *returnPath, const char *defaultPath, const char 
 	}
 }
 
+boolean characterForbiddenInFilename(const char theChar) {
+    if (theChar == '/' || theChar == '\\' || theChar == ':') {
+        return true;
+    } else {
+        return false;
+    }
+}
+
 void saveGame() {
 	char filePath[BROGUE_FILENAME_MAX], defaultPath[BROGUE_FILENAME_MAX];
 	boolean askAgain;
@@ -990,8 +998,7 @@ void saveGame() {
 	do {
 		askAgain = false;
 		if (getInputTextString(filePath, "Save game as (<esc> to cancel): ",
-							   BROGUE_FILENAME_MAX - strlen(GAME_SUFFIX), defaultPath, GAME_SUFFIX, TEXT_INPUT_NORMAL, false)) {
-			
+							   BROGUE_FILENAME_MAX - strlen(GAME_SUFFIX), defaultPath, GAME_SUFFIX, TEXT_INPUT_FILENAME, false)) {
 			strcat(filePath, GAME_SUFFIX);
 			if (!fileExists(filePath) || confirm("File of that name already exists. Overwrite?", true)) {
 				remove(filePath);
@@ -1022,7 +1029,7 @@ void saveRecording() {
 	do {
 		askAgain = false;
 		if (getInputTextString(filePath, "Save recording as (<esc> to cancel): ",
-							   BROGUE_FILENAME_MAX - strlen(RECORDING_SUFFIX), defaultPath, RECORDING_SUFFIX, TEXT_INPUT_NORMAL, false)) {
+							   BROGUE_FILENAME_MAX - strlen(RECORDING_SUFFIX), defaultPath, RECORDING_SUFFIX, TEXT_INPUT_FILENAME, false)) {
 			
 			strcat(filePath, RECORDING_SUFFIX);
 			if (!fileExists(filePath) || confirm("File of that name already exists. Overwrite?", true)) {
