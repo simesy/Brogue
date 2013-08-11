@@ -132,8 +132,9 @@ void getClosestValidLocationOnMap(short loc[2], short **map, short x, short y) {
 // Displays a menu of buttons for various commands.
 // Buttons will be disabled if not permitted based on the playback state.
 // Returns the keystroke to effect the button's command, or -1 if canceled.
-short actionMenu(short x, short y, boolean playingBack) {
+short actionMenu(short x, boolean playingBack) {
 	short buttonCount;
+    short y;
 	
 	brogueButton buttons[ROWS] = {{{0}}};
 	char yellowColorEscape[5] = "", whiteColorEscape[5] = "", darkGrayColorEscape[5] = "";
@@ -146,7 +147,6 @@ short actionMenu(short x, short y, boolean playingBack) {
 	
 	for (i=0; i<ROWS; i++) {
 		initializeButton(&(buttons[i]));
-		buttons[i].y = y + i;
 		buttons[i].buttonColor = interfaceBoxColor;
 		buttons[i].opacity = INTERFACE_OPACITY;
 	}
@@ -270,13 +270,11 @@ short actionMenu(short x, short y, boolean playingBack) {
     }
 	buttons[buttonCount].hotkey[0] = AGGRO_DISPLAY_KEY;
     buttonCount++;
-    if (KEYBOARD_LABELS) {
+    if (KEYBOARD_LABELS) { // No help button if we're not in keyboard mode.
         sprintf(buttons[buttonCount].text, "  %s?: %sHelp  ", yellowColorEscape, whiteColorEscape);
-    } else {
-        strcpy(buttons[buttonCount].text, "  Help  ");
+        buttons[buttonCount].hotkey[0] = HELP_KEY;
+        buttonCount++;
     }
-    buttons[buttonCount].hotkey[0] = HELP_KEY;
-    buttonCount++;
     sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
     buttons[buttonCount].flags &= ~B_ENABLED;
     buttonCount++;
@@ -296,8 +294,10 @@ short actionMenu(short x, short y, boolean playingBack) {
 	for (i=0; i<buttonCount; i++) {
 		longestName = max(longestName, strLenWithoutEscapes(buttons[i].text));
 	}
+    y = ROWS - buttonCount;
 	for (i=0; i<buttonCount; i++) {
 		buttons[i].x = x;
+		buttons[i].y = y + i;
 		for (j = strLenWithoutEscapes(buttons[i].text); j < longestName; j++) {
 			strcat(buttons[i].text, " "); // Schlemiel the Painter, but who cares.
 		}
@@ -586,7 +586,7 @@ void mainInputLoop() {
 			rogue.playbackMode = false;
 			
 			if (state.buttonChosen == 3) { // Actions menu button.
-				buttonInput = actionMenu(buttons[3].x - 4, buttons[3].y - (playingBack ? 14 : 13), playingBack); // Returns the corresponding keystroke.
+				buttonInput = actionMenu(buttons[3].x - 4, playingBack); // Returns the corresponding keystroke.
 				if (buttonInput == -1) { // Canceled.
 					doEvent = false;
 				} else {
@@ -2287,9 +2287,11 @@ void executeKeystroke(signed long keystroke, boolean controlKey, boolean shiftKe
 			displayLevel();
 			refreshSideBar(-1, -1, false);
 			if (rogue.trueColorMode) {
-				messageWithColor("Color effects disabled. Press '\\' again to enable.", &teal, false);
+				messageWithColor(KEYBOARD_LABELS ? "Color effects disabled. Press '\\' again to enable." : "Color effects disabled.",
+                                 &teal, false);
 			} else {
-				messageWithColor("Color effects enabled. Press '\\' again to disable.", &teal, false);
+				messageWithColor(KEYBOARD_LABELS ? "Color effects enabled. Press '\\' again to disable." : "Color effects enabled.",
+                                 &teal, false);
 			}
 			break;
 		case AGGRO_DISPLAY_KEY:
@@ -2297,9 +2299,11 @@ void executeKeystroke(signed long keystroke, boolean controlKey, boolean shiftKe
 			displayLevel();
 			refreshSideBar(-1, -1, false);
 			if (rogue.displayAggroRangeMode) {
-                messageWithColor("Stealth range displayed. Press ']' again to hide.", &teal, false);
+                messageWithColor(KEYBOARD_LABELS ? "Stealth range displayed. Press ']' again to hide." : "Stealth range displayed.",
+                                 &teal, false);
             } else {
-                messageWithColor("Stealth range hidden. Press ']' again to display.", &teal, false);
+                messageWithColor(KEYBOARD_LABELS ? "Stealth range hidden. Press ']' again to display." : "Stealth range hidden.",
+                                 &teal, false);
 			}
 			break;
 //		case FIGHT_KEY:
@@ -3726,7 +3730,10 @@ void printHighScores(boolean hiliteMostRecent) {
 	
 	scoreColor = black;
 	applyColorAverage(&scoreColor, &goodMessageColor, 100);
-	printString("Press space to continue.", (COLS - strLenWithoutEscapes("Press space to continue.")) / 2, ROWS - 1, &scoreColor, &black, 0);
+    
+	printString(KEYBOARD_LABELS ? "Press space to continue." : "Touch anywhere to continue.",
+                (COLS - strLenWithoutEscapes(KEYBOARD_LABELS ? "Press space to continue." : "Touch anywhere to continue.")) / 2,
+                ROWS - 1, &scoreColor, &black, 0);
 	
 	commitDraws();
 	waitForAcknowledgment();

@@ -132,7 +132,9 @@ void welcome() {
     sprintf(buf2, " from the %ith floor and escape with it!", AMULET_LEVEL);
     strcat(buf, buf2);
 	message(buf, false);
-	messageWithColor("Press <?> for help at any time.", &backgroundMessageColor, false);
+    if (KEYBOARD_LABELS) {
+        messageWithColor("Press <?> for help at any time.", &backgroundMessageColor, false);
+    }
 	flavorMessage("The doors to the dungeon slam shut behind you.");
 }
 

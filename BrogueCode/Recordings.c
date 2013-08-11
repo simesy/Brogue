@@ -709,7 +709,8 @@ void promptToAdvanceToLocation(short keystroke) {
 void pausePlayback() {
 	if (!rogue.playbackPaused) {
 		rogue.playbackPaused = true;
-		messageWithColor("recording paused. Press space to play.", &teal, false);
+		messageWithColor(KEYBOARD_LABELS ? "recording paused. Press space to play." : "recording paused.",
+                         &teal, false);
 		refreshSideBar(-1, -1, false);
 		mainInputLoop();
 		
@@ -916,9 +917,11 @@ void executePlaybackInput(rogueEvent *recordingInput) {
                 displayLevel();
                 refreshSideBar(-1, -1, false);
                 if (rogue.trueColorMode) {
-                    messageWithColor("Color effects disabled. Press '\\' again to enable.", &teal, false);
+                    messageWithColor(KEYBOARD_LABELS ? "Color effects disabled. Press '\\' again to enable." : "Color effects disabled.",
+                                     &teal, false);
                 } else {
-                    messageWithColor("Color effects enabled. Press '\\' again to disable.", &teal, false);
+                    messageWithColor(KEYBOARD_LABELS ? "Color effects enabled. Press '\\' again to disable." : "Color effects enabled.",
+                                     &teal, false);
                 }
                 break;
             case AGGRO_DISPLAY_KEY:
@@ -926,9 +929,11 @@ void executePlaybackInput(rogueEvent *recordingInput) {
                 displayLevel();
                 refreshSideBar(-1, -1, false);
                 if (rogue.displayAggroRangeMode) {
-                    messageWithColor("Stealth range displayed. Press ']' again to hide.", &teal, false);
+                    messageWithColor(KEYBOARD_LABELS ? "Stealth range displayed. Press ']' again to hide." : "Stealth range displayed.",
+                                     &teal, false);
                 } else {
-                    messageWithColor("Stealth range hidden. Press ']' again to display.", &teal, false);
+                    messageWithColor(KEYBOARD_LABELS ? "Stealth range hidden. Press ']' again to display." : "Stealth range hidden.",
+                                     &teal, false);
                 }
                 break;
 			case SEED_KEY:
