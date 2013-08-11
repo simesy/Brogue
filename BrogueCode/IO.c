@@ -4427,7 +4427,7 @@ unsigned long printCarriedItemDetails(item *theItem,
 	
 	b = 0;
 	if (includeButtons) {
-		encodeMessageColor(goldColorEscape, 0, &yellow);
+		encodeMessageColor(goldColorEscape, 0, KEYBOARD_LABELS ? &yellow : &white);
 		encodeMessageColor(whiteColorEscape, 0, &white);
 		
 		if (theItem->category & (FOOD | SCROLL | POTION | WAND | STAFF | CHARM)) {

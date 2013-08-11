@@ -978,7 +978,8 @@ void call(item *theItem) {
             }
         }
 		theItem = promptForItemOfType((WEAPON|ARMOR|SCROLL|RING|POTION|STAFF|WAND|CHARM), ITEM_CAN_BE_IDENTIFIED, 0,
-									  "Call what? (a-z, shift for more info; or <esc> to cancel)", true);
+									  KEYBOARD_LABELS ? "Call what? (a-z, shift for more info; or <esc> to cancel)" : "Call what?",
+                                      true);
         updateIdentifiableItems(); // Reset the flags.
 	}
 	if (theItem == NULL) {
@@ -2796,7 +2797,8 @@ void equip(item *theItem) {
 	
 	command[c++] = EQUIP_KEY;
 	if (!theItem) {
-		theItem = promptForItemOfType((WEAPON|ARMOR|RING), 0, ITEM_EQUIPPED, "Equip what? (a-z, shift for more info; or <esc> to cancel)", true);
+		theItem = promptForItemOfType((WEAPON|ARMOR|RING), 0, ITEM_EQUIPPED,
+                                      KEYBOARD_LABELS ? "Equip what? (a-z, shift for more info; or <esc> to cancel)" : "Equip what?", true);
 	}
 	if (theItem == NULL) {
 		return;
@@ -5229,7 +5231,8 @@ void throwCommand(item *theItem) {
 	
 	command[0] = THROW_KEY;
 	if (theItem == NULL) {
-		theItem = promptForItemOfType((ALL_ITEMS), 0, 0, "Throw what? (a-z, shift for more info; or <esc> to cancel)", true);
+		theItem = promptForItemOfType((ALL_ITEMS), 0, 0,
+                                      KEYBOARD_LABELS ? "Throw what? (a-z, shift for more info; or <esc> to cancel)" : "Throw what?", true);
 	}
 	if (theItem == NULL) {
 		return;
@@ -5474,7 +5477,8 @@ void apply(item *theItem, boolean recordCommands) {
 	
 	if (!theItem) {
 		theItem = promptForItemOfType((SCROLL|FOOD|POTION|STAFF|WAND|CHARM), 0, 0,
-									  "Apply what? (a-z, shift for more info; or <esc> to cancel)", true);
+									  KEYBOARD_LABELS ? "Apply what? (a-z, shift for more info; or <esc> to cancel)" : "Apply what?",
+                                      true);
 	}
 	
 	if (theItem == NULL) {
@@ -5704,7 +5708,8 @@ void readScroll(item *theItem) {
 			}
 			do {
 				theItem = promptForItemOfType((ALL_ITEMS), ITEM_CAN_BE_IDENTIFIED, 0,
-											  "Identify what? (a-z; shift for more info)", false);
+											  KEYBOARD_LABELS ? "Identify what? (a-z; shift for more info)" : "Identify what?",
+                                              false);
 				if (rogue.gameHasEnded) {
 					return;
 				}
@@ -5748,7 +5753,8 @@ void readScroll(item *theItem) {
 			}
 			do {
 				theItem = promptForItemOfType((WEAPON | ARMOR | RING | STAFF | WAND | CHARM), 0, 0,
-											  "Enchant what? (a-z; shift for more info)", false);
+											  KEYBOARD_LABELS ? "Enchant what? (a-z; shift for more info)" : "Enchant what?",
+                                              false);
 				confirmMessages();
 				if (theItem == NULL || !(theItem->category & (WEAPON | ARMOR | RING | STAFF | WAND | CHARM))) {
 					message("Can't enchant that.", true);
@@ -6243,7 +6249,8 @@ void unequip(item *theItem) {
 	command[0] = UNEQUIP_KEY;
 	if (theItem == NULL) {
 		theItem = promptForItemOfType(ALL_ITEMS, ITEM_EQUIPPED, 0,
-									  "Remove (unequip) what? (a-z or <esc> to cancel)", true);
+									  KEYBOARD_LABELS ? "Remove (unequip) what? (a-z or <esc> to cancel)" : "Remove (unequip) what?",
+                                      true);
 	}
 	if (theItem == NULL) {
 		return;
@@ -6296,7 +6303,8 @@ void drop(item *theItem) {
 	command[0] = DROP_KEY;
 	if (theItem == NULL) {
 		theItem = promptForItemOfType(ALL_ITEMS, 0, 0,
-									  "Drop what? (a-z, shift for more info; or <esc> to cancel)", true);
+									  KEYBOARD_LABELS ? "Drop what? (a-z, shift for more info; or <esc> to cancel)" : "Drop what?",
+                                      true);
 	}
 	if (theItem == NULL) {
 		return;
