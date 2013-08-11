@@ -53,6 +53,9 @@
 // set to false to allow multiple loads from the same saved file:
 #define DELETE_SAVE_FILE_AFTER_LOADING	true
 
+// set to false to disable references to keystrokes (e.g. for a tablet port)
+#define KEYBOARD_LABELS true
+
 #define BROGUE_ASSERTS		// introduces several assert()s -- useful to find certain array overruns
 //#define AUDIT_RNG             // VERY slow, but sometimes necessary to debug out-of-sync recording errors
 //#define GENERATE_FONT_FILES	// Displays font in grid upon startup, which can be screen-captured into font files for PC.
@@ -1181,7 +1184,6 @@ typedef struct pcell {								// permanent cell; have to remember this stuff to 
 typedef struct tcell {			// transient cell; stuff we don't need to remember between levels
 	short light[3];				// RGB components of lighting
 	short oldLight[3];			// compare with subsequent lighting to determine whether to refresh cell
-	signed char connected;		// used in dungeon generation to keep track of connected regions
 } tcell;
 
 typedef struct randomRange {
@@ -1191,7 +1193,6 @@ typedef struct randomRange {
 } randomRange;
 
 typedef struct color {
-	
 	// base RGB components:
 	short red;
 	short green;
@@ -1207,7 +1208,6 @@ typedef struct color {
 	
 	// Flag: this color "dances" with every refresh:
 	boolean colorDances;
-	
 } color;
 
 enum itemFlags {

@@ -2429,6 +2429,7 @@ char displayInventory(unsigned short categoryMask,
 	}
 	// Now prepare the buttons.
 	//for (theItem = packItems->nextItem; theItem != NULL; theItem = theItem->nextItem) {
+    const char closeParen = KEYBOARD_LABELS ? ')' : ' ';
 	for (i=0; i<itemNumber; i++) {
 		theItem = itemList[i];
 		// Set button parameters for the item:
@@ -2463,9 +2464,9 @@ char displayInventory(unsigned short categoryMask,
 			
 			// The first '*' is the magic detection symbol, e.g. '-' for non-magical.
 			// The second '*' is the item character, e.g. ':' for food.
-			sprintf(buttons[i].text, " %c%s %s* %s* %s%s%s%s",
-					theItem->inventoryLetter,
-					(theItem->flags & ITEM_PROTECTED ? "}" : ")"),
+			sprintf(buttons[i].text, " %c%c %s* %s* %s%s%s%s",
+					KEYBOARD_LABELS ? theItem->inventoryLetter : ' ',
+					(theItem->flags & ITEM_PROTECTED ? '}' : closeParen),
 					magicEscapePtr,
 					(buttons[i].flags & B_HOVER_ENABLED) ? yellowColorEscapeSequence : darkYellowColorEscapeSequence,
 					(buttons[i].flags & B_HOVER_ENABLED) ? whiteColorEscapeSequence : grayColorEscapeSequence,
@@ -2474,9 +2475,9 @@ char displayInventory(unsigned short categoryMask,
 					(theItem->flags & ITEM_EQUIPPED ? ((theItem->category & WEAPON) ? " (in hand) " : " (worn) ") : ""));
 			buttons[i].symbol[1] = theItem->displayChar;
 		} else {
-			sprintf(buttons[i].text, " %c%s %s%s* %s%s%s%s", // The '*' is the item character, e.g. ':' for food.
-					theItem->inventoryLetter,
-					(theItem->flags & ITEM_PROTECTED ? "}" : ")"),
+			sprintf(buttons[i].text, " %c%c %s%s* %s%s%s%s", // The '*' is the item character, e.g. ':' for food.
+					KEYBOARD_LABELS ? theItem->inventoryLetter : ' ',
+					(theItem->flags & ITEM_PROTECTED ? '}' : closeParen),
 					(magicDetected ? "  " : ""), // For proper spacing when this item is not detected but another is.
 					(buttons[i].flags & B_HOVER_ENABLED) ? yellowColorEscapeSequence : darkYellowColorEscapeSequence,
 					(buttons[i].flags & B_HOVER_ENABLED) ? whiteColorEscapeSequence : grayColorEscapeSequence,
@@ -2518,7 +2519,8 @@ char displayInventory(unsigned short categoryMask,
 		maxLength = max(maxLength, (strLenWithoutEscapes(buttons[itemNumber + extraLineCount].text)));
 		extraLineCount++;
 		
-		sprintf(buttons[itemNumber + extraLineCount].text, "%s%s -- press (a-z) for more info -- ",
+		sprintf(buttons[itemNumber + extraLineCount].text,
+                KEYBOARD_LABELS ? "%s%s -- press (a-z) for more info -- " : "%s%s -- touch an item for more info -- ",
 				grayColorEscapeSequence,
 				(magicDetected ? "  " : ""));
 		maxLength = max(maxLength, (strLenWithoutEscapes(buttons[itemNumber + extraLineCount].text)));

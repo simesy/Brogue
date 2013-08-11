@@ -154,12 +154,20 @@ short actionMenu(short x, short y, boolean playingBack) {
 	buttonCount = 0;
 	
 	if (playingBack) {
-		sprintf(buttons[buttonCount].text,	"  %sk: %sFaster playback  ", yellowColorEscape, whiteColorEscape);
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text,	"  %sk: %sFaster playback  ", yellowColorEscape, whiteColorEscape);
+        } else {
+            strcpy(buttons[buttonCount].text, "  Faster playback  ");
+        }
 		buttons[buttonCount].hotkey[0] = UP_KEY;
 		buttons[buttonCount].hotkey[1] = UP_ARROW;
 		buttons[buttonCount].hotkey[2] = NUMPAD_8;
 		buttonCount++;
-		sprintf(buttons[buttonCount].text,	"  %sj: %sSlower playback  ", yellowColorEscape, whiteColorEscape);
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text,	"  %sj: %sSlower playback  ", yellowColorEscape, whiteColorEscape);
+        } else {
+            strcpy(buttons[buttonCount].text, "  Slower playback  ");
+        }
 		buttons[buttonCount].hotkey[0] = DOWN_KEY;
 		buttons[buttonCount].hotkey[1] = DOWN_ARROW;
 		buttons[buttonCount].hotkey[2] = NUMPAD_2;
@@ -167,65 +175,117 @@ short actionMenu(short x, short y, boolean playingBack) {
 		sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
 		buttons[buttonCount].flags &= ~B_ENABLED;
 		buttonCount++;
-		
-		sprintf(buttons[buttonCount].text,	"%s0-9: %sFast forward to turn  ", yellowColorEscape, whiteColorEscape);
+        
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text,	"%s0-9: %sFast forward to turn  ", yellowColorEscape, whiteColorEscape);
+        } else {
+            strcpy(buttons[buttonCount].text, "  Fast forward to turn  ");
+        }
 		buttons[buttonCount].hotkey[0] = '0';
-		buttonCount++;
-		sprintf(buttons[buttonCount].text,	"  %s>:%s Next Level  ", yellowColorEscape, whiteColorEscape);
+        buttonCount++;
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text,	"  %s>:%s Next Level  ", yellowColorEscape, whiteColorEscape);
+        } else {
+            strcpy(buttons[buttonCount].text, "  Next Level  ");
+        }
 		buttons[buttonCount].hotkey[0] = DESCEND_KEY;
 		buttonCount++;
 		sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
 		buttons[buttonCount].flags &= ~B_ENABLED;
 		buttonCount++;
-	} else {
-		sprintf(buttons[buttonCount].text, "  %sZ: %sSleep until better  ",		yellowColorEscape, whiteColorEscape);
+    } else {
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text, "  %sZ: %sSleep until better  ",		yellowColorEscape, whiteColorEscape);
+        } else {
+            strcpy(buttons[buttonCount].text, "  Sleep until better  ");
+        }
 		buttons[buttonCount].hotkey[0] = AUTO_REST_KEY;
 		buttonCount++;
 		sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
 		buttons[buttonCount].flags &= ~B_ENABLED;
 		buttonCount++;
-		
-		sprintf(buttons[buttonCount].text, "  %sA: %sAutopilot  ",				yellowColorEscape, whiteColorEscape);
+        
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text, "  %sA: %sAutopilot  ",				yellowColorEscape, whiteColorEscape);
+        } else {
+            strcpy(buttons[buttonCount].text, "  Autopilot  ");
+        }
 		buttons[buttonCount].hotkey[0] = AUTOPLAY_KEY;
 		buttonCount++;
 		sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
 		buttons[buttonCount].flags &= ~B_ENABLED;
 		buttonCount++;
-		
-		sprintf(buttons[buttonCount].text, "  %sS: %sSuspend game and quit  ",	yellowColorEscape, whiteColorEscape);
+        
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text, "  %sS: %sSuspend game and quit  ",	yellowColorEscape, whiteColorEscape);
+        } else {
+            strcpy(buttons[buttonCount].text, "  Suspend game and quit  ");
+        }
 		buttons[buttonCount].hotkey[0] = SAVE_GAME_KEY;
-		buttonCount++;
-		sprintf(buttons[buttonCount].text, "  %sO: %sOpen suspended game  ",		yellowColorEscape, whiteColorEscape);
+        buttonCount++;
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text, "  %sO: %sOpen suspended game  ",		yellowColorEscape, whiteColorEscape);
+        } else {
+            strcpy(buttons[buttonCount].text, "  Open suspended game  ");
+        }
 		buttons[buttonCount].hotkey[0] = LOAD_SAVED_GAME_KEY;
 		
-	}
-	sprintf(buttons[buttonCount].text, "  %sV: %sView saved recording  ",		yellowColorEscape, whiteColorEscape);
+    }
+    if (KEYBOARD_LABELS) {
+        sprintf(buttons[buttonCount].text, "  %sV: %sView saved recording  ",		yellowColorEscape, whiteColorEscape);
+    } else {
+        strcpy(buttons[buttonCount].text, "  View saved recording  ");
+    }
 	buttons[buttonCount].hotkey[0] = VIEW_RECORDING_KEY;
 	buttonCount++;
 	sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
 	buttons[buttonCount].flags &= ~B_ENABLED;
 	buttonCount++;
-	
-	sprintf(buttons[buttonCount].text, "  %sD: %sDiscovered items  ",	yellowColorEscape, whiteColorEscape);
+    
+    if (KEYBOARD_LABELS) {
+        sprintf(buttons[buttonCount].text, "  %sD: %sDiscovered items  ",	yellowColorEscape, whiteColorEscape);
+    } else {
+        strcpy(buttons[buttonCount].text, "  Discovered items  ");
+    }
 	buttons[buttonCount].hotkey[0] = DISCOVERIES_KEY;
-	buttonCount++;
-	sprintf(buttons[buttonCount].text, "  %s~: %sView dungeon seed  ",	yellowColorEscape, whiteColorEscape);
+    buttonCount++;
+    if (KEYBOARD_LABELS) {
+        sprintf(buttons[buttonCount].text, "  %s~: %sView dungeon seed  ",	yellowColorEscape, whiteColorEscape);
+    } else {
+        strcpy(buttons[buttonCount].text, "  View dungeon seed  ");
+    }
 	buttons[buttonCount].hotkey[0] = SEED_KEY;
-	buttonCount++;
-	sprintf(buttons[buttonCount].text, "  %s\\: %s%s color effects  ",	yellowColorEscape, whiteColorEscape, rogue.trueColorMode ? "Enable" : "Disable");
+    buttonCount++;
+    if (KEYBOARD_LABELS) {
+        sprintf(buttons[buttonCount].text, "  %s\\: %s%s color effects  ",	yellowColorEscape, whiteColorEscape, rogue.trueColorMode ? "Enable" : "Disable");
+    } else {
+        sprintf(buttons[buttonCount].text, "  %s color effects  ",	rogue.trueColorMode ? "Enable" : "Disable");
+    }
 	buttons[buttonCount].hotkey[0] = TRUE_COLORS_KEY;
-	buttonCount++;
-	sprintf(buttons[buttonCount].text, "  %s]: %s%s stealth range  ",	yellowColorEscape, whiteColorEscape, rogue.displayAggroRangeMode ? "Hide" : "Display");
+    buttonCount++;
+    if (KEYBOARD_LABELS) {
+        sprintf(buttons[buttonCount].text, "  %s]: %s%s stealth range  ",	yellowColorEscape, whiteColorEscape, rogue.displayAggroRangeMode ? "Hide" : "Display");
+    } else {
+        sprintf(buttons[buttonCount].text, "  %s stealth range  ",	rogue.displayAggroRangeMode ? "Hide" : "Display");
+    }
 	buttons[buttonCount].hotkey[0] = AGGRO_DISPLAY_KEY;
-	buttonCount++;
-	sprintf(buttons[buttonCount].text, "  %s?: %sHelp  ", yellowColorEscape, whiteColorEscape);
-	buttons[buttonCount].hotkey[0] = HELP_KEY;
-	buttonCount++;
-	sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
-	buttons[buttonCount].flags &= ~B_ENABLED;
-	buttonCount++;
-	
-	sprintf(buttons[buttonCount].text, "  %sQ: %sQuit %s  ",	yellowColorEscape, whiteColorEscape, (playingBack ? "to title screen" : "without saving"));
+    buttonCount++;
+    if (KEYBOARD_LABELS) {
+        sprintf(buttons[buttonCount].text, "  %s?: %sHelp  ", yellowColorEscape, whiteColorEscape);
+    } else {
+        strcpy(buttons[buttonCount].text, "  Help  ");
+    }
+    buttons[buttonCount].hotkey[0] = HELP_KEY;
+    buttonCount++;
+    sprintf(buttons[buttonCount].text, "    %s---", darkGrayColorEscape);
+    buttons[buttonCount].flags &= ~B_ENABLED;
+    buttonCount++;
+    
+    if (KEYBOARD_LABELS) {
+        sprintf(buttons[buttonCount].text, "  %sQ: %sQuit %s  ",	yellowColorEscape, whiteColorEscape, (playingBack ? "to title screen" : "without saving"));
+    } else {
+        sprintf(buttons[buttonCount].text, "  Quit %s  ",	(playingBack ? "to title screen" : "without saving"));
+    }
 	buttons[buttonCount].hotkey[0] = QUIT_KEY;
 	buttonCount++;
 	
@@ -263,7 +323,7 @@ void initializeMenuButtons(buttonState *state, brogueButton buttons[5]) {
 	char whiteTextEscape[MAX_MENU_BUTTON_COUNT] = "";
 	color tempColor;
 	
-	encodeMessageColor(goldTextEscape, 0, &yellow);
+    encodeMessageColor(goldTextEscape, 0, KEYBOARD_LABELS ? &yellow : &white);
 	encodeMessageColor(whiteTextEscape, 0, &white);
 	
 	for (i=0; i<MAX_MENU_BUTTON_COUNT; i++) {
@@ -278,15 +338,27 @@ void initializeMenuButtons(buttonState *state, brogueButton buttons[5]) {
 	buttonCount = 0;
 	
 	if (rogue.playbackMode) {
-		sprintf(buttons[buttonCount].text,	" Unpause (%sspace%s) ", goldTextEscape, whiteTextEscape);
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text,  " Unpause (%sspace%s) ", goldTextEscape, whiteTextEscape);
+        } else {
+            strcpy(buttons[buttonCount].text,   "      Unpause    ");
+        }
 		buttons[buttonCount].hotkey[0] = ACKNOWLEDGE_KEY;
 		buttonCount++;
 		
-		sprintf(buttons[buttonCount].text,	"Omniscience (%stab%s)", goldTextEscape, whiteTextEscape);
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text,  "Omniscience (%stab%s)", goldTextEscape, whiteTextEscape);
+        } else {
+            strcpy(buttons[buttonCount].text,	"   Omniscience   ");
+        }
 		buttons[buttonCount].hotkey[0] = TAB_KEY;
 		buttonCount++;
 		
-		sprintf(buttons[buttonCount].text,	" Next Turn (%sl%s) ", goldTextEscape, whiteTextEscape);
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text,	" Next Turn (%sl%s) ", goldTextEscape, whiteTextEscape);
+        } else {
+            strcpy(buttons[buttonCount].text,	"   Next Turn   ");
+        }
 		buttons[buttonCount].hotkey[0] = RIGHT_KEY;
 		buttons[buttonCount].hotkey[1] = RIGHT_ARROW;
 		buttons[buttonCount].hotkey[2] = NUMPAD_6;
@@ -300,11 +372,19 @@ void initializeMenuButtons(buttonState *state, brogueButton buttons[5]) {
 		buttons[buttonCount].hotkey[1] = 'X';
 		buttonCount++;
 		
-		sprintf(buttons[buttonCount].text,	"   Rest (%sz%s)   ", goldTextEscape, whiteTextEscape);
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text,	"   Rest (%sz%s)   ", goldTextEscape, whiteTextEscape);
+        } else {
+            strcpy(buttons[buttonCount].text,	"     Rest     ");
+        }
 		buttons[buttonCount].hotkey[0] = REST_KEY;
 		buttonCount++;
 		
-		sprintf(buttons[buttonCount].text,	"  Search (%ss%s)  ", goldTextEscape, whiteTextEscape);
+        if (KEYBOARD_LABELS) {
+            sprintf(buttons[buttonCount].text,	"  Search (%ss%s)  ", goldTextEscape, whiteTextEscape);
+        } else {
+            strcpy(buttons[buttonCount].text,	"    Search    ");
+        }
 		buttons[buttonCount].hotkey[0] = SEARCH_KEY;
 		buttonCount++;
 		
@@ -2537,7 +2617,7 @@ boolean confirm(char *prompt, boolean alsoDuringPlayback) {
 	}
 	
 	encodeMessageColor(whiteColorEscape, 0, &white);
-	encodeMessageColor(yellowColorEscape, 0, &yellow);
+	encodeMessageColor(yellowColorEscape, 0, KEYBOARD_LABELS ? &yellow : &white);
 	
 	initializeButton(&(buttons[0]));
 	sprintf(buttons[0].text, "     %sY%ses     ", yellowColorEscape, whiteColorEscape);
@@ -3492,7 +3572,8 @@ void printDiscoveriesScreen() {
 	printString("-- WANDS --", mapToWindowX(54), y += NUMBER_STAFF_KINDS + 1, &flavorTextColor, &black, dbuf);
 	printDiscoveries(WAND, NUMBER_WAND_KINDS, WAND_CHAR, mapToWindowX(54), ++y, dbuf);
     
-    printString("-- press any key to continue --", mapToWindowX(20), mapToWindowY(DROWS-2), &itemMessageColor, &black, dbuf);
+    printString(KEYBOARD_LABELS ? "-- press any key to continue --" : "-- touch anywhere to continue --",
+                mapToWindowX(20), mapToWindowY(DROWS-2), &itemMessageColor, &black, dbuf);
 	
 	for (i=0; i<COLS; i++) {
 		for (j=0; j<ROWS; j++) {

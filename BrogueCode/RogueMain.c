@@ -1027,8 +1027,10 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
 			rogue.playbackMode = false;
 		}
         strcpy(buf, "You die...");
-        encodeMessageColor(buf, strlen(buf), &veryDarkGray);
-        strcat(buf, " (press 'i' to view your inventory)");
+        if (KEYBOARD_LABELS) {
+            encodeMessageColor(buf, strlen(buf), &veryDarkGray);
+            strcat(buf, " (press 'i' to view your inventory)");
+        }
 		messageWithColor(buf, &badMessageColor, false);
         displayMoreSignWithoutWaitingForAcknowledgment();
         

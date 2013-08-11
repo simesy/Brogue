@@ -1661,11 +1661,13 @@ boolean explore(short frameDelay) {
 	}
 	
 	if (!rogue.autoPlayingLevel) {
-		message("Exploring... press any key to stop.", false);
+		message(KEYBOARD_LABELS ? "Exploring... press any key to stop." : "Exploring... touch anywhere to stop.",
+                false);
 		// A little hack so the exploring message remains bright while exploring and then auto-dims when
 		// another message is displayed:
 		confirmMessages();
-		printString("Exploring... press any key to stop.", mapToWindowX(0), mapToWindowY(-1), &white, &black, NULL);
+		printString(KEYBOARD_LABELS ? "Exploring... press any key to stop." : "Exploring... touch anywhere to stop.",
+                    mapToWindowX(0), mapToWindowY(-1), &white, &black, NULL);
 	}
 	rogue.disturbed = false;
 	rogue.automationActive = true;
@@ -1742,7 +1744,7 @@ void autoPlayLevel(boolean fastForward) {
 	rogue.autoPlayingLevel = true;
 	
 	confirmMessages();
-	message("Playing... press any key to stop.", false);
+	message(KEYBOARD_LABELS ? "Playing... press any key to stop." : "Playing... touch anywhere to stop.", false);
 	
 	// explore until we are not making progress
 	do {
