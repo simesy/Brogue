@@ -691,6 +691,134 @@ boolean fillInteriorForVestibuleMachine(char interior[DCOLS][DROWS], short bp, s
     return success;
 }
 
+void redesignInterior(char interior[DCOLS][DROWS], short originX, short originY) {
+    short i, j, n, newX, newY;
+    enum directions dir;
+    short orphanList[20][2];
+    short orphanCount = 0;
+    short **grid, **pathingGrid, **costGrid;
+    const short roomFrequencies[ROOM_TYPE_COUNT] = {0, 1, 0, 0, 0, 0, 0};
+    grid = allocGrid();
+    
+    for (i=0; i<DCOLS; i++) {
+        for (j=0; j<DROWS; j++) {
+            if (interior[i][j]) {
+                if (//(pmap[i][j].flags & IS_GATE_SITE) && pmap[i][j].machineNumber
+                    //||
+                    i == originX && j == originY) {
+                    
+                    grid[i][j] = 1; // All rooms must grow from this space.
+                } else {
+                    grid[i][j] = 0; // Other interior squares are fair game for placing rooms.
+                }
+            } else if (cellIsPassableOrDoor(i, j)) {
+                grid[i][j] = 1; // Treat existing level as already built (though shielded by a film of -1s).
+                for (dir = 0; dir < 4; dir++) {
+                    newX = i + nbDirs[dir][0];
+                    newY = j + nbDirs[dir][1];
+                    if (coordinatesAreInMap(newX, newY)
+                        && interior[newX][newY]
+                        && (newX != originX || newY != originY)) {
+                        
+                        orphanList[orphanCount][0] = newX;
+                        orphanList[orphanCount][1] = newY;
+                        orphanCount++;
+                        grid[i][j] = -1; // Treat the orphaned door as off limits.
+                        
+                        break;
+                    }
+                }
+            } else {
+                grid[i][j] = -1; // Exterior spaces are off limits.
+            }
+        }
+    }
+    attachRooms(grid, roomFrequencies, 50, 40, 40);
+    
+    // Connect to preexisting rooms that orphaned (mostly preexisting machine rooms).
+    if (orphanCount > 0) {
+        pathingGrid = allocGrid();
+        costGrid = allocGrid();
+        for (n = 0; n < orphanCount; n++) {
+            
+            if (D_INSPECT_MACHINES) {
+                dumpLevelToScreen();
+                copyGrid(pathingGrid, grid);
+                findReplaceGrid(pathingGrid, -1, -1, 0);
+                hiliteGrid(pathingGrid, &green, 50);
+                plotCharWithColor('X', mapToWindowX(orphanList[n][0]), mapToWindowY(orphanList[n][1]), &black, &orange);
+                temporaryMessage("Orphan detected:", true);
+            }
+            
+            for (i=0; i<DCOLS; i++) {
+                for (j=0; j<DROWS; j++) {
+                    if (interior[i][j]) {
+                        if (grid[i][j] > 0) {
+                            pathingGrid[i][j] = 0;
+                            costGrid[i][j] = 1;
+                        } else {
+                            pathingGrid[i][j] = 30000;
+                            costGrid[i][j] = 1;
+                        }
+                    } else {
+                        pathingGrid[i][j] = 30000;
+                        costGrid[i][j] = PDS_OBSTRUCTION;
+                    }
+                }
+            }
+            dijkstraScan(pathingGrid, costGrid, false);
+            
+            i = orphanList[n][0];
+            j = orphanList[n][1];
+            while (pathingGrid[i][j] > 0) {
+                for (dir = 0; dir < 4; dir++) {
+                    newX = i + nbDirs[dir][0];
+                    newY = j + nbDirs[dir][1];
+                    
+                    if (coordinatesAreInMap(newX, newY)
+                        && pathingGrid[newX][newY] < pathingGrid[i][j]) {
+                        
+                        grid[i][j] = 1;
+                        i = newX;
+                        j = newY;
+                        break;
+                    }
+                }
+#ifdef BROGUE_ASSERTS
+                assert(dir < 4);
+#endif
+                if (D_INSPECT_MACHINES) {
+                    dumpLevelToScreen();
+                    displayGrid(pathingGrid);
+                    plotCharWithColor('X', mapToWindowX(i), mapToWindowY(j), &black, &orange);
+                    temporaryMessage("Orphan connecting:", true);
+                }
+            }
+        }
+        freeGrid(pathingGrid);
+        freeGrid(costGrid);
+    }
+    
+    addLoops(grid, 10);
+    for(i=0; i<DCOLS; i++) {
+        for(j=0; j<DROWS; j++) {
+            if (interior[i][j]) {
+                if (grid[i][j] >= 0) {
+                    pmap[i][j].layers[SURFACE] = pmap[i][j].layers[GAS] = NOTHING;
+                }
+                if (grid[i][j] == 0) {
+                    pmap[i][j].layers[DUNGEON] = GRANITE;
+                    interior[i][j] = false;
+                }
+                if (grid[i][j] >= 1) {
+                    pmap[i][j].layers[DUNGEON] = FLOOR;
+                }
+            }
+        }
+    }
+    freeGrid(grid);
+}
+
 void prepareInteriorWithMachineFlags(char interior[DCOLS][DROWS], short originX, short originY, unsigned long flags) {
     short i, j, newX, newY;
     enum dungeonLayers layer;
@@ -769,47 +897,7 @@ void prepareInteriorWithMachineFlags(char interior[DCOLS][DROWS], short originX,
     // Completely clear the interior, fill with granite, and cut entirely new rooms into it from the gate site.
     // Then zero out any portion of the interior that is still wall.
     if (flags & BP_REDESIGN_INTERIOR) {
-        short **grid;
-        const short roomFrequencies[ROOM_TYPE_COUNT] = {0, 1, 0, 0, 0, 0, 0};
-        grid = allocGrid();
-        
-		for(i=0; i<DCOLS; i++) {
-			for(j=0; j<DROWS; j++) {
-				if (interior[i][j]) {
-                     if ((pmap[i][j].flags & IS_GATE_SITE) && pmap[i][j].machineNumber
-                         || i == originX && j == originY) {
-                         
-                         grid[i][j] = 1; // All rooms must grow from this space.
-                     } else {
-                         grid[i][j] = 0; // Other interior squares are fair game for placing rooms.
-                     }
-                } else if (!cellHasTerrainFlag(i, j, T_PATHING_BLOCKER)) {
-                    grid[i][j] = 1; // Treat existing level as already built (though shielded by a film of -1s).
-                } else {
-                    grid[i][j] = -1; // Exterior spaces are off limits.
-                }
-            }
-        }
-        attachRooms(grid, roomFrequencies, 50, 40, 40);
-        addLoops(grid, 10);
-        // ^^ Gotta add a thing to connect to preexisting rooms
-		for(i=0; i<DCOLS; i++) {
-			for(j=0; j<DROWS; j++) {
-                if (interior[i][j]) {
-                    if (grid[i][j] >= 0) {
-                        pmap[i][j].layers[SURFACE] = pmap[i][j].layers[GAS] = NOTHING;
-                    }
-                    if (grid[i][j] == 0) {
-                        pmap[i][j].layers[DUNGEON] = GRANITE;
-                        interior[i][j] = false;
-                    }
-                    if (grid[i][j] >= 1) {
-                        pmap[i][j].layers[DUNGEON] = FLOOR;
-                    }
-                }
-            }
-        }
-        freeGrid(grid);
+        redesignInterior(interior, originX, originY);
     }
 	
 	// Reinforce surrounding tiles and interior tiles if requested to prevent tunneling in or through.

@@ -905,7 +905,7 @@ enum monsterTypes {
 
 #define NUMBER_MUTATORS             8
 
-#define	NUMBER_HORDES				169
+#define	NUMBER_HORDES				168
 
 // flavors
 

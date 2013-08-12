@@ -1038,11 +1038,11 @@ const blueprint blueprintCatalog[NUMBER_BLUEPRINTS] = {
 		{DF_TRIGGER_AREA,COFFIN_CLOSED,0,		{1,1},		1,			KEY,		KEY_CAGE,	0,				MK_VAMPIRE,		1,				0,			(ITEM_IS_KEY | ITEM_PLAYER_AVOIDS),(MF_GENERATE_ITEM | MF_SKELETON_KEY | MF_MONSTER_TAKE_ITEM | MF_MONSTERS_DORMANT | MF_FAR_FROM_ORIGIN | MF_KEY_DISPOSABLE)},
 		{DF_AMBIENT_BLOOD,SECRET_DOOR,DUNGEON,	{1,1},		1,			0,			0,			0,				0,				1,				0,			0,			(MF_PERMIT_BLOCKING | MF_BUILD_AT_ORIGIN)}}},
 	// Legendary ally -- approach the altar with the crystal key to activate a portal and summon a legendary ally.
-	{{8, AMULET_LEVEL},{30, 50},	15,		2,			(BP_ROOM | BP_REWARD),	{
+	{{8, AMULET_LEVEL}, {30, 50},	15,		2,			(BP_ROOM | BP_REWARD),	{
 		{DF_LUMINESCENT_FUNGUS,	ALTAR_KEYHOLE, DUNGEON,	{1,1}, 1,		KEY,		KEY_PORTAL,	0,				0,				2,				0,			(ITEM_IS_KEY | ITEM_PLAYER_AVOIDS),(MF_GENERATE_ITEM | MF_NOT_IN_HALLWAY | MF_NEAR_ORIGIN | MF_OUTSOURCE_ITEM_TO_MACHINE | MF_KEY_DISPOSABLE)},
 		{DF_LUMINESCENT_FUNGUS,	PORTAL,	DUNGEON,{1,1},		1,			0,			-1,			0,				0,				2,				HORDE_MACHINE_LEGENDARY_ALLY,0,	(MF_GENERATE_HORDE | MF_MONSTERS_DORMANT | MF_FAR_FROM_ORIGIN)}}},
     // Goblin warren
-	{{5, AMULET_LEVEL},{100, 200},	0,      9,			(BP_ROOM | BP_REWARD | BP_MAXIMIZE_INTERIOR | BP_REDESIGN_INTERIOR),	{
+	{{5, 15},           {100, 200},	15,     9,			(BP_ROOM | BP_REWARD | BP_MAXIMIZE_INTERIOR | BP_REDESIGN_INTERIOR),	{
 		{0,			MUD_FLOOR,	DUNGEON,		{0,0},		0,			0,			-1,			0,				0,				0,				0,			0,			(MF_EVERYWHERE)},
         {0,         MUD_DOORWAY,DUNGEON,        {1,1},      1,          0,          -1,         0,              0,              1,              0,          0,          (MF_BUILD_AT_ORIGIN)},
         {0,         MUD_WALL,   DUNGEON,        {1,1},      100,        0,			-1,			0,				0,				1,				0,			0,			(MF_BUILD_IN_WALLS | MF_EVERYWHERE)},
@@ -1947,7 +1947,6 @@ const hordeType hordeCatalog[NUMBER_HORDES] = {
 	{MK_GOBLIN_CONJURER,2,		{MK_GOBLIN_CONJURER, MK_GOBLIN_MYSTIC},	{{0,1,1}, {1,1,1}},				7,		15,		4,      0,              0,              HORDE_MACHINE_GOBLIN_WARREN},
 	{MK_GOBLIN_TOTEM,	4,		{MK_GOBLIN_TOTEM, MK_GOBLIN_CONJURER, MK_GOBLIN_MYSTIC, MK_GOBLIN}, {{1,2,1},{1,2,1},{1,2,1},{3,5,1}},10,17,8,0,MT_CAMP_AREA,	HORDE_MACHINE_GOBLIN_WARREN},
 	{MK_GOBLIN,			1,		{MK_GOBLIN},							{{1, 2, 1}},					3,		7,		1,		0,              0,				HORDE_MACHINE_GOBLIN_WARREN | HORDE_LEADER_CAPTIVE},
-	{MK_GOBLIN_MYSTIC,	1,		{MK_KOBOLD},							{{3, 7, 1}},					5,		20,		1,		0,              0,				HORDE_MACHINE_GOBLIN_WARREN | HORDE_LEADER_CAPTIVE},
 };
 
 // ITEMS

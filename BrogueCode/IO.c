@@ -341,7 +341,7 @@ void initializeMenuButtons(buttonState *state, brogueButton buttons[5]) {
         if (KEYBOARD_LABELS) {
             sprintf(buttons[buttonCount].text,  " Unpause (%sspace%s) ", goldTextEscape, whiteTextEscape);
         } else {
-            strcpy(buttons[buttonCount].text,   "      Unpause    ");
+            strcpy(buttons[buttonCount].text,   "     Unpause     ");
         }
 		buttons[buttonCount].hotkey[0] = ACKNOWLEDGE_KEY;
 		buttonCount++;
