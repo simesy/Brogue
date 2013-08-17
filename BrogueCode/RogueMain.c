@@ -736,7 +736,7 @@ void startLevel(short oldLevelNumber, short stairDirection) {
 		
 		// restore level
         scentMap = levels[rogue.depthLevel - 1].scentMap;
-		timeAway = max(0, rogue.absoluteTurnNumber - levels[rogue.depthLevel - 1].awaySince);
+		timeAway = clamp(0, rogue.absoluteTurnNumber - levels[rogue.depthLevel - 1].awaySince, 30000);
 		
 		for (i=0; i<DCOLS; i++) {
 			for (j=0; j<DROWS; j++) {
@@ -807,7 +807,7 @@ void startLevel(short oldLevelNumber, short stairDirection) {
 	px = player.xLoc;
 	py = player.yLoc;
 	player.xLoc = player.yLoc = 0;
-	for (i = 0; i < 100 && i < timeAway; i++) {
+	for (i = 0; i < 100 && i < (short) timeAway; i++) {
 		updateEnvironment();
 	}
 	player.xLoc = px;

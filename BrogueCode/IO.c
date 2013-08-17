@@ -3825,7 +3825,7 @@ void printProgressBar(short x, short y, const char barLabel[COLS], long amtFille
 	applyColorAverage(&darkenedBarColor, &black, 75);
 	
 	labelOffset = (20 - strlen(barLabel)) / 2;
-	for (i=0; i<strlen(barLabel); i++) {
+	for (i = 0; i < (short) strlen(barLabel); i++) {
 		barText[i + labelOffset] = barLabel[i];
 	}
 	
