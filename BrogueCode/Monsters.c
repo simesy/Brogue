@@ -2811,7 +2811,7 @@ boolean updateMonsterCorpseAbsorption(creature *monst) {
                         (monst->absorbBehavior ? monsterBehaviorFlagDescriptions[unflag(monst->absorptionFlags)] :
                          monsterAbilityFlagDescriptions[unflag(monst->absorptionFlags)]));
                 resolvePronounEscapes(buf, monst);
-                messageWithColor(buf, &goodMessageColor, false);
+                messageWithColor(buf, &advancementMessageColor, false);
             }
             monst->absorptionFlags = 0;
         }

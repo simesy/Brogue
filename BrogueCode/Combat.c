@@ -1037,7 +1037,7 @@ void decrementWeaponAutoIDTimer() {
 
 // returns whether the attack hit
 boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
-	short damage, transferenceAmount, poisonDamage;
+	short damage, transferenceAmount, transferenceDamage, poisonDamage;
 	char buf[COLS*2], buf2[COLS*2], attackerName[COLS], defenderName[COLS], verb[DCOLS], explicationClause[DCOLS] = "", armorRunicString[DCOLS*3];
 	boolean sneakAttack, defenderWasAsleep, defenderWasParalyzed, degradesAttackerWeapon, sightUnseen;
 	
@@ -1107,20 +1107,20 @@ boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
 			damage *= 3; // Treble damage for sneak attacks!
 		}
 		
-		damage = min(damage, defender->currentHP); // Can't do more damage to a creature than it has remaining health.
-		
 		if (((attacker == &player && rogue.transference) || (attacker != &player && (attacker->info.abilityFlags & MA_TRANSFERENCE)))
 			&& !(defender->info.flags & MONST_INANIMATE)) {
+            
+            transferenceDamage = min(damage, defender->currentHP); // Maximum transferred damage can't exceed the victim's remaining health.
 			
 			if (attacker == &player) {
-				transferenceAmount = damage * rogue.transference / 10;
+				transferenceAmount = transferenceDamage * rogue.transference / 10;
 				if (transferenceAmount == 0) {
 					transferenceAmount = ((rogue.transference > 0) ? 1 : -1);
 				}
 			} else if (attacker->creatureState == MONSTER_ALLY) {
-                transferenceAmount = damage * 4 / 10; // allies get 40% recovery rate
+                transferenceAmount = transferenceDamage * 4 / 10; // allies get 40% recovery rate
             } else {
-				transferenceAmount = damage * 9 / 10; // enemies get 90% recovery rate, deal with it
+				transferenceAmount = transferenceDamage * 9 / 10; // enemies get 90% recovery rate, deal with it
 			}
 
 			attacker->currentHP += transferenceAmount;
@@ -1448,7 +1448,9 @@ boolean inflictDamage(creature *defender, short damage, const color *flashColor,
 		wakeUp(defender);
 	}
 	
-	if (defender == &player && rogue.easyMode) {
+	if (defender == &player
+        && rogue.easyMode
+        && damage > 0) {
 		damage = max(1, damage/5);
 	}
 	
