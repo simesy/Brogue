@@ -847,9 +847,12 @@ void startLevel(short oldLevelNumber, short stairDirection) {
             }
         }
 		if (!placedPlayer) {
-            getQualifyingLocNear(loc, player.xLoc, player.yLoc, true, 0,
-                                 (T_PATHING_BLOCKER),
-                                 (HAS_MONSTER | HAS_ITEM | HAS_UP_STAIRS | HAS_DOWN_STAIRS | IS_IN_MACHINE), false, true);
+            getQualifyingPathLocNear(&loc[0], &loc[1],
+                                     player.xLoc, player.yLoc,
+                                     true,
+                                     T_DIVIDES_LEVEL, NULL,
+                                     T_PATHING_BLOCKER, (HAS_MONSTER | HAS_ITEM | HAS_UP_STAIRS | HAS_DOWN_STAIRS | IS_IN_MACHINE),
+                                     false);
         }
 	}
 	player.xLoc = loc[0];

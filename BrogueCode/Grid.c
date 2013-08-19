@@ -367,12 +367,12 @@ boolean getQualifyingPathLocNear(short *retValX, short *retValY,
     // Get the solution.
     randomLeastPositiveLocationInGrid(grid, retValX, retValY, deterministic);
     
-//    dumpLevelToScreen();
-//    displayGrid(grid);
-//    if (coordinatesAreInMap(*retValX, *retValY)) {
-//        hiliteCell(*retValX, *retValY, &yellow, 100, true);
-//    }
-//    temporaryMessage("Qualifying path selected:", true);
+    dumpLevelToScreen();
+    displayGrid(grid);
+    if (coordinatesAreInMap(*retValX, *retValY)) {
+        hiliteCell(*retValX, *retValY, &yellow, 100, true);
+    }
+    temporaryMessage("Qualifying path selected:", true);
     
     freeGrid(grid);
     freeGrid(costMap);
