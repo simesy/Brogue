@@ -375,7 +375,8 @@ void applyInstantTileEffectsToCreature(creature *monst) {
             sprintf(buf2, "the lichen's grasping tendrils poison %s.", buf);
             messageWithColor(buf2, messageColorFromVictim(monst), false);
         }
-        addPoison(monst, 5);
+        damage = max(0, 5 - monst->status[STATUS_POISONED]);
+        addPoison(monst, damage);
     }
 	
 	// fire

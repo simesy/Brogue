@@ -1482,17 +1482,19 @@ boolean inflictDamage(creature *defender, short damage, const color *flashColor,
 
 void addPoison(creature *monst, short damage) {
     extern const color poisonColor;
-    if (monst == &player && !player.status[STATUS_POISONED]) {
-        combatMessage("scalding poison fills your veins", &badMessageColor);
-    }
-    if (!monst->status[STATUS_POISONED]) {
-        monst->maxStatus[STATUS_POISONED] = 0;
-    }
-    monst->status[STATUS_POISONED] += damage;
-    monst->maxStatus[STATUS_POISONED] = monst->info.maxHP;
-    
-    if (canSeeMonster(monst)) {
-        flashMonster(monst, &poisonColor, 100);
+    if (damage > 0) {
+        if (monst == &player && !player.status[STATUS_POISONED]) {
+            combatMessage("scalding poison fills your veins", &badMessageColor);
+        }
+        if (!monst->status[STATUS_POISONED]) {
+            monst->maxStatus[STATUS_POISONED] = 0;
+        }
+        monst->status[STATUS_POISONED] += damage;
+        monst->maxStatus[STATUS_POISONED] = monst->info.maxHP;
+        
+        if (canSeeMonster(monst)) {
+            flashMonster(monst, &poisonColor, 100);
+        }
     }
 }
 
