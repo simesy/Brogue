@@ -1437,7 +1437,7 @@ boolean inflictDamage(creature *defender, short damage, const color *flashColor,
 	// bleed all over the place, proportionately to damage inflicted:
 	if (damage > 0 && defender->info.bloodType) {
 		theBlood = dungeonFeatureCatalog[defender->info.bloodType];
-		theBlood.startProbability = (theBlood.startProbability * (15 + damage * 3 / 2) / 100);
+		theBlood.startProbability = (theBlood.startProbability * (15 + min(damage, defender->currentHP) * 3 / 2) / 100);
 		if (theBlood.layer == GAS) {
 			theBlood.startProbability *= 100;
 		}
