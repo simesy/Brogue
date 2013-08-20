@@ -96,7 +96,7 @@ creature *generateMonster(short monsterID, boolean itemPossible, boolean mutatio
 	monst->turnsSpentStationary = 0;
 	monst->xpxp = 0;
     monst->machineHome = 0;
-	monst->absorbXPXP = 1500;
+	monst->newPowerCount = 0;
 	monst->targetCorpseLoc[0] = monst->targetCorpseLoc[1] = 0;
     monst->targetWaypointIndex = -1;
     for (i=0; i < MAX_WAYPOINT_COUNT; i++) {
@@ -377,6 +377,23 @@ short pickHordeType(short depth, enum monsterTypes summonerType, unsigned long f
 			}
 	}
 	return 0; // should never happen
+}
+
+void empowerMonster(creature *monst) {
+    char theMonsterName[100], buf[200];
+    monst->info.maxHP += 15;
+    monst->currentHP += (15 * monst->currentHP / (monst->info.maxHP - 15));
+    monst->info.defense += 15;
+    monst->info.accuracy += 15;
+    monst->info.damage.lowerBound += max(1, monst->info.damage.lowerBound / 7);
+    monst->info.damage.upperBound += max(1, monst->info.damage.upperBound / 7);
+    monst->newPowerCount++;
+    
+    if (canSeeMonster(monst)) {
+        monsterName(theMonsterName, monst, true);
+        sprintf(buf, "%s looks stronger", theMonsterName);
+        combatMessage(buf, &advancementMessageColor);
+    }
 }
 
 // If placeClone is false, the clone won't get a location
@@ -2786,8 +2803,8 @@ boolean updateMonsterCorpseAbsorption(creature *monst) {
             } else {
                 monst->info.abilityFlags |= monst->absorptionFlags;
             }
-            monst->absorbXPXP -= XPXP_NEEDED_FOR_ABSORB;
-            monst->bookkeepingFlags &= ~(MONST_ABSORBING | MONST_ALLY_ANNOUNCED_HUNGER);
+            monst->newPowerCount--;
+            monst->bookkeepingFlags &= ~MONST_ABSORBING;
             
             if (monst->info.flags & MONST_FIERY) {
                 monst->status[STATUS_BURNING] = monst->maxStatus[STATUS_BURNING] = 1000; // won't decrease
@@ -3706,7 +3723,7 @@ void monsterDetails(char buf[], creature *monst) {
 		i = encodeMessageColor(buf, i, &goodMessageColor);
 		
 		sprintf(newText, "%s is your ally.", capMonstName);
-		if (monst->absorbXPXP > XPXP_NEEDED_FOR_ABSORB) {
+		if (monst->newPowerCount > 0) {
 			upperCase(newText);
 			strcat(buf, newText);
 			strcat(buf, "\n     ");

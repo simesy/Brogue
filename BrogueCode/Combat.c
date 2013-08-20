@@ -1322,7 +1322,7 @@ void flashMonster(creature *monst, const color *theColor, short strength) {
 
 boolean canAbsorb(creature *ally, creature *prey, short **grid) {
 	return (ally->creatureState == MONSTER_ALLY
-			&& ally->absorbXPXP >= XPXP_NEEDED_FOR_ABSORB
+			&& ally->newPowerCount > 0
 			&& (ally->targetCorpseLoc[0] <= 0)
 			&& monstersAreEnemies(ally, prey)
 			&& ((~(ally->info.abilityFlags) & prey->info.abilityFlags & LEARNABLE_ABILITIES)

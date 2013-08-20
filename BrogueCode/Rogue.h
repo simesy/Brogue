@@ -579,6 +579,7 @@ enum lightType {
     SCROLL_PROTECTION_LIGHT,
     SCROLL_ENCHANTMENT_LIGHT,
     POTION_STRENGTH_LIGHT,
+    EMPOWERMENT_LIGHT,
     GENERIC_FLASH_LIGHT,
     FALLEN_TORCH_FLASH_LIGHT,
     SUMMONING_FLASH_LIGHT,
@@ -739,6 +740,7 @@ enum wandKind {
 	WAND_BECKONING,
 	WAND_PLENTY,
 	WAND_INVISIBILITY,
+    WAND_EMPOWERMENT,
 	NUMBER_WAND_KINDS
 };
 
@@ -768,6 +770,7 @@ enum boltType {
 	BOLT_BECKONING,
 	BOLT_PLENTY,
 	BOLT_INVISIBILITY,
+    BOLT_EMPOWERMENT,
 	BOLT_LIGHTNING,
 	BOLT_FIRE,
 	BOLT_POISON,
@@ -913,7 +916,7 @@ enum monsterTypes {
 #define NUMBER_TITLE_PHONEMES		17
 #define NUMBER_ITEM_WOODS			21
 #define NUMBER_POTION_DESCRIPTIONS	18
-#define NUMBER_ITEM_METALS			9
+#define NUMBER_ITEM_METALS			12
 #define NUMBER_ITEM_GEMS			18
 
 // Dungeon flags
@@ -969,8 +972,7 @@ enum tileFlags {
 #define MAX_EXP_LEVEL						20
 #define MAX_EXP								100000000L
 
-#define XPXP_NEEDED_FOR_ABSORB				4000 // XPXP required for your allies to be eligible to absorb an enemy ability/behavior
-#define XPXP_NEEDED_FOR_LEVELUP				1400 // XPXP required per increase in your allies' stats
+#define XPXP_NEEDED_FOR_TELEPATHIC_BOND     1400 // XPXP required to enable telepathic awareness with the ally
 
 #define ROOM_MIN_WIDTH						4
 #define ROOM_MAX_WIDTH						20
@@ -1231,7 +1233,7 @@ enum itemFlags {
 	ITEM_ATTACKS_PENETRATE	= Fl(17),	// spear, pike
 	ITEM_ATTACKS_ALL_ADJACENT=Fl(18),	// axe, war axe
     ITEM_LUNGE_ATTACKS      = Fl(19),   // rapier
-	ITEM_KIND_AUTO_ID=Fl(20),	// the item type will become known when the item is picked up.
+	ITEM_KIND_AUTO_ID       = Fl(20),	// the item type will become known when the item is picked up.
 	ITEM_PLAYER_AVOIDS		= Fl(21),	// explore and travel will try to avoid picking the item up
 };
 
@@ -1841,8 +1843,7 @@ enum monsterBookkeepingFlags {
 	MONST_IS_DYING					= Fl(18),	// monster has already been killed and is awaiting the end-of-turn graveyard sweep.
 	MONST_GIVEN_UP_ON_SCENT			= Fl(19),	// to help the monster remember that the scent map is a dead end
 	MONST_IS_DORMANT				= Fl(20),	// lurking, waiting to burst out
-    MONST_ALLY_ANNOUNCED_HUNGER     = Fl(21),   // player has gotten the message that the ally is ready to absorb a new power
-    MONST_HAS_SOUL                  = Fl(22),   // slaying the monster will count toward weapon auto-ID
+    MONST_HAS_SOUL                  = Fl(21),   // slaying the monster will count toward weapon auto-ID
 };
 
 // Defines all creatures, which include monsters and the player:
@@ -1961,10 +1962,10 @@ typedef struct creature {
 	short status[NUMBER_OF_STATUS_EFFECTS];
 	short maxStatus[NUMBER_OF_STATUS_EFFECTS]; // used to set the max point on the status bars
 	unsigned long bookkeepingFlags;
-	short spawnDepth;					// because monster doesn't earn xpxp on shallower levels than it spawned, and for activation monsters
-    short machineHome;                  // monsters that spawn in a machine keep track of the machine number here
-	short xpxp;							// exploration experience
-	short absorbXPXP;                   // absorption experience (accrued like xpxp, but spent on absorbing new powers)
+	short spawnDepth;					// keep track of the depth of the machine to which they relate (for activation monsters)
+    short machineHome;                  // monsters that spawn in a machine keep track of the machine number here (for activation monsters)
+	short xpxp;							// exploration experience (used to time telepathic bonding for allies)
+	short newPowerCount;                // how many times this monster can absorb a fallen monster
 	struct creature *leader;			// only if monster is a follower
 	struct creature *carriedMonster;	// when vampires turn into bats, one of the bats restores the vampire when it dies
 	struct creature *nextCreature;
@@ -2608,6 +2609,7 @@ extern "C" {
 	void resolvePronounEscapes(char *text, creature *monst);
 	short pickHordeType(short depth, enum monsterTypes summonerType, unsigned long forbiddenFlags, unsigned long requiredFlags);
 	creature *cloneMonster(creature *monst, boolean announce, boolean placeClone);
+    void empowerMonster(creature *monst);
 	unsigned long forbiddenFlagsForMonster(creatureType *monsterType);
     unsigned long avoidedFlagsForMonster(creatureType *monsterType);
 	boolean monsterCanSubmergeNow(creature *monst);

@@ -783,27 +783,6 @@ void burnItem(item *theItem) {
     spawnDungeonFeature(x, y, &(dungeonFeatureCatalog[DF_ITEM_FIRE]), true, false);
 }
 
-void handleAllyHungerAlerts() {
-    char buf[COLS*3], name[50];
-    creature *monst;
-    
-    if (!player.status[STATUS_HALLUCINATING]) {
-        for (monst = monsters->nextCreature; monst != NULL; monst = monst->nextCreature) {
-            if (monst->creatureState == MONSTER_ALLY
-                && canSeeMonster(monst)
-                && monst->absorbXPXP >= XPXP_NEEDED_FOR_ABSORB
-                && !(monst->bookkeepingFlags & MONST_ALLY_ANNOUNCED_HUNGER)) {
-                
-                monst->bookkeepingFlags |= MONST_ALLY_ANNOUNCED_HUNGER;
-                monsterName(name, monst, true);
-                sprintf(buf, "%s looks like $HESHE's ready to learn something new.", name);
-                resolvePronounEscapes(buf, monst);
-                messageWithColor(buf, &advancementMessageColor, false);
-            }
-        }
-    }
-}
-
 void flashCreatureAlert(creature *monst, char msg[200], color *foreColor, color *backColor) {
     short x, y;
     if (monst->yLoc > DROWS / 2) {
@@ -865,38 +844,23 @@ void handleHealthAlerts() {
     restoreRNG;
 }
 
-
-
 void addXPXPToAlly(short XPXP, creature *monst) {
     char theMonsterName[100], buf[200];
     if (!(monst->info.flags & (MONST_INANIMATE | MONST_IMMOBILE))
+        && !(monst->bookkeepingFlags & MONST_TELEPATHICALLY_REVEALED)
         && monst->creatureState == MONSTER_ALLY
         && monst->spawnDepth <= rogue.depthLevel
         && rogue.depthLevel <= AMULET_LEVEL) {
         
         monst->xpxp += XPXP;
-        monst->absorbXPXP += XPXP;
         //printf("\n%i xpxp added to your %s this turn.", rogue.xpxpThisTurn, monst->info.monsterName);
-        while (monst->xpxp >= XPXP_NEEDED_FOR_LEVELUP) {
-            monst->xpxp -= XPXP_NEEDED_FOR_LEVELUP;
-            monst->info.maxHP += 5;
-            monst->currentHP += (5 * monst->currentHP / (monst->info.maxHP - 5));
-            monst->info.defense += 5;
-            monst->info.accuracy += 5;
-            monst->info.damage.lowerBound += max(1, monst->info.damage.lowerBound / 20);
-            monst->info.damage.upperBound += max(1, monst->info.damage.upperBound / 20);
-            if (!(monst->bookkeepingFlags & MONST_TELEPATHICALLY_REVEALED)) {
-                monst->bookkeepingFlags |= MONST_TELEPATHICALLY_REVEALED;
-                updateVision(true);
-                monsterName(theMonsterName, monst, false);
-                sprintf(buf, "you have developed a telepathic bond with your %s.", theMonsterName);
-                messageWithColor(buf, &advancementMessageColor, false);
-            }
-            //				if (canSeeMonster(monst)) {
-            //					monsterName(theMonsterName, monst, false);
-            //					sprintf(buf, "your %s looks stronger", theMonsterName);
-            //					combatMessage(buf, &advancementMessageColor);
-            //				}
+        if (monst->xpxp >= XPXP_NEEDED_FOR_TELEPATHIC_BOND) {
+            monst->bookkeepingFlags |= MONST_TELEPATHICALLY_REVEALED;
+            updateVision(true);
+            monsterName(theMonsterName, monst, false);
+            sprintf(buf, "you have developed a telepathic bond with your %s.", theMonsterName);
+            messageWithColor(buf, &advancementMessageColor, false);
+            monst->xpxp = 0;
         }
     }
 }
@@ -2233,8 +2197,6 @@ void playerTurnEnded() {
 				monst->bookkeepingFlags &= ~MONST_WAS_VISIBLE;
 			}
 		}
-        
-        handleAllyHungerAlerts();
 		
 		displayCombatText();
 		

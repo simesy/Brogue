@@ -4081,6 +4081,12 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 				flashMonster(monst, boltColors[BOLT_NEGATION], 100);
 			}
 			break;
+        case BOLT_EMPOWERMENT:
+            if (monst && monst != &player) {
+                empowerMonster(monst);
+                createFlare(monst->xLoc, monst->yLoc, EMPOWERMENT_LIGHT);
+            }
+            break;
 		case BOLT_LIGHTNING:
 			// already handled above
 			break;
@@ -4903,6 +4909,12 @@ void identifyItemKind(item *theItem) {
         }
         if ((theItem->category & RING)
             && theItem->enchant1 <= 0) {
+            
+            theItem->flags |= ITEM_IDENTIFIED;
+        }
+        
+        if ((theItem->category & WAND)
+            && theTable[theItem->kind].range.lowerBound == theTable[theItem->kind].range.upperBound) {
             
             theItem->flags |= ITEM_IDENTIFIED;
         }
@@ -6142,6 +6154,7 @@ short magicCharDiscoverySuffix(short category, short kind) {
 				case WAND_PLENTY:
 				case WAND_INVISIBILITY:
 				case WAND_BECKONING:
+                case WAND_EMPOWERMENT:
 					result = -1;
 					break;
 				default:
@@ -6212,6 +6225,7 @@ uchar itemMagicChar(item *theItem) {
 				case WAND_PLENTY:
 				case WAND_INVISIBILITY:
 				case WAND_BECKONING:
+                case WAND_EMPOWERMENT:
 					return BAD_MAGIC_CHAR;
 				default:
 					return GOOD_MAGIC_CHAR;

@@ -98,13 +98,13 @@ const color tanColor =				{80,	67,		15,		0,		0,			0,			0,		false};
 
 // bolt colors
 const color rainbow =				{-70,	-70,	-70,	170,	170,		170,		0,		true};
-// const color rainbow =			{0,		0,		50,		100,	100,		0,			0,		true};
 const color descentBoltColor =      {-40,   -40,    -40,    0,      0,          80,         80,     true};
 const color discordColor =			{25,	0,		25,		66,		0,			0,			0,		true};
 const color poisonColor =			{0,		0,		0,		10,		50,			10,			0,		true};
 const color beckonColor =			{10,	10,		10,		5,		5,			5,			50,		true};
 const color invulnerabilityColor =	{25,	0,		25,		0,		0,			66,			0,		true};
 const color dominationColor =		{0,		0,		100,	80,		25,			0,			0,		true};
+const color empowermentColor =		{30,    100,	40,     25,		80,			25,			0,		true};
 const color fireBoltColor =			{500,	150,	0,		45,		30,			0,			0,		true};
 const color flamedancerCoronaColor ={500,	150,	100,	45,		30,			0,			0,		true};
 //const color shieldingColor =		{100,	50,		0,		0,		50,			100,		0,		true};
@@ -274,6 +274,7 @@ const color algaeGreenLightColor =  {15,    50,     20,     0,      0,          
 const color scrollProtectionColor =	{375,	750,	0,		0,		0,			0,          0,		true};
 const color scrollEnchantmentColor ={250,	225,	300,	0,		0,			450,        0,		true};
 const color potionStrengthColor =   {1000,  0,      400,	600,	0,			0,          0,		true};
+const color empowermentFlashColor = {500,   1000,   600,	0,      500,		0,          0,		true};
 const color genericFlashColor =     {800,   800,    800,    0,      0,          0,          0,      false};
 const color summoningFlashColor =   {0,     0,      0,      600,    0,          1200,       0,      true};
 const color fireFlashColor =		{750,	225,	0,		100,	50,			0,			0,		true};
@@ -927,6 +928,7 @@ const lightSource lightCatalog[NUMBER_LIGHT_KINDS] = {
 	{&scrollProtectionColor,{600, 600, 1},			0,		true},		// scroll of protection flare
     {&scrollEnchantmentColor,{600, 600, 1},			0,		true},		// scroll of enchantment flare
     {&potionStrengthColor,  {600, 600, 1},			0,		true},		// potion of strength flare
+    {&empowermentFlashColor,{600, 600, 1},			0,		true},		// empowerment flare
     {&genericFlashColor,    {300, 300, 1},			0,		true},		// generic flash flare
 	{&fireFlashColor,		{800, 800, 1},			0,		false},		// fallen torch flare
     {&summoningFlashColor,  {600, 600, 1},			0,		true},		// summoning flare
@@ -973,10 +975,11 @@ const blueprint blueprintCatalog[NUMBER_BLUEPRINTS] = {
 	// -- REWARD ROOMS --
 	
 	// Mixed item library -- can check one item out at a time
-	{{1, 12},           {30, 50},	30,		5,			(BP_ROOM | BP_PURGE_INTERIOR | BP_SURROUND_WITH_WALLS | BP_OPEN_INTERIOR | BP_IMPREGNABLE | BP_REWARD),	{
+	{{1, 12},           {30, 50},	30,		6,			(BP_ROOM | BP_PURGE_INTERIOR | BP_SURROUND_WITH_WALLS | BP_OPEN_INTERIOR | BP_IMPREGNABLE | BP_REWARD),	{
 		{0,			CARPET,		DUNGEON,		{0,0},		0,			0,			-1,			0,				0,				0,				0,			0,			(MF_EVERYWHERE)},
 		{0,			0,          0,              {1,1},		1,			0,          0,          0,				0,				2,				0,			0,          (MF_BUILD_AT_ORIGIN | MF_PERMIT_BLOCKING | MF_BUILD_VESTIBULE)},
-		{0,			ALTAR_CAGE_OPEN,DUNGEON,	{3,3},		3,			(WEAPON|ARMOR|WAND),-1,	0,				0,				2,				0,			(ITEM_IS_KEY | ITEM_KIND_AUTO_ID | ITEM_PLAYER_AVOIDS),	(MF_GENERATE_ITEM | MF_NO_THROWING_WEAPONS | MF_TREAT_AS_BLOCKING | MF_IMPREGNABLE)},
+		{0,			ALTAR_CAGE_OPEN,DUNGEON,	{1,1},		1,			WAND,       WAND_EMPOWERMENT, 0,		0,				2,				0,			(ITEM_IS_KEY | ITEM_KIND_AUTO_ID | ITEM_PLAYER_AVOIDS),	(MF_GENERATE_ITEM | MF_TREAT_AS_BLOCKING | MF_IMPREGNABLE)},
+        {0,			ALTAR_CAGE_OPEN,DUNGEON,	{3,3},		3,			(WEAPON|ARMOR|WAND),-1,	0,				0,				2,				0,			(ITEM_IS_KEY | ITEM_KIND_AUTO_ID | ITEM_PLAYER_AVOIDS),	(MF_GENERATE_ITEM | MF_NO_THROWING_WEAPONS | MF_TREAT_AS_BLOCKING | MF_IMPREGNABLE)},
 		{0,			ALTAR_CAGE_OPEN,DUNGEON,	{2,3},		2,			(STAFF|RING|CHARM),-1,	0,				0,				2,				0,			(ITEM_IS_KEY | ITEM_KIND_AUTO_ID | ITEM_MAX_CHARGES_KNOWN | ITEM_PLAYER_AVOIDS),	(MF_GENERATE_ITEM | MF_NO_THROWING_WEAPONS | MF_TREAT_AS_BLOCKING | MF_IMPREGNABLE)},
         {0,			STATUE_INERT,DUNGEON,		{2,3},		0,			0,			-1,			0,				0,				2,				0,          0,          (MF_TREAT_AS_BLOCKING | MF_BUILD_IN_WALLS | MF_IMPREGNABLE)}}},
 	// Single item category library -- can check one item out at a time
@@ -2039,6 +2042,9 @@ const char itemMetalsRef[NUMBER_ITEM_METALS][30] = {
 	"aluminum",
 	"tungsten",
 	"titanium",
+    "cobalt",
+    "chromium",
+    "silver",
 };
 
 char itemGems[NUMBER_ITEM_GEMS][30];
@@ -2186,6 +2192,7 @@ itemTable wandTable[NUMBER_WAND_KINDS] = {
 	{"beckoning",		itemMetals[5], "",	3,	500,	0,{2,4,1}, false, false, "The force of this wand will yank the targeted creature into direct proximity."},
 	{"plenty",			itemMetals[6], "",	2,	700,	0,{1,2,1}, false, false, "The creature at the other end of this mischievous bit of metal will be beside itself -- literally! Cloning an enemy is ill-advised, but the effect can be invaluable on a powerful ally."},
 	{"invisibility",	itemMetals[7], "",	3,	100,	0,{3,5,1}, false, false, "A charge from this wand will render a creature temporarily invisible to the naked eye. Only with telepathy or in the silhouette of a thick gas will an observer discern the creature's hazy outline."},
+    {"empowerment",     itemMetals[8], "",	2,	100,	0,{1,1,1}, false, false, "This sacred magic will permanently improve the body and mind of any monster it hits. A wise adventurer will use it on allies, making them stronger in combat and able to learn a new talent from a fallen foe. If the bolt is reflected back at you, it will have no effect."},
 };
 
 itemTable staffTable[NUMBER_STAFF_KINDS] = {
@@ -2240,6 +2247,7 @@ const color *boltColors[NUMBER_BOLT_KINDS] = {
 	&beckonColor,		// beckoning
 	&rainbow,			// plenty
 	&darkBlue,			// invisibility
+    &empowermentColor,  // empowerment
 	&lightningColor,	// lightning
 	&fireBoltColor,		// fire
 	&poisonColor,		// poison
