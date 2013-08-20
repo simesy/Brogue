@@ -25,6 +25,7 @@
 #include <unistd.h>
 #include "CoreFoundation/CoreFoundation.h"
 #import "RogueDriver.h"
+#import <QuartzCore/QuartzCore.h>
 
 #define BROGUE_VERSION	4	// A special version number that's incremented only when
 // something about the OS X high scores file structure changes.
@@ -32,6 +33,7 @@
 static Viewport *theMainDisplay;
 NSDate *pauseStartDate;
 short mouseX, mouseY;
+static CGColorSpaceRef _colorSpace;
 
 @implementation RogueDriver
 
@@ -68,8 +70,9 @@ short mouseX, mouseY;
 	mouseX = mouseY = 0;
 }
 
-- (IBAction)playBrogue:(id)sender
+- (IBAction)playBrogue:(id)__unused sender
 {
+    _colorSpace = CGColorSpaceCreateDeviceRGB();
     //UNUSED(sender);
     //	[fileMenu setAutoenablesItems:NO];
 	rogueMain();
@@ -77,7 +80,7 @@ short mouseX, mouseY;
 	//exit(0);
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+- (void)applicationDidFinishLaunching:(NSNotification *)__unused aNotification
 {
     //UNUSED(aNotification);
 	[theWindow makeMainWindow];
@@ -88,7 +91,7 @@ short mouseX, mouseY;
 	[NSApp terminate:nil];
 }
 
-- (void)windowDidResize:(NSNotification *)aNotification
+- (void)windowDidResize:(NSNotification *)__unused aNotification
 {
     //UNUSED(aNotification);
     NSRect theRect;
@@ -102,7 +105,7 @@ short mouseX, mouseY;
     theSize = min(FONT_SIZE * theWidth / (HORIZ_PX * kCOLS), FONT_SIZE * theHeight / (VERT_PX * kROWS));
     //NSLog(@"Start theSize=%d (w=%d, h=%d)", theSize, theWidth, theHeight);
     do {
-        [theAttributes setObject:[NSFont fontWithName:[theMainDisplay fontName] size:theSize] forKey:NSFontAttributeName];
+        [theAttributes setObject:[NSFont fontWithName:[theMainDisplay basicFontName] size:theSize] forKey:NSFontAttributeName];
         testSizeBox = [@"a" sizeWithAttributes:theAttributes];
         //NSLog(@"theSize=%d testSizeBox w=%f, h=%f", theSize, testSizeBox.width, testSizeBox.height);
         theSize++;
@@ -141,26 +144,29 @@ void plotChar(uchar inputChar,
 			  short xLoc, short yLoc,
 			  short foreRed, short foreGreen, short foreBlue,
 			  short backRed, short backGreen, short backBlue) {
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    //	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
-    [theMainDisplay setString:[NSString stringWithCharacters:&inputChar length:1]
-               withBackground:[NSColor colorWithDeviceRed:((float)backRed/100)
-                                                    green:((float)backGreen/100)
-                                                     blue:((float)backBlue/100)
-                                                    alpha:(float)1]
-              withLetterColor:[NSColor colorWithDeviceRed:((float)foreRed/100)
-                                                    green:((float)foreGreen/100)
-                                                     blue:((float)foreBlue/100)
-                                                    alpha:(float)1]
+    CGFloat backComponents[] = {(CGFloat)(backRed/100.), (CGFloat)(backGreen/100.), (CGFloat)(backBlue/100.), 1.};
+    CGColorRef backColor = CGColorCreate(_colorSpace, backComponents);
+    
+    CGFloat foreComponents[] = {(CGFloat)(foreRed/100.), (CGFloat)(foreGreen/100.), (CGFloat)(foreBlue/100.), 1.};
+    CGColorRef foreColor = CGColorCreate(_colorSpace, foreComponents);
+    
+    NSString *unicodeString = nil;
+    if (inputChar > 127 && inputChar != 183) {
+        unicodeString = [NSString stringWithCharacters:&inputChar length:1];
+    }
+    
+    [theMainDisplay setString:unicodeString
+               withBackground:backColor
+              withLetterColor:foreColor
                   atLocationX:xLoc locationY:yLoc
-                withFancyFont:(inputChar == FOLIAGE_CHAR)];
-	[pool drain];
+                withFancyFont:(inputChar == FOLIAGE_CHAR) withChar:inputChar];
+	//[pool drain];
 }
 
 void pausingTimerStartsNow() {
-	if (pauseStartDate) {
-		[pauseStartDate release];
-	}
+    [pauseStartDate release];
 	pauseStartDate = [NSDate date];
 	[pauseStartDate retain];
 	//printf("\nPause timer started!");
@@ -212,7 +218,7 @@ boolean pauseForMilliseconds(short milliseconds) {
 	return false;
 }
 
-void nextKeyOrMouseEvent(rogueEvent *returnEvent, boolean textInput, boolean colorsDance) {
+void nextKeyOrMouseEvent(rogueEvent *returnEvent, __unused boolean textInput, boolean colorsDance) {
 	//UNUSED(textInput);
     NSEvent *theEvent;
 	NSEventType theEventType;

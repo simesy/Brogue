@@ -3,6 +3,7 @@
 //  Brogue
 //
 //  Created by Brian and Kevin Walker.
+//  Updated by Seth Howard on 8/15/2013
 //  Copyright 2012. All rights reserved.
 //
 //  This file is part of Brogue.
@@ -37,30 +38,56 @@
 
 @interface Viewport : NSView
 {
-	NSString *letterArray[kCOLS][kROWS];
-	NSColor *bgColorArray[kCOLS][kROWS];
-	NSMutableDictionary *attributes[kCOLS][kROWS];
-	NSMutableDictionary *characterSizeDictionary;
-	NSRect rectArray[kCOLS][kROWS];
+	NSString *_letterArray[kCOLS][kROWS];
+	CGColorRef _bgColorArray[kCOLS][kROWS];
+    CGColorRef _letterColorArray[kCOLS][kROWS];
+	NSMutableDictionary *_attributes[kCOLS][kROWS];
+	NSMutableDictionary *_characterSizeDictionary;
+	NSRect _rectArray[kCOLS][kROWS];
+    unsigned short _charArray[kCOLS][kROWS];
+    NSSize _fastFontCharSize;
+    CGContextRef _context;
+    CGFontRef _cgFont;
+    
+    short _hWindow;
+    short _vWindow;
+    short _vPixels;
+    short _hPixels;
+    short _theFontSize;
+    
+    NSFont *_slowFont;
+    NSFont *_fastFont;
+    
+    CGGlyph _glyphString[1];
+    
+    NSString *_basicFontName;
 }
 
-- (BOOL)isOpaque;
-
 - (void)setString:(NSString *)c
-   withBackground:(NSColor *)bgColor
-  withLetterColor:(NSColor *)letterColor
+   withBackground:(CGColorRef)bgColor
+  withLetterColor:(CGColorRef)letterColor
 	  atLocationX:(short)x
 		locationY:(short)y
-    withFancyFont:(bool)fancyFont;
+    withFancyFont:(bool)fancyFont
+         withChar:(unsigned short)character;
 
-- (void)drawTheString:(NSString *)theString centeredIn:(NSRect)rect withAttributes:(NSMutableDictionary *)theAttributes;
+- (void)drawTheString:(NSString *)theString centeredIn:(NSRect)rect withAttributes:(NSMutableDictionary *)theAttributes withChar:(unsigned short)character;
 
-- (short)horizWindow;
-- (short)vertWindow;
-- (short)fontSize;
-- (NSString *)fontName;
 - (void)setHorizWindow:(short)hPx
 			vertWindow:(short)vPx
 			  fontSize:(short)size;
+
+// window size
+@property (nonatomic, assign) short horizWindow;
+@property (nonatomic, assign) short vertWindow;
+// TODO: rename to fastFont and slowFont and use the custom getter already provided (fastfont)
+@property (nonatomic, retain) NSFont *slowFont;
+@property (nonatomic, retain) NSFont *fastFont;
+// The approximate size of one rectangle, which can be off by up to 1 pixel:
+@property (nonatomic, assign) short vPixels;
+@property (nonatomic, assign) short hPixels;
+@property (nonatomic, assign) short theFontSize; // Will get written over when windowDidResize
+@property (nonatomic, copy) NSString *basicFontName;
+@property (nonatomic, retain) NSDictionary *characterSizeDictionary;
 
 @end
