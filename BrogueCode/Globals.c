@@ -35,7 +35,7 @@ short **playerPathingMap;						// used to calculate routes for mouse movement
 const short nbDirs[8][2] = {{0,-1}, {0,1}, {-1,0}, {1,0}, {-1,-1}, {-1,1}, {1,-1}, {1,1}};
 const short cDirs[8][2] = {{0, 1}, {1, 1}, {1, 0}, {1, -1}, {0, -1}, {-1, -1}, {-1, 0}, {-1, 1}};
 short numberOfWaypoints;
-levelData levels[DEEPEST_LEVEL+1];
+levelData *levels;
 creature player;
 playerCharacter rogue;
 creature *monsters;

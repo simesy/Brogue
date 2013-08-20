@@ -236,6 +236,7 @@ void initializeRogue(unsigned long seed) {
     
 	initRecording();
 	
+    levels = malloc(sizeof(levelData) * (DEEPEST_LEVEL+1));
 	levels[0].upStairsLoc[0] = (DCOLS - 1) / 2 - 1;
 	levels[0].upStairsLoc[1] = DROWS - 2;
 	
@@ -1005,6 +1006,9 @@ void freeEverything() {
         free(rogue.flares);
         rogue.flares = NULL;
     }
+    
+    free(levels);
+    levels = NULL;
 }
 
 void gameOver(char *killedBy, boolean useCustomPhrasing) {

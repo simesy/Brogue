@@ -33,7 +33,7 @@ extern short **playerPathingMap;
 
 extern const short nbDirs[8][2];
 extern const short cDirs[8][2];
-extern levelData levels[DEEPEST_LEVEL+1];
+extern levelData *levels;
 extern creature player;
 extern playerCharacter rogue;
 extern creature *monsters;
