@@ -6658,18 +6658,9 @@ void shuffleFlavors() {
 	short i, j, randIndex, randNumber;
 	char buf[COLS];
 	
-	//	for (i=0; i<NUMBER_FOOD_KINDS; i++) {
-	//		resetItemTableEntry(foodTable + i);
-	//	}
 	for (i=0; i<NUMBER_POTION_KINDS; i++) {
 		resetItemTableEntry(potionTable + i);
 	}
-	//	for (i=0; i<NUMBER_WEAPON_KINDS; i++) {
-	//		resetItemTableEntry(weaponTable + i);
-	//	}
-	//	for (i=0; i<NUMBER_ARMOR_KINDS; i++) {
-	//		resetItemTableEntry(armorTable + i);
-	//	}
 	for (i=0; i<NUMBER_STAFF_KINDS; i++) {
 		resetItemTableEntry(staffTable+ i);
 	}
@@ -6688,9 +6679,11 @@ void shuffleFlavors() {
 	}
 	for (i=0; i<NUMBER_ITEM_COLORS; i++) {
 		randIndex = rand_range(0, NUMBER_ITEM_COLORS - 1);
-		strcpy(buf, itemColors[i]);
-		strcpy(itemColors[i], itemColors[randIndex]);
-		strcpy(itemColors[randIndex], buf);
+        if (randIndex != i) {
+            strcpy(buf, itemColors[i]);
+            strcpy(itemColors[i], itemColors[randIndex]);
+            strcpy(itemColors[randIndex], buf);
+        }
 	}
 	
 	for (i=0; i<NUMBER_ITEM_WOODS; i++) {
@@ -6698,9 +6691,11 @@ void shuffleFlavors() {
 	}
 	for (i=0; i<NUMBER_ITEM_WOODS; i++) {
 		randIndex = rand_range(0, NUMBER_ITEM_WOODS - 1);
-		strcpy(buf, itemWoods[i]);
-		strcpy(itemWoods[i], itemWoods[randIndex]);
-		strcpy(itemWoods[randIndex], buf);
+        if (randIndex != i) {
+            strcpy(buf, itemWoods[i]);
+            strcpy(itemWoods[i], itemWoods[randIndex]);
+            strcpy(itemWoods[randIndex], buf);
+        }
 	}
 	
 	for (i=0; i<NUMBER_ITEM_GEMS; i++) {
@@ -6708,19 +6703,23 @@ void shuffleFlavors() {
 	}
 	for (i=0; i<NUMBER_ITEM_GEMS; i++) {
 		randIndex = rand_range(0, NUMBER_ITEM_GEMS - 1);
-		strcpy(buf, itemGems[i]);
-		strcpy(itemGems[i], itemGems[randIndex]);
-		strcpy(itemGems[randIndex], buf);
+        if (randIndex != i) {
+            strcpy(buf, itemGems[i]);
+            strcpy(itemGems[i], itemGems[randIndex]);
+            strcpy(itemGems[randIndex], buf);
+        }
 	}
 	
 	for (i=0; i<NUMBER_ITEM_METALS; i++) {
 		strcpy(itemMetals[i], itemMetalsRef[i]);
 	}
 	for (i=0; i<NUMBER_ITEM_METALS; i++) {
-		randIndex = rand_range(0, NUMBER_ITEM_METALS - 1);
-		strcpy(buf, itemMetals[i]);
-		strcpy(itemMetals[i], itemMetals[randIndex]);
-		strcpy(itemMetals[randIndex], buf);
+        randIndex = rand_range(0, NUMBER_ITEM_METALS - 1);
+        if (randIndex != i) {
+            strcpy(buf, itemMetals[i]);
+            strcpy(itemMetals[i], itemMetals[randIndex]);
+            strcpy(itemMetals[randIndex], buf);
+        }
 	}
 	
 	for (i=0; i<NUMBER_SCROLL_KINDS; i++) {
