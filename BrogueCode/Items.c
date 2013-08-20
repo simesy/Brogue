@@ -6000,9 +6000,9 @@ void drinkPotion(item *theItem) {
 			message("colors are everywhere! The walls are singing!", false);
 			break;
 		case POTION_INCINERATION:
-			colorFlash(&darkOrange, 0, IN_FIELD_OF_VIEW, 4, 4, player.xLoc, player.yLoc);
+			//colorFlash(&darkOrange, 0, IN_FIELD_OF_VIEW, 4, 4, player.xLoc, player.yLoc);
 			message("as you uncork the flask, it explodes in flame!", false);
-			spawnDungeonFeature(player.xLoc, player.yLoc, &dungeonFeatureCatalog[DF_FLAMETHROWER], true, false);
+			spawnDungeonFeature(player.xLoc, player.yLoc, &dungeonFeatureCatalog[DF_INCINERATION_POTION], true, false);
 			exposeCreatureToFire(&player);
 			break;
 		case POTION_DARKNESS:

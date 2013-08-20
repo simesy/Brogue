@@ -38,7 +38,7 @@ void exposeCreatureToFire(creature *monst) {
 			player.info.foreColor = &torchLightColor;
 			refreshDungeonCell(player.xLoc, player.yLoc);
 			//updateVision(); // this screws up the firebolt visual effect by erasing it while a message is displayed
-			message("you catch fire!", true);
+			message("you catch fire!", false);
 		} else if (canDirectlySeeMonster(monst)) {
 			monsterName(buf, monst, true);
 			sprintf(buf2, "%s catches fire!", buf);
