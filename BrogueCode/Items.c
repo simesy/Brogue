@@ -4082,7 +4082,10 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 			}
 			break;
         case BOLT_EMPOWERMENT:
-            if (monst && monst != &player) {
+            if (monst
+                && monst != &player
+                && !(monst->info.flags & MONST_INANIMATE)) {
+                
                 empowerMonster(monst);
                 createFlare(monst->xLoc, monst->yLoc, EMPOWERMENT_LIGHT);
             }
