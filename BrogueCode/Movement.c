@@ -707,7 +707,9 @@ boolean playerMoves(short direction) {
 	}
     
     // If there's no enemy at the movement location that the player is aware of, consider terrain promotions.
-    if (!(defender && (canSeeMonster(defender) || monsterRevealed(defender)) && monstersAreEnemies(&player, defender))) {
+    if (!defender
+        || (!canSeeMonster(defender) && !monsterRevealed(defender))
+        || !monstersAreEnemies(&player, defender)) {
         
         if (cellHasTerrainFlag(newX, newY, T_OBSTRUCTS_PASSABILITY) && cellHasTMFlag(newX, newY, TM_PROMOTES_ON_PLAYER_ENTRY)) {
             layer = layerWithTMFlag(newX, newY, TM_PROMOTES_ON_PLAYER_ENTRY);
@@ -815,7 +817,7 @@ boolean playerMoves(short direction) {
 				// Attack!
 				for (i=0; i<16; i++) {
 					if (hitList[i]
-						&& monstersAreEnemies(&player, hitList[i])
+						&& monsterWillAttackTarget(&player, hitList[i])
 						&& !(hitList[i]->bookkeepingFlags & MONST_IS_DYING)
                         && !rogue.gameHasEnded) {
 						

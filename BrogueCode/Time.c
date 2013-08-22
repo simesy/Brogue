@@ -607,8 +607,8 @@ short armorAggroAdjustment(item *theArmor) {
 }
 
 short currentAggroValue() {
-    // Default value of 8.
-    short stealthVal = 8;
+    // Default value of 6.
+    short stealthVal = 6;
     
     if (player.status[STATUS_INVISIBLE]) {
         stealthVal = 1;

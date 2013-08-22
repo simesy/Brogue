@@ -2602,6 +2602,7 @@ extern "C" {
 	creature *spawnHorde(short hordeID, short x, short y, unsigned long forbiddenFlags, unsigned long requiredFlags);
 	void fadeInMonster(creature *monst);
 	boolean removeMonsterFromChain(creature *monst, creature *theChain);
+    boolean monsterWillAttackTarget(const creature *attacker, const creature *defender);
 	boolean monstersAreTeammates(const creature *monst1, const creature *monst2);
 	boolean monstersAreEnemies(const creature *monst1, const creature *monst2);
 	void initializeGender(creature *monst);

@@ -218,6 +218,36 @@ void monsterName(char *buf, creature *monst, boolean includeArticle) {
 	}
 }
 
+boolean monsterWillAttackTarget(const creature *attacker, const creature *defender) {
+    if (attacker == defender || (defender->bookkeepingFlags & MONST_IS_DYING)) {
+        return false;
+    }
+    if (attacker == &player
+        && defender->creatureState == MONSTER_ALLY) {
+        
+        return false;
+    }
+    if (attacker->status[STATUS_ENTRANCED]
+        && defender->creatureState != MONSTER_ALLY) {
+        
+        return true;
+    }
+    if (defender->bookkeepingFlags & MONST_CAPTIVE) {
+        return false;
+    }
+    if (attacker->status[STATUS_DISCORDANT]
+        || defender->status[STATUS_DISCORDANT]
+        || attacker->status[STATUS_CONFUSED]) {
+        
+        return true;
+    }
+    if (monstersAreEnemies(attacker, defender)
+        && !monstersAreTeammates(attacker, defender)) {
+        return true;
+    }
+    return false;
+}
+
 boolean monstersAreTeammates(const creature *monst1, const creature *monst2) {
 	// if one follows the other, or the other follows the one, or they both follow the same
 	return ((((monst1->bookkeepingFlags & MONST_FOLLOWER) && monst1->leader == monst2)
@@ -1100,7 +1130,7 @@ boolean monsterAvoids(creature *monst, short x, short y) {
     if (distanceBetween(monst->xLoc, monst->yLoc, x, y) <= 1) {
         defender = monsterAtLoc(x, y);
         if (defender
-            && monstersAreEnemies(monst, defender)
+            && monsterWillAttackTarget(monst, defender)
             && (!(monst->info.flags & MONST_RESTRICTED_TO_LIQUID) || !(defender->status[STATUS_LEVITATING]))) {
             
             return false;
@@ -1363,7 +1393,7 @@ boolean awareOfTarget(creature *observer, creature *target) {
 		// out of awareness range, even if hunting
 		retval = false;
     } else if (target->status[STATUS_INVISIBLE]
-               && perceivedDistance > (awareness + 1) * 2) {
+               && perceivedDistance > awareness * 3) {
         retval = false;
 	} else if (observer->creatureState == MONSTER_TRACKING_SCENT) {
 		// already aware of the target
@@ -2154,7 +2184,7 @@ boolean monstUseMagic(creature *monst) {
                     && !target->status[STATUS_ENTRANCED]
                     && (!cellHasTerrainFlag(target->xLoc, target->yLoc, T_OBSTRUCTS_PASSABILITY) || (target->info.flags & MONST_ATTACKABLE_THRU_WALLS))
 					&& distanceBetween(monst->xLoc, monst->yLoc, targetLoc[0], targetLoc[1]) < 11
-                    && (alwaysUse || !monst->status[STATUS_DISCORDANT] || rand_percent(35))) {
+                    && (alwaysUse || monst->status[STATUS_DISCORDANT] || rand_percent(35))) {
                     
 					monsterShoots(monst, targetLoc,
 								  ((monst->info.abilityFlags & MA_HIT_DEGRADE_ARMOR) ? '*' : WEAPON_CHAR),
@@ -2524,7 +2554,7 @@ boolean monsterFleesFrom(creature *monst, creature *defender) {
     const short x = monst->xLoc;
     const short y = monst->yLoc;
     
-    if (!monstersAreEnemies(monst, defender)) {
+    if (!monsterWillAttackTarget(defender, monst)) {
         return false;
     }
     
@@ -2639,9 +2669,7 @@ void moveAlly(creature *monst) {
 	for (target = monsters->nextCreature; target != NULL; target = target->nextCreature) {
 		if (target != monst
 			&& (!(target->bookkeepingFlags & MONST_SUBMERGED) || (monst->bookkeepingFlags & MONST_SUBMERGED))
-			&& monstersAreEnemies(target, monst)
-			&& !(target->bookkeepingFlags & MONST_CAPTIVE)
-            && !target->status[STATUS_ENTRANCED]
+			&& monsterWillAttackTarget(monst, target)
 			&& distanceBetween(x, y, target->xLoc, target->yLoc) < shortestDistance
 			&& traversiblePathBetween(monst, target->xLoc, target->yLoc)
 			&& (!cellHasTerrainFlag(target->xLoc, target->yLoc, T_OBSTRUCTS_PASSABILITY) || (target->info.flags & MONST_ATTACKABLE_THRU_WALLS))
@@ -2722,8 +2750,7 @@ void moveAlly(creature *monst) {
 			for (target = monsters->nextCreature; target != NULL; target = target->nextCreature) {
 				if (target != monst
 					&& (!(target->bookkeepingFlags & MONST_SUBMERGED) || (monst->bookkeepingFlags & MONST_SUBMERGED))
-					&& monstersAreEnemies(target, monst)
-					&& !(target->bookkeepingFlags & MONST_CAPTIVE)
+					&& monsterWillAttackTarget(monst, target)
 					&& distanceBetween(x, y, target->xLoc, target->yLoc) < shortestDistance
 					&& traversiblePathBetween(monst, target->xLoc, target->yLoc)
 					&& (!monsterAvoids(monst, target->xLoc, target->yLoc) || (target->info.flags & MONST_ATTACKABLE_THRU_WALLS))
@@ -2920,8 +2947,7 @@ void monstersTurn(creature *monst) {
 		CYCLE_MONSTERS_AND_PLAYERS(target) {
 			if (target != monst
 				&& (!(target->bookkeepingFlags & MONST_SUBMERGED) || (monst->bookkeepingFlags & MONST_SUBMERGED))
-				&& monstersAreEnemies(target, monst)
-				&& !(target->bookkeepingFlags & MONST_CAPTIVE)
+				&& monsterWillAttackTarget(monst, target)
 				&& distanceBetween(x, y, target->xLoc, target->yLoc) < shortestDistance
 				&& traversiblePathBetween(monst, target->xLoc, target->yLoc)
 				&& (!monsterAvoids(monst, target->xLoc, target->yLoc) || (target->info.flags & MONST_ATTACKABLE_THRU_WALLS))
@@ -2966,8 +2992,10 @@ void monstersTurn(creature *monst) {
 		if (distanceBetween(x, y, player.xLoc, player.yLoc) > 1
 			|| diagonalBlocked(x, y, player.xLoc, player.yLoc)) {
 			for (ally = monsters->nextCreature; ally != NULL; ally = ally->nextCreature) {
-				if (monstersAreEnemies(monst, ally) && distanceBetween(x, y, ally->xLoc, ally->yLoc) == 1
+				if (monsterWillAttackTarget(monst, ally)
+                    && distanceBetween(x, y, ally->xLoc, ally->yLoc) == 1
 					&& (!ally->status[STATUS_INVISIBLE] || rand_percent(33))) {
+                    
 					targetLoc[0] = ally->xLoc;
 					targetLoc[1] = ally->yLoc;
 					if (moveMonsterPassivelyTowards(monst, targetLoc, true)) { // attack
@@ -3034,8 +3062,7 @@ void monstersTurn(creature *monst) {
 		if (dir == -1 || (!moveMonster(monst, nbDirs[dir][0], nbDirs[dir][1]) && !moveMonsterPassivelyTowards(monst, targetLoc, true))) {
 			CYCLE_MONSTERS_AND_PLAYERS(ally) {
 				if (!monst->status[STATUS_MAGICAL_FEAR] // Fearful monsters will never attack.
-					&& monstersAreEnemies(monst, ally)
-					&& ally != monst // Otherwise, discordant cornered fleeing enemies will slit their wrists in grotesque fashion.
+					&& monsterWillAttackTarget(monst, ally)
 					&& distanceBetween(x, y, ally->xLoc, ally->yLoc) <= 1) {
 					
 					moveMonster(monst, ally->xLoc - x, ally->yLoc - y); // attack the player if cornered
@@ -3092,7 +3119,8 @@ void monstersTurn(creature *monst) {
 		// if the monster is adjacent to an ally and not fleeing, attack the ally
 		if (monst->creatureState == MONSTER_WANDERING) {
 			for (ally = monsters->nextCreature; ally != NULL; ally = ally->nextCreature) {
-				if (monstersAreEnemies(monst, ally) && distanceBetween(x, y, ally->xLoc, ally->yLoc) == 1
+				if (monsterWillAttackTarget(monst, ally)
+                    && distanceBetween(x, y, ally->xLoc, ally->yLoc) == 1
 					&& (!ally->status[STATUS_INVISIBLE] || rand_percent(33))) {
                     
 					targetLoc[0] = ally->xLoc;
@@ -3296,8 +3324,7 @@ boolean moveMonster(creature *monst, short dx, short dy) {
 		 || (isPassableOrSecretDoor(newX, newY)
              && !diagonalBlocked(x, y, newX, newY)
 			 && isPassableOrSecretDoor(x, y)))
-		&& (!defender || monst->status[STATUS_CONFUSED] || monst->status[STATUS_ENTRANCED] ||
-			canPass(monst, defender) || monstersAreEnemies(monst, defender))) {
+		&& (!defender || canPass(monst, defender) || monsterWillAttackTarget(monst, defender))) {
 			// if it's a legal move
             
 			if (defender) {
@@ -3353,7 +3380,7 @@ boolean moveMonster(creature *monst, short dx, short dy) {
                     // Attack!
                     for (i=0; i<16; i++) {
                         if (hitList[i]
-                            && monstersAreEnemies(monst, hitList[i])
+                            && monsterWillAttackTarget(monst, hitList[i])
                             && !(hitList[i]->bookkeepingFlags & MONST_IS_DYING)
                             && !rogue.gameHasEnded) {
                             
@@ -3730,7 +3757,11 @@ void monsterDetails(char buf[], creature *monst) {
 			i = strlen(buf);
 			i = encodeMessageColor(buf, i, &advancementMessageColor);
 			
-			strcpy(newText, "$HESHE seems ready to learn something new.");
+            if (monst->newPowerCount == 1) {
+                strcpy(newText, "$HESHE seems ready to learn something new.");
+            } else {
+                sprintf(newText, "$HESHE seems ready to learn %i new talents.", monst->newPowerCount);
+            }
 			resolvePronounEscapes(newText, monst); // So that it gets capitalized appropriately.
 		}
 	} else if (monst->bookkeepingFlags & MONST_CAPTIVE) {

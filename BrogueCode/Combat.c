@@ -461,7 +461,7 @@ void specialHit(creature *attacker, creature *defender, short damage) {
 			&& !(attacker->carriedItem)
 			&& (packItems->nextItem)
 			&& attacker->currentHP > 0
-            && monstersAreEnemies(attacker, defender) // No stealing from the player if you bump him while confused.
+            && !attacker->status[STATUS_CONFUSED] // No stealing from the player if you bump him while confused.
 			&& attackHit(attacker, defender)) {
 			
 			itemCandidates = numberOfMatchingPackItems(ALL_ITEMS & ~AMULET, 0, (ITEM_EQUIPPED), false);
@@ -1617,9 +1617,7 @@ void buildHitList(creature **hitList,
         if (coordinatesAreInMap(newestX, newestY) && (pmap[newestX][newestY].flags & HAS_MONSTER)) {
             defender = monsterAtLoc(newestX, newestY);
             if (defender
-                && monstersAreEnemies(attacker, defender)
-                && !monstersAreTeammates(attacker, defender)
-                && !(defender->bookkeepingFlags & MONST_IS_DYING)
+                && monsterWillAttackTarget(attacker, defender)
                 && (!cellHasTerrainFlag(defender->xLoc, defender->yLoc, T_OBSTRUCTS_PASSABILITY) || (defender->info.flags & MONST_ATTACKABLE_THRU_WALLS))) {
                 
                 // Attack the outermost monster first, so that spears of force can potentially send both of them flying.
@@ -1638,9 +1636,7 @@ void buildHitList(creature **hitList,
             if (coordinatesAreInMap(newestX, newestY) && (pmap[newestX][newestY].flags & (HAS_MONSTER | HAS_PLAYER))) {
                 defender = monsterAtLoc(newestX, newestY);
                 if (defender
-                    && monstersAreEnemies(attacker, defender)
-                    && !monstersAreTeammates(attacker, defender)
-                    && !(defender->bookkeepingFlags & MONST_IS_DYING)
+                    && monsterWillAttackTarget(attacker, defender)
                     && (!cellHasTerrainFlag(defender->xLoc, defender->yLoc, T_OBSTRUCTS_PASSABILITY) || (defender->info.flags & MONST_ATTACKABLE_THRU_WALLS))) {
                     
                     hitList[i] = defender;
