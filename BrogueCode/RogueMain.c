@@ -297,6 +297,10 @@ void initializeRogue(unsigned long seed) {
 	}
 	
 	shuffleFlavors();
+    
+    for (i = 0; i < FEAT_COUNT; i++) {
+        rogue.featRecord[i] = featTable[i].initialValue;
+    }
 	
 	deleteMessages();
 	for (i = 0; i < MESSAGE_ARCHIVE_LINES; i++) { // Clear the message archive.
@@ -1132,7 +1136,7 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
 void victory(boolean superVictory) {
 	char buf[DCOLS*3], victoryVerb[20];
 	item *theItem;
-	short i, gemCount = 0;
+	short i, j, gemCount = 0;
 	unsigned long totalValue = 0;
 	rogueHighScoresEntry theEntry;
 	boolean qualified, isPlayback;
@@ -1195,8 +1199,17 @@ void victory(boolean superVictory) {
 	printString("TOTAL:", mapToWindowX(2), min(ROWS-1, i + 1), &lightBlue, &black, dbuf);
 	sprintf(buf, "%li", totalValue);
 	printString(buf, mapToWindowX(60), min(ROWS-1, i + 1), &lightBlue, &black, dbuf);
+    
+    i += 4;
+    for (j = 0; i < ROWS && j < FEAT_COUNT; j++) {
+        if (rogue.featRecord[j]) {
+            sprintf(buf, "%s: %s", featTable[j].name, featTable[j].description);
+            printString(buf, mapToWindowX(2), i, &advancementMessageColor, &black, dbuf);
+            i++;
+        }
+    }
 	
-	funkyFade(dbuf, &white, 0, 15, COLS/2, ROWS/2, true);	
+	funkyFade(dbuf, &white, 0, 15, COLS/2, ROWS/2, true);
 	
     strcpy(victoryVerb, superVictory ? "Mastered" : "Escaped");
 	if (gemCount == 0) {

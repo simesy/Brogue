@@ -369,6 +369,13 @@ short alliedCloneCount(creature *monst) {
 // This function is called whenever one creature acts aggressively against another in a way that directly causes damage.
 // This can be things like melee attacks, fire/lightning attacks or throwing a weapon.
 void moralAttack(creature *attacker, creature *defender) {
+    
+    if (attacker == &player) {
+        rogue.featRecord[FEAT_PACIFIST] = false;
+        if (defender->creatureState != MONSTER_TRACKING_SCENT) {
+            rogue.featRecord[FEAT_PALADIN] = false;
+        }
+    }
 	
 	if (defender->currentHP > 0
 		&& !(defender->bookkeepingFlags & MONST_IS_DYING)) {
@@ -1040,6 +1047,10 @@ boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
 	short damage, transferenceAmount, transferenceDamage, poisonDamage;
 	char buf[COLS*2], buf2[COLS*2], attackerName[COLS], defenderName[COLS], verb[DCOLS], explicationClause[DCOLS] = "", armorRunicString[DCOLS*3];
 	boolean sneakAttack, defenderWasAsleep, defenderWasParalyzed, degradesAttackerWeapon, sightUnseen;
+    
+    if (attacker == &player) {
+        rogue.featRecord[FEAT_PURE_MAGE] = false;
+    }
 	
 	if (attacker->info.abilityFlags & MA_KAMIKAZE) {
 		killCreature(attacker, false);
@@ -1185,7 +1196,11 @@ boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
 			if (&player == defender) {
 				gameOver(attacker->info.monsterName, false);
 				return true;
-			}
+			} else if (&player == attacker
+                       && defender->info.monsterID == MK_DRAGON) {
+                
+                rogue.featRecord[FEAT_DRAGONSLAYER] = true;
+            }
 		} else { // if the defender survived
 			if (!rogue.blockCombatText && (canSeeMonster(attacker) || canSeeMonster(defender))) {
 				attackVerb(verb, attacker, max(damage - attacker->info.damage.lowerBound * monsterDamageAdjustmentAmount(attacker), 0) * 100
@@ -1463,6 +1478,9 @@ boolean inflictDamage(creature *defender, short damage, const color *flashColor,
 			defender->currentHP = max(defender->currentHP, defender->info.maxHP);
 		} else {
 			defender->currentHP -= damage; // inflict the damage!
+            if (defender == &player && damage > 0) {
+                rogue.featRecord[FEAT_INDOMITABLE] = false;
+            }
 		}
 		
 		if (defender != &player && defender->creatureState != MONSTER_ALLY

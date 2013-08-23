@@ -2236,6 +2236,22 @@ itemTable charmTable[NUMBER_CHARM_KINDS] = {
     {"negation",        "", "",	1,	700,	0,{1,2,1}, true, false, "A featureless gray disc hangs from a leather lanyard. When you touch it, your hand briefly goes numb."},
 };
 
+#pragma mark Feat definitions
+
+const feat featTable[FEAT_COUNT] = {
+    {"Pure Mage",       "Never use fists or a weapon.", true},
+    {"Pure Warrior",    "Never use a staff, wand or charm.", true},
+    {"Pacifist",        "Never attack a creature.", true},
+    {"Archivist",       "Never drink a potion or read a scroll.", true},
+    {"Companion",       "Journey with an ally through 20 depths.", false},
+    {"Specialist",      "Enchant an item up to or above +16.", false},
+    {"Jellymancer",     "Obtain at least 90 jelly allies simultaneously.", false},
+    {"Indomitable",     "Never take damage.", true},
+    {"Mystic",          "Never eat.", true},
+    {"Dragonslayer",    "Kill a dragon with a melee attack.", false},
+    {"Paladin",         "Never attack an unaware creature.", true},
+};
+
 #pragma mark Miscellaneous definitions
 
 const color *boltColors[NUMBER_BOLT_KINDS] = {

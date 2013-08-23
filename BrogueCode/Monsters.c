@@ -432,6 +432,7 @@ void empowerMonster(creature *monst) {
 creature *cloneMonster(creature *monst, boolean announce, boolean placeClone) {
 	creature *newMonst, *nextMonst, *parentMonst;
 	char buf[DCOLS], monstName[DCOLS];
+    short jellyCount;
 	
 	newMonst = generateMonster(monst->info.monsterID, false, false);
 	nextMonst = newMonst->nextCreature;
@@ -494,6 +495,22 @@ creature *cloneMonster(creature *monst, boolean announce, boolean placeClone) {
 		strcpy(newMonst->info.monsterName, "clone");
 		newMonst->creatureState = MONSTER_ALLY;
 	}
+    
+    if (monst->creatureState == MONSTER_ALLY
+        && (monst->info.abilityFlags & MA_CLONE_SELF_ON_DEFEND)) {
+        
+        jellyCount = 0;
+        for (nextMonst = monsters->nextCreature; nextMonst != NULL; nextMonst = nextMonst->nextCreature) {
+            if (nextMonst->creatureState == MONSTER_ALLY
+                && (nextMonst->info.abilityFlags & MA_CLONE_SELF_ON_DEFEND)) {
+                
+                jellyCount++;
+            }
+        }
+        if (jellyCount >= 90) {
+            rogue.featRecord[FEAT_JELLYMANCER] = true;
+        }
+    }
 	return newMonst;
 }
 

@@ -5369,6 +5369,8 @@ boolean useStaffOrWand(item *theItem, boolean *commandsRecorded) {
         originLoc[0] = player.xLoc;
         originLoc[1] = player.yLoc;
         
+        rogue.featRecord[FEAT_PURE_WARRIOR] = false;
+        
         if (theItem->charges > 0) {
             autoID = (zap(originLoc, zapTarget,
                           (theItem->kind + (theItem->category == STAFF ? NUMBER_WAND_KINDS : 0)),		// bolt type
@@ -5418,6 +5420,9 @@ void summonGuardian(item *theItem) {
 }
 
 void useCharm(item *theItem) {
+    
+    rogue.featRecord[FEAT_PURE_WARRIOR] = false;
+    
     switch (theItem->kind) {
         case CHARM_HEALTH:
             heal(&player, charmHealing(theItem->enchant1));
@@ -5538,6 +5543,7 @@ void apply(item *theItem, boolean recordCommands) {
 			} else {
 				messageWithColor("My, what a yummy mango!", &itemMessageColor, false);
 			}
+            rogue.featRecord[FEAT_MYSTIC] = false;
 			break;
 		case POTION:
 			command[c] = '\0';
@@ -5711,6 +5717,8 @@ void readScroll(item *theItem) {
 	creature *monst;
 	boolean hadEffect = false;
 	char buf[2*COLS], buf2[COLS];
+    
+    rogue.featRecord[FEAT_ARCHIVIST] = false;
 	
 	switch (theItem->kind) {
 		case SCROLL_IDENTIFY:
@@ -5823,6 +5831,11 @@ void readScroll(item *theItem) {
 				default:
 					break;
 			}
+            if ((theItem->category & (WEAPON | ARMOR | STAFF | RING | CHARM))
+                && theItem->enchant1 >= 16) {
+                
+                rogue.featRecord[FEAT_SPECIALIST] = true;
+            }
 			if (theItem->flags & ITEM_EQUIPPED) {
 				equipItem(theItem, true);
 			}
@@ -5962,6 +5975,8 @@ void drinkPotion(item *theItem) {
 #ifdef BROGUE_ASSERTS
     assert(rogue.RNG == RNG_SUBSTANTIVE);
 #endif
+    
+    rogue.featRecord[FEAT_ARCHIVIST] = false;
 	
 	switch (theItem->kind) {
 		case POTION_LIFE:

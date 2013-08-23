@@ -35,7 +35,7 @@
 
 // debug macros -- define DEBUGGING as 1 to enable debugging.
 
-#define DEBUGGING						0
+#define DEBUGGING						1
 
 #define DEBUG							if (DEBUGGING)
 #define MONSTERS_ENABLED				(!DEBUGGING || 1) // Quest room monsters can be generated regardless.
@@ -1984,6 +1984,22 @@ enum NGCommands {
 	NG_QUIT,
 };
 
+enum featTypes {
+    FEAT_PURE_MAGE = 0,
+    FEAT_PURE_WARRIOR,
+    FEAT_PACIFIST,
+    FEAT_ARCHIVIST,
+    FEAT_COMPANION,
+    FEAT_SPECIALIST,
+    FEAT_JELLYMANCER,
+    FEAT_INDOMITABLE,
+    FEAT_MYSTIC,
+    FEAT_DRAGONSLAYER,
+    FEAT_PALADIN,
+    
+    FEAT_COUNT,
+};
+
 // these are basically global variables pertaining to the game state and player's unique variables:
 typedef struct playerCharacter {
 	short depthLevel;					// which dungeon level are we on
@@ -2085,6 +2101,9 @@ typedef struct playerCharacter {
 	short awarenessBonus;
 	short transference;
 	short wisdomBonus;
+    
+    // feats:
+    boolean featRecord[FEAT_COUNT];
     
     // waypoints:
     short **wpDistance[MAX_WAYPOINT_COUNT];
@@ -2296,7 +2315,11 @@ typedef struct autoGenerator {
 
 #define NUMBER_AUTOGENERATORS 36
 
-#define NUMBER_LEVEL_PROFILES 1
+typedef struct feat {
+	char name[100];
+    char description[200];
+    boolean initialValue;
+} feat;
 
 #define PDS_FORBIDDEN   -1
 #define PDS_OBSTRUCTION -2

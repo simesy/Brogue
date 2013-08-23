@@ -193,6 +193,8 @@ extern monsterWords monsterText[NUMBER_MONSTER_KINDS];
 extern hordeType hordeCatalog[NUMBER_HORDES];
 extern const mutation mutationCatalog[NUMBER_MUTATORS];
 
+extern const feat featTable[FEAT_COUNT];
+
 extern color *boltColors[NUMBER_BOLT_KINDS];
 
 // ITEMS
