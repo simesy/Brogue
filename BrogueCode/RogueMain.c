@@ -1012,7 +1012,7 @@ void freeEverything() {
 }
 
 void gameOver(char *killedBy, boolean useCustomPhrasing) {
-	char buf[200], buf2[200];
+	char buf[200], highScoreText[200], buf2[200];
 	rogueHighScoresEntry theEntry;
 	cellDisplayBuffer dbuf[COLS][ROWS];
 	boolean playback;
@@ -1100,6 +1100,7 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
 	if (rogue.easyMode) {
 		theEntry.score /= 10;
 	}
+    strcpy(highScoreText, buf);
     if (theEntry.score > 0) {
         sprintf(buf2, " with %li gold", theEntry.score);
         strcat(buf, buf2);
@@ -1108,8 +1109,9 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
         strcat(buf, ", amulet in hand");
     }
     strcat(buf, ".");
+    strcat(highScoreText, ".");
 	
-	strcpy(theEntry.description, buf);
+	strcpy(theEntry.description, highScoreText);
 	
 	printString(buf, ((COLS - strLenWithoutEscapes(buf)) / 2), (ROWS / 2), &gray, &black, 0);
 	if (!rogue.quit) {
@@ -1168,7 +1170,7 @@ void victory(boolean superVictory) {
 	printString(buf, mapToWindowX(60), mapToWindowY(1), &itemMessageColor, &black, dbuf);
 	totalValue += rogue.gold;
 	
-	for (i = 4, theItem = packItems->nextItem; theItem != NULL; theItem = theItem->nextItem, i++) {
+	for (i = 4, theItem = packItems->nextItem; theItem != NULL; theItem = theItem->nextItem) {
 		if (theItem->category & GEM) {
 			gemCount += theItem->quantity;
 		}
@@ -1177,7 +1179,8 @@ void victory(boolean superVictory) {
             sprintf(buf, "%li", max(0, itemValue(theItem) * 3));
             printString(buf, mapToWindowX(60), min(ROWS-1, i + 1), &itemMessageColor, &black, dbuf);
             totalValue += max(0, itemValue(theItem) * 3);
-        } else {
+            i++;
+        } else if (theItem->category & COUNTS_TOWARD_SCORE) {
             identify(theItem);
             itemName(theItem, buf, true, true, &white);
             upperCase(buf);
@@ -1185,6 +1188,7 @@ void victory(boolean superVictory) {
             sprintf(buf, "%li", max(0, itemValue(theItem)));
             printString(buf, mapToWindowX(60), min(ROWS-1, i + 1), &itemMessageColor, &black, dbuf);
             totalValue += max(0, itemValue(theItem));
+            i++;
         }
 	}
 	i++;
