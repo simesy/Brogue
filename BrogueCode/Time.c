@@ -854,13 +854,17 @@ void addXPXPToAlly(short XPXP, creature *monst) {
         
         monst->xpxp += XPXP;
         //printf("\n%i xpxp added to your %s this turn.", rogue.xpxpThisTurn, monst->info.monsterName);
-        if (monst->xpxp >= XPXP_NEEDED_FOR_TELEPATHIC_BOND) {
+        if (monst->xpxp >= XPXP_NEEDED_FOR_TELEPATHIC_BOND
+            && !(monst->bookkeepingFlags & MONST_TELEPATHICALLY_REVEALED)) {
+            
             monst->bookkeepingFlags |= MONST_TELEPATHICALLY_REVEALED;
             updateVision(true);
             monsterName(theMonsterName, monst, false);
             sprintf(buf, "you have developed a telepathic bond with your %s.", theMonsterName);
             messageWithColor(buf, &advancementMessageColor, false);
-            monst->xpxp = 0;
+        }
+        if (monst->xpxp > 1500 * 20) {
+            rogue.featRecord[FEAT_COMPANION] = true;
         }
     }
 }
