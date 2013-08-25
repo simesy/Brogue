@@ -1940,47 +1940,59 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 								strcpy(buf2, "When worn, the damage that you incur from physical attacks will be split evenly among yourself and all other adjacent enemies. ");
 								break;
 							case A_ABSORPTION:
-								sprintf(buf2, "It will reduce the damage of inbound attacks by a random amount between 0 and %i, which is %i%% of your current maximum health. (If the %s is enchanted, this maximum amount will %s %i.) ",
-										(int) armorAbsorptionMax(enchant),
-										(int) (100 * armorAbsorptionMax(enchant) / player.info.maxHP),
-										theName,
-										(armorAbsorptionMax(enchant) == armorAbsorptionMax((float) (enchant + enchantIncrement(theItem))) ? "remain at" : "increase to"),
-										(int) armorAbsorptionMax((float) (enchant + enchantIncrement(theItem))));
+                                if (theItem->flags & ITEM_IDENTIFIED) {
+                                    sprintf(buf2, "It will reduce the damage of inbound attacks by a random amount between 0 and %i, which is %i%% of your current maximum health. (If the %s is enchanted, this maximum amount will %s %i.) ",
+                                            (int) armorAbsorptionMax(enchant),
+                                            (int) (100 * armorAbsorptionMax(enchant) / player.info.maxHP),
+                                            theName,
+                                            (armorAbsorptionMax(enchant) == armorAbsorptionMax((float) (enchant + enchantIncrement(theItem))) ? "remain at" : "increase to"),
+                                            (int) armorAbsorptionMax((float) (enchant + enchantIncrement(theItem))));
+                                } else {
+                                    strcpy(buf2, "It will reduce the damage of inbound attacks by a random amount determined by its enchantment level. ");
+                                }
 								break;
 							case A_REPRISAL:
-								sprintf(buf2, "Any enemy that attacks you will itself be wounded by %i%% of the damage that it inflicts. (If the %s is enchanted, this percentage will increase to %i%%.) ",
-										armorReprisalPercent(enchant),
-										theName,
-										armorReprisalPercent((float) (enchant + enchantIncrement(theItem))));
+                                if (theItem->flags & ITEM_IDENTIFIED) {
+                                    sprintf(buf2, "Any enemy that attacks you will itself be wounded by %i%% of the damage that it inflicts. (If the %s is enchanted, this percentage will increase to %i%%.) ",
+                                            armorReprisalPercent(enchant),
+                                            theName,
+                                            armorReprisalPercent((float) (enchant + enchantIncrement(theItem))));
+                                } else {
+                                    strcpy(buf2, "Any enemy that attacks you will itself be wounded by a percentage (determined by enchantment level) of the damage that it inflicts. ");
+                                }
 								break;
 							case A_IMMUNITY:
 								sprintf(buf2, "It offers complete protection from any attacking %s. ",
 										monsterCatalog[theItem->vorpalEnemy].monsterName);
 								break;
 							case A_REFLECTION:
-								if (theItem->enchant1 > 0) {
-									short reflectChance = reflectionChance(enchant);
-									short reflectChance2 = reflectionChance(enchant + enchantIncrement(theItem));
-									sprintf(buf2, "When worn, you will deflect %i%% of incoming spells -- including directly back at their source %i%% of the time. (If the armor is enchanted, these will increase to %i%% and %i%%.)",
-											reflectChance,
-											reflectChance * reflectChance / 100,
-											reflectChance2,
-											reflectChance2 * reflectChance2 / 100);
-								} else if (theItem->enchant1 < 0) {
-									short reflectChance = reflectionChance(enchant);
-									short reflectChance2 = reflectionChance(enchant + enchantIncrement(theItem));
-									sprintf(buf2, "When worn, %i%% of your own spells will deflect from their target -- including directly back at you %i%% of the time. (If the armor is enchanted, these will decrease to %i%% and %i%%.)",
-											reflectChance,
-											reflectChance * reflectChance / 100,
-											reflectChance2,
-											reflectChance2 * reflectChance2 / 100);
-								}
+                                if (theItem->flags & ITEM_IDENTIFIED) {
+                                    if (theItem->enchant1 > 0) {
+                                        short reflectChance = reflectionChance(enchant);
+                                        short reflectChance2 = reflectionChance(enchant + enchantIncrement(theItem));
+                                        sprintf(buf2, "When worn, you will deflect %i%% of incoming spells -- including directly back at their source %i%% of the time. (If the armor is enchanted, these will increase to %i%% and %i%%.) ",
+                                                reflectChance,
+                                                reflectChance * reflectChance / 100,
+                                                reflectChance2,
+                                                reflectChance2 * reflectChance2 / 100);
+                                    } else if (theItem->enchant1 < 0) {
+                                        short reflectChance = reflectionChance(enchant);
+                                        short reflectChance2 = reflectionChance(enchant + enchantIncrement(theItem));
+                                        sprintf(buf2, "When worn, %i%% of your own spells will deflect from their target -- including directly back at you %i%% of the time. (If the armor is enchanted, these will decrease to %i%% and %i%%.) ",
+                                                reflectChance,
+                                                reflectChance * reflectChance / 100,
+                                                reflectChance2,
+                                                reflectChance2 * reflectChance2 / 100);
+                                    }
+                                } else {
+                                    strcpy(buf2, "When worn, you will deflect some percentage of incoming spells, determined by enchantment level. ");
+                                }
 								break;
                             case A_RESPIRATION:
-                                strcpy(buf2, "When worn, it will maintain a pocket of fresh air around you, rendering you immune to the effects of steam and all toxic gases.");
+                                strcpy(buf2, "When worn, it will maintain a pocket of fresh air around you, rendering you immune to the effects of steam and all toxic gases. ");
                                 break;
                             case A_DAMPENING:
-                                strcpy(buf2, "When worn, it will harmlessly absorb the concussive impact of any explosions (though you may still be burned).");
+                                strcpy(buf2, "When worn, it will harmlessly absorb the concussive impact of any explosions (though you may still be burned). ");
                                 break;
 							case A_BURDEN:
 								strcpy(buf2, "10% of the time it absorbs a blow, it will permanently become heavier. ");
