@@ -5032,9 +5032,8 @@ boolean hitMonsterWithProjectileWeapon(creature *thrower, creature *monst, item 
 				magicWeaponHit(monst, theItem, false);
 			}
 			messageWithColor(buf, messageColorFromVictim(monst), false);
-			
-			moralAttack(thrower, monst);
 		}
+        moralAttack(thrower, monst);
 		if (armorRunicString[0]) {
 			message(armorRunicString, false);
 		}

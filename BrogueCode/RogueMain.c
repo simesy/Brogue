@@ -1016,6 +1016,7 @@ void freeEverything() {
 }
 
 void gameOver(char *killedBy, boolean useCustomPhrasing) {
+    short i, y;
 	char buf[200], highScoreText[200], buf2[200];
 	rogueHighScoresEntry theEntry;
 	cellDisplayBuffer dbuf[COLS][ROWS];
@@ -1117,8 +1118,21 @@ void gameOver(char *killedBy, boolean useCustomPhrasing) {
 	
 	strcpy(theEntry.description, highScoreText);
 	
-	printString(buf, ((COLS - strLenWithoutEscapes(buf)) / 2), (ROWS / 2), &gray, &black, 0);
 	if (!rogue.quit) {
+        printString(buf, (COLS - strLenWithoutEscapes(buf)) / 2, ROWS / 2, &gray, &black, 0);
+        
+        y = ROWS / 2 + 3;
+        for (i = 0; i < FEAT_COUNT; i++) {
+            //printf("\nConduct %i (%s) is %s.", i, featTable[i].name, rogue.featRecord[i] ? "true" : "false");
+            if (rogue.featRecord[i]
+                && !featTable[i].initialValue) {
+                
+                sprintf(buf, "%s: %s", featTable[i].name, featTable[i].description);
+                printString(buf, (COLS - strLenWithoutEscapes(buf)) / 2, y, &advancementMessageColor, &black, 0);
+                y++;
+            }
+        }
+        
 		displayMoreSign();
 	}
 	

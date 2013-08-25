@@ -393,7 +393,8 @@ void moralAttack(creature *attacker, creature *defender) {
 		if (attacker == &player
 			&& defender->creatureState == MONSTER_ALLY
 			&& !defender->status[STATUS_DISCORDANT]
-			&& !attacker->status[STATUS_CONFUSED]) {
+			&& !attacker->status[STATUS_CONFUSED]
+            && !(attacker->bookkeepingFlags & MONST_IS_DYING)) {
 		
 			unAlly(defender);
 		}
@@ -634,7 +635,6 @@ void forceWeaponHit(creature *defender, item *theItem) {
                 combatMessage(buf, messageColorFromVictim(defender));
             }
         } else {
-            moralAttack(&player, defender);
             if (canDirectlySeeMonster(defender)) {
                 sprintf(buf, "%s slams against %s",
                         monstName,
@@ -643,6 +643,8 @@ void forceWeaponHit(creature *defender, item *theItem) {
                 combatMessage(buf, messageColorFromVictim(defender));
             }
         }
+        moralAttack(&player, defender);
+        
         if (otherMonster
             && !(defender->info.flags & MONST_IMMUNE_TO_WEAPONS)) {
             
@@ -657,9 +659,8 @@ void forceWeaponHit(creature *defender, item *theItem) {
                     buf[DCOLS] = '\0';
                     combatMessage(buf, messageColorFromVictim(otherMonster));
                 }
-            } else {
-                moralAttack(&player, otherMonster);
             }
+            moralAttack(&player, otherMonster);
         }
     }
 }
@@ -1077,6 +1078,12 @@ boolean attack(creature *attacker, creature *defender, boolean lungeAttack) {
 	if (defender->status[STATUS_MAGICAL_FEAR]) {
 		defender->status[STATUS_MAGICAL_FEAR] = 1;
 	}
+    
+    if (attacker == &player
+        && defender->creatureState != MONSTER_TRACKING_SCENT) {
+        
+        rogue.featRecord[FEAT_PALADIN] = false;
+    }
 	
 	if (attacker != &player && defender == &player && attacker->creatureState == MONSTER_WANDERING) {
 		attacker->creatureState = MONSTER_TRACKING_SCENT;

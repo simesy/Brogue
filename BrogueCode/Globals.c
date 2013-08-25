@@ -2239,17 +2239,17 @@ itemTable charmTable[NUMBER_CHARM_KINDS] = {
 #pragma mark Feat definitions
 
 const feat featTable[FEAT_COUNT] = {
-    {"Pure Mage",       "Never use fists or a weapon.", true},
-    {"Pure Warrior",    "Never use a staff, wand or charm.", true},
-    {"Pacifist",        "Never attack a creature.", true},
-    {"Archivist",       "Never drink a potion or read a scroll.", true},
+    {"Pure Mage",       "Ascend without using fists or a weapon.", true},
+    {"Pure Warrior",    "Ascend without using a staff, wand or charm.", true},
+    {"Pacifist",        "Ascend without attacking a creature.", true},
+    {"Archivist",       "Ascend without drinking a potion or reading a scroll.", true},
     {"Companion",       "Journey with an ally through 20 depths.", false},
     {"Specialist",      "Enchant an item up to or above +16.", false},
     {"Jellymancer",     "Obtain at least 90 jelly allies simultaneously.", false},
-    {"Indomitable",     "Never take damage.", true},
-    {"Mystic",          "Never eat.", true},
+    {"Indomitable",     "Ascend without taking damage.", true},
+    {"Mystic",          "Ascend without eating.", true},
     {"Dragonslayer",    "Kill a dragon with a melee attack.", false},
-    {"Paladin",         "Never attack an unaware creature.", true},
+    {"Paladin",         "Ascend without attacking an unaware or fleeing creature.", true},
 };
 
 #pragma mark Miscellaneous definitions
