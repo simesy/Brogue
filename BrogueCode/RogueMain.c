@@ -1194,9 +1194,9 @@ void victory(boolean superVictory) {
 		}
         if (theItem->category == AMULET && superVictory) {
             printString("The Birthright of Yendor", mapToWindowX(2), min(ROWS-1, i + 1), &itemMessageColor, &black, dbuf);
-            sprintf(buf, "%li", max(0, itemValue(theItem) * 3));
+            sprintf(buf, "%li", max(0, itemValue(theItem) * 2));
             printString(buf, mapToWindowX(60), min(ROWS-1, i + 1), &itemMessageColor, &black, dbuf);
-            totalValue += max(0, itemValue(theItem) * 3);
+            totalValue += max(0, itemValue(theItem) * 2);
             i++;
         } else if (theItem->category & COUNTS_TOWARD_SCORE) {
             identify(theItem);

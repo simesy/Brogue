@@ -6841,7 +6841,7 @@ unsigned long itemValue(item *theItem) {
 			* (float) (1 + 0.15 * (theItem->enchant1 - 1));
 			break;
 		case AMULET:
-			return 10000;
+			return 35000;
 			break;
 		case GEM:
 			return 5000 * theItem->quantity;
