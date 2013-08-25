@@ -1488,16 +1488,27 @@ void updateMonsterState(creature *monst) {
 	} else if (monst->creatureState == MONSTER_TRACKING_SCENT
 			   && closestFearedEnemy < 3) {
 		monst->creatureState = MONSTER_FLEEING;
+    } else if (monst->creatureState != MONSTER_ALLY
+               && (monst->info.flags & MONST_FLEES_NEAR_DEATH)
+               && monst->currentHP <= 3 * monst->info.maxHP / 4) {
+        
+        if (monst->creatureState == MONSTER_FLEEING
+            || monst->currentHP <= monst->info.maxHP / 4) {
+            
+            monst->creatureState = MONSTER_FLEEING;
+        }
 	} else if (monst->creatureMode == MODE_NORMAL
 			   && monst->creatureState == MONSTER_FLEEING
 			   && !(monst->status[STATUS_MAGICAL_FEAR])
 			   && closestFearedEnemy >= 3) {
+        
 		monst->creatureState = MONSTER_TRACKING_SCENT;
 	} else if (monst->creatureMode == MODE_PERM_FLEEING
 			   && monst->creatureState == MONSTER_FLEEING
 			   && (monst->info.abilityFlags & MA_HIT_STEAL_FLEE)
 			   && !(monst->status[STATUS_MAGICAL_FEAR])
 			   && !(monst->carriedItem)) {
+        
 		monst->creatureState = MONSTER_TRACKING_SCENT;
 		monst->creatureMode = MODE_NORMAL;
 	} else if (monst->creatureMode == MODE_NORMAL
@@ -1505,6 +1516,7 @@ void updateMonsterState(creature *monst) {
 			   && (monst->info.flags & MONST_FLEES_NEAR_DEATH)
 			   && !(monst->status[STATUS_MAGICAL_FEAR])
 			   && monst->currentHP >= monst->info.maxHP * 3 / 4) {
+        
 		monst->creatureState = (((monst->bookkeepingFlags & MONST_FOLLOWER) && monst->leader == &player)
 								? MONSTER_ALLY : MONSTER_TRACKING_SCENT);
 	}
