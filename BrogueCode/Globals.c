@@ -566,6 +566,7 @@ const floorTileType tileCatalog[NUMBER_TILETYPES] = {
 	{FIRE_CHAR,		&yellow,				0,						10,	0,	0,				0,			0,              10000,			EXPLOSION_LIGHT,(T_IS_FIRE | T_CAUSES_EXPLOSIVE_DAMAGE), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION | TM_VISUALLY_DISTINCT), "a violent explosion",	"the force of the explosion slams into you."},
 	{FIRE_CHAR,		&white,					0,						10,	0,	0,				0,			0,				10000,			INCENDIARY_DART_LIGHT ,(T_IS_FIRE), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION | TM_VISUALLY_DISTINCT),			"a flash of fire",		"flames burst out of the incendiary dart."},
     {FIRE_CHAR,		&white,                 0,						10,	0,	0,				0,			DF_EMBERS,		3000,			FIRE_LIGHT,		(T_IS_FIRE), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION | TM_VISUALLY_DISTINCT),				"crackling flames",		"crackling flames rise from the blackened item."},
+    {FIRE_CHAR,		&white,                 0,						10,	0,	0,				0,			DF_EMBERS,		3000,			FIRE_LIGHT,		(T_IS_FIRE), (TM_STAND_IN_TILE | TM_VANISHES_UPON_PROMOTION | TM_VISUALLY_DISTINCT),				"greasy flames",		"greasy flames rise from the corpse."},
 	
 	// gas layer
 	{	' ',		0,						&poisonGasColor,		35,	100,DF_GAS_FIRE,	0,			0,				0,				NO_LIGHT,		(T_IS_FLAMMABLE | T_CAUSES_DAMAGE), (TM_STAND_IN_TILE | TM_GAS_DISSIPATES),							"a cloud of caustic gas", "you can feel the purple gas eating at your flesh."},
@@ -746,6 +747,7 @@ dungeonFeature dungeonFeatureCatalog[NUMBER_DUNGEON_FEATURES] = {
 	{EMBERS,					SURFACE,	100,	94,		0},
 	{OBSIDIAN,					SURFACE,	0,		0,		0},
     {ITEM_FIRE,                 SURFACE,    0,      0,      0,  "", FALLEN_TORCH_FLASH_LIGHT},
+    {CREATURE_FIRE,             SURFACE,    0,      0,      0,  "", FALLEN_TORCH_FLASH_LIGHT},
     
 	{FLOOD_WATER_SHALLOW,		SURFACE,	225,	37,		0,	"", 0,	0,	0,		0,			DF_FLOOD_2},
 	{FLOOD_WATER_DEEP,			SURFACE,	175,	37,		0,	"the area is flooded as water rises through imperceptible holes in the ground."},

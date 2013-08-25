@@ -514,6 +514,7 @@ enum tileType {
 	GAS_EXPLOSION,
 	DART_EXPLOSION,
     ITEM_FIRE,
+    CREATURE_FIRE,
     
 	POISON_GAS,
 	CONFUSION_GAS,
@@ -1396,6 +1397,7 @@ enum dungeonFeatureTypes {
 	DF_EMBERS_PATCH,
 	DF_OBSIDIAN,
     DF_ITEM_FIRE,
+    DF_CREATURE_FIRE,
     
 	DF_FLOOD,
 	DF_FLOOD_2,

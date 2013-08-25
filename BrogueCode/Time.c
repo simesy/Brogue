@@ -153,6 +153,7 @@ void applyInstantTileEffectsToCreature(creature *monst) {
 				messageWithColor(buf2, messageColorFromVictim(monst), false);
 			}
 			killCreature(monst, false);
+            spawnDungeonFeature(*x, *y, &(dungeonFeatureCatalog[DF_CREATURE_FIRE]), true, false);
 			refreshDungeonCell(*x, *y);
 			return;
 		}
@@ -764,22 +765,16 @@ void burnItem(item *theItem) {
 	sprintf(buf2, "%s burn%s up!",
             buf1,
             theItem->quantity == 1 ? "s" : "");
-	
 	x = theItem->xLoc;
 	y = theItem->yLoc;
-	
 	removeItemFromChain(theItem, floorItems);
-	
 	pmap[x][y].flags &= ~(HAS_ITEM | ITEM_DETECTED);
-	
 	if (pmap[x][y].flags & (ANY_KIND_OF_VISIBLE | DISCOVERED | ITEM_DETECTED)) {
 		refreshDungeonCell(x, y);
 	}
-	
 	if (playerCanSee(x, y)) {
 		messageWithColor(buf2, &itemMessageColor, false);
 	}
-    
     spawnDungeonFeature(x, y, &(dungeonFeatureCatalog[DF_ITEM_FIRE]), true, false);
 }
 
