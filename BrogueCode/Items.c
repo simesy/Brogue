@@ -3254,8 +3254,7 @@ void weaken(creature *monst, short maxDuration) {
 
 // True if the creature polymorphed; false if not.
 boolean polymorph(creature *monst) {
-	short previousDamageTaken;
-	float healthFraction;
+	short previousDamageTaken, healthFraction;
 	
 	if (monst == &player || (monst->info.flags & MONST_INANIMATE)) {
 		return false; // Sorry, this is not Nethack.
@@ -3270,7 +3269,7 @@ boolean polymorph(creature *monst) {
 	
 	unAlly(monst); // Sorry, no cheap dragon allies.
     monst->mutationIndex = -1; // Polymorph cures mutation -- basic science.
-	healthFraction = monst->currentHP / monst->info.maxHP;
+	healthFraction = monst->currentHP * 1000 / monst->info.maxHP;
 	previousDamageTaken = monst->info.maxHP - monst->currentHP;
 	
 	do {
@@ -3278,7 +3277,7 @@ boolean polymorph(creature *monst) {
 	} while (monst->info.flags & (MONST_INANIMATE | MONST_NO_POLYMORPH)); // Can't turn something into an inanimate object or lich/phoenix.
 	
     monst->info.turnsBetweenRegen *= 1000;
-	monst->currentHP = max(1, max(healthFraction * monst->info.maxHP + FLOAT_FUDGE, monst->info.maxHP - previousDamageTaken));
+	monst->currentHP = max(1, max(healthFraction * monst->info.maxHP / 1000, monst->info.maxHP - previousDamageTaken));
 	
 	monst->movementSpeed = monst->info.movementSpeed;
 	monst->attackSpeed = monst->info.attackSpeed;
