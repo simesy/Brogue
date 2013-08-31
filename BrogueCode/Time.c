@@ -283,7 +283,8 @@ void applyInstantTileEffectsToCreature(creature *monst) {
 			monsterName(buf, monst, true);
 			if (inflictDamage(monst, damage, &yellow, false)) {
 				// if killed
-				sprintf(buf2, "%s dies in %s.", buf,
+				sprintf(buf2, "%s %s %s.", buf,
+                        (monst->info.flags & MONST_INANIMATE) ? "is destroyed by" : "dies in",
 						tileCatalog[pmap[*x][*y].layers[layerWithFlag(*x, *y, T_CAUSES_EXPLOSIVE_DAMAGE)]].description);
 				messageWithColor(buf2, messageColorFromVictim(monst), false);
 				refreshDungeonCell(*x, *y);
