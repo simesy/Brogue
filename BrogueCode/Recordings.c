@@ -622,7 +622,11 @@ void printPlaybackHelpScreen() {
 void advanceToLocation(unsigned long destinationFrame) {
 	unsigned long progressBarInterval, initialFrameNumber;
 	rogueEvent theEvent;
-    boolean useProgressBar;
+    boolean useProgressBar, omniscient, stealth, trueColors;
+    
+    omniscient = rogue.playbackOmniscience;
+    stealth = rogue.displayAggroRangeMode;
+    trueColors = rogue.trueColorMode;
 	
 	cellDisplayBuffer dbuf[COLS][ROWS];
     
@@ -668,6 +672,11 @@ void advanceToLocation(unsigned long destinationFrame) {
         rogue.RNG = RNG_SUBSTANTIVE;
         executeEvent(&theEvent);
     }
+    
+    rogue.playbackOmniscience = omniscient;
+    rogue.displayAggroRangeMode = stealth;
+    rogue.trueColorMode = trueColors;
+    
     rogue.playbackPaused = true;
     rogue.playbackFastForward = false;
     confirmMessages();
@@ -775,7 +784,7 @@ void executePlaybackInput(rogueEvent *recordingInput) {
 				pauseState = rogue.playbackPaused;
                 previousDeepestLevel = rogue.deepestLevel;
 				if (!rogue.playbackPaused || unpause()) {
-					if (rogue.deepestLevel < maxLevelChanges) {
+					if ((unsigned long) rogue.deepestLevel < maxLevelChanges) {
 						displayCenteredAlert(" Loading... ");
 						pauseBrogue(5);
 						rogue.playbackFastForward = true;
@@ -945,6 +954,7 @@ void executePlaybackInput(rogueEvent *recordingInput) {
 			default:
 				if (key >= '0' && key <= '9'
 					|| key >= NUMPAD_0 && key <= NUMPAD_9) {
+                    
 					promptToAdvanceToLocation(key);
 				}
 				break;
