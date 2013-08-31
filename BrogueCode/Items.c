@@ -1028,23 +1028,24 @@ void call(item *theItem) {
 	}
 	
 	if (tableForItemCategory(theItem->category)
-        && !(tableForItemCategory(theItem->category)[theItem->kind].identified)
-        && getInputTextString(itemText, "call them: \"", 29, "", "\"", TEXT_INPUT_NORMAL, false)) {
+        && !(tableForItemCategory(theItem->category)[theItem->kind].identified)) {
         
-		command[c++] = '\0';
-		strcat((char *) command, itemText);
-		recordKeystrokeSequence(command);
-		recordKeystroke(RETURN_KEY, false, false);
-		if (itemText[0]) {
-			strcpy(tableForItemCategory(theItem->category)[theItem->kind].callTitle, itemText);
-			tableForItemCategory(theItem->category)[theItem->kind].called = true;
-		} else {
-			tableForItemCategory(theItem->category)[theItem->kind].callTitle[0] = '\0';
-			tableForItemCategory(theItem->category)[theItem->kind].called = false;
-		}
-		confirmMessages();
-		itemName(theItem, buf, false, true, NULL);
-		messageWithColor(buf, &itemMessageColor, false);
+        if (getInputTextString(itemText, "call them: \"", 29, "", "\"", TEXT_INPUT_NORMAL, false)) {
+            command[c++] = '\0';
+            strcat((char *) command, itemText);
+            recordKeystrokeSequence(command);
+            recordKeystroke(RETURN_KEY, false, false);
+            if (itemText[0]) {
+                strcpy(tableForItemCategory(theItem->category)[theItem->kind].callTitle, itemText);
+                tableForItemCategory(theItem->category)[theItem->kind].called = true;
+            } else {
+                tableForItemCategory(theItem->category)[theItem->kind].callTitle[0] = '\0';
+                tableForItemCategory(theItem->category)[theItem->kind].called = false;
+            }
+            confirmMessages();
+            itemName(theItem, buf, false, true, NULL);
+            messageWithColor(buf, &itemMessageColor, false);
+        }
 	} else {
         message("you already know what that is.", false);
 	}
@@ -1992,7 +1993,7 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
                                 strcpy(buf2, "When worn, it will maintain a pocket of fresh air around you, rendering you immune to the effects of steam and all toxic gases. ");
                                 break;
                             case A_DAMPENING:
-                                strcpy(buf2, "When worn, it will harmlessly absorb the concussive impact of any explosions (though you may still be burned). ");
+                                strcpy(buf2, "When worn, it will safely absorb the concussive impact of any explosions (though you may still be burned). ");
                                 break;
 							case A_BURDEN:
 								strcpy(buf2, "10% of the time it absorbs a blow, it will permanently become heavier. ");
@@ -3870,10 +3871,10 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 							canSeeMonster(shootingMonst) ? "the" : "a",
 							((monst->info.flags & MONST_INANIMATE) ? "destroys" : "kills"),
 							monstName);
-					combatMessage(buf, messageColorFromVictim(monst));
+					combatMessage(buf, 0);
 				} else {
 					sprintf(buf, "you hear %s %s", monstName, ((monst->info.flags & MONST_INANIMATE) ? "get destroyed" : "die"));
-					combatMessage(buf, messageColorFromVictim(monst));
+					combatMessage(buf, 0);
 				}
 			} else {
 				// monster lives
@@ -4151,7 +4152,7 @@ boolean zap(short originLoc[2], short targetLoc[2], enum boltType bolt, short bo
 						combatMessage(buf, messageColorFromVictim(monst));
 					} else {
 						sprintf(buf, "you hear %s %s", monstName, ((monst->info.flags & MONST_INANIMATE) ? "get destroyed" : "die"));
-						combatMessage(buf, messageColorFromVictim(monst));
+						combatMessage(buf, 0);
 					}
 
 				} else {

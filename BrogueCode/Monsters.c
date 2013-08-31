@@ -157,7 +157,6 @@ boolean monsterRevealed(creature *monst) {
     } else if (player.status[STATUS_TELEPATHIC] && !(monst->info.flags & MONST_INANIMATE)) {
         return true;
     }
-    
     return false;
 }
 
@@ -2295,6 +2294,7 @@ boolean monstUseMagic(creature *monst) {
 				&& ((target->status[STATUS_ENTRANCED] && target->creatureState != MONSTER_ALLY)
                      || target->status[STATUS_MAGICAL_FEAR] || target->status[STATUS_DISCORDANT])
 				&& monstersAreTeammates(monst, target)
+                && !monstersAreEnemies(monst, target)
 				&& !(target->bookkeepingFlags & MONST_SUBMERGED)
 				&& !(target->info.flags & MONST_DIES_IF_NEGATED)
                 && (monst->creatureState != MONSTER_ALLY || !(target->info.flags & MONST_REFLECT_4))

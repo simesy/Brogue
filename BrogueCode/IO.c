@@ -1105,7 +1105,7 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 		
 		if (!(pmap[x][y].flags & (ANY_KIND_OF_VISIBLE | ITEM_DETECTED | HAS_PLAYER))
 			&& !playerCanSeeOrSense(x, y)
-			&& (!monst || monsterRevealed(monst)) && !monsterWithDetectedItem) {
+			&& (!monst || !monsterRevealed(monst)) && !monsterWithDetectedItem) {
 			
 			// store memory
 			storeColorComponents(pmap[x][y].rememberedAppearance.foreColorComponents, &cellForeColor);
@@ -1123,7 +1123,7 @@ void getCellAppearance(short x, short y, uchar *returnChar, color *returnForeCol
 			pmap[x][y].rememberedTerrain = pmap[x][y].layers[highestPriorityLayer(x, y, false)];
 			if (pmap[x][y].flags & HAS_ITEM) {
                 theItem = itemAtLoc(x, y);
-                //addItemToPack(<#item *theItem#>)
+                //addItemToPack()
 				pmap[x][y].rememberedItemCategory = theItem->category;
 			} else {
 				pmap[x][y].rememberedItemCategory = 0;
