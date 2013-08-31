@@ -282,6 +282,8 @@ boolean playerInDarkness() {
 			&& tmap[player.xLoc][player.yLoc].light[2] + 10 < minersLightColor.blue);
 }
 
+#define flarePrecision 1000
+
 flare *newFlare(lightSource *light, short x, short y, short changePerFrame, short limit) {
     flare *theFlare = malloc(sizeof(flare));
 	memset(theFlare, '\0', sizeof(flare));
@@ -293,7 +295,7 @@ flare *newFlare(lightSource *light, short x, short y, short changePerFrame, shor
         theFlare->coeffChangeAmount = 1; // no change would mean it lasts forever, which usually breaks things
     }
     theFlare->coeffLimit = limit;
-    theFlare->coeff = 100.0;
+    theFlare->coeff = 100 * flarePrecision;
     theFlare->turnNumber = rogue.absoluteTurnNumber;
     return theFlare;
 }
@@ -320,11 +322,11 @@ boolean flareIsActive(flare *theFlare) {
         active = false;
     }
     if (increasing) {
-        if ((short) (theFlare->coeff + FLOAT_FUDGE) > theFlare->coeffLimit) {
+        if ((short) (theFlare->coeff / flarePrecision) > theFlare->coeffLimit) {
             active = false;
         }
     } else {
-        if ((short) (theFlare->coeff + FLOAT_FUDGE) < theFlare->coeffLimit) {
+        if ((short) (theFlare->coeff / flarePrecision) < theFlare->coeffLimit) {
             active = false;
         }
     }
@@ -336,8 +338,8 @@ boolean updateFlare(flare *theFlare) {
     if (!flareIsActive(theFlare)) {
         return false;
     }
-    theFlare->coeff += ((double) theFlare->coeffChangeAmount) / 10;
-    theFlare->coeffChangeAmount *= 1.2;
+    theFlare->coeff += (theFlare->coeffChangeAmount) * flarePrecision / 10;
+    theFlare->coeffChangeAmount = theFlare->coeffChangeAmount * 12 / 10;
     return flareIsActive(theFlare);
 }
 
@@ -350,9 +352,9 @@ boolean drawFlareFrame(flare *theFlare) {
     
     lightSource tempLight = *(theFlare->light);
     color tempColor = *(tempLight.lightColor);
-    tempLight.lightRadius.lowerBound = ((short) (((double) tempLight.lightRadius.lowerBound + FLOAT_FUDGE) * (theFlare->coeff / 100.0 + FLOAT_FUDGE)));
-    tempLight.lightRadius.upperBound = ((short) (((double) tempLight.lightRadius.upperBound + FLOAT_FUDGE) * (theFlare->coeff / 100.0 + FLOAT_FUDGE)));
-    applyColorScalar(&tempColor, (short) (theFlare->coeff + FLOAT_FUDGE));
+    tempLight.lightRadius.lowerBound = ((long) tempLight.lightRadius.lowerBound) * theFlare->coeff / (flarePrecision * 100);
+    tempLight.lightRadius.upperBound = ((long) tempLight.lightRadius.upperBound) * theFlare->coeff / (flarePrecision * 100);
+    applyColorScalar(&tempColor, theFlare->coeff / flarePrecision);
     tempLight.lightColor = &tempColor;
     inView = paintLight(&tempLight, theFlare->xLoc, theFlare->yLoc, false, true);
     
