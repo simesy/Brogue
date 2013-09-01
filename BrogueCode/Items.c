@@ -1582,8 +1582,9 @@ Who knows what it will do when used?",
 						tableForItemCategory(theItem->category)[theItem->kind].flavor);
 				break;
 			case RING:
-				sprintf(buf2, "This metal band is adorned with a large %s gem that glitters in the darkness. \
+				sprintf(buf2, "This metal band is adorned with a%s %s gem that glitters in the darkness. \
 Who knows what effect it has when worn? ",
+                        isVowelish(tableForItemCategory(theItem->category)[theItem->kind].flavor) ? "n" : "",
 						tableForItemCategory(theItem->category)[theItem->kind].flavor);
 				break;
 			case CHARM: // Should never be displayed.
