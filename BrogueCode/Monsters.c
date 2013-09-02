@@ -232,6 +232,7 @@ boolean monsterWillAttackTarget(const creature *attacker, const creature *defend
         return true;
     }
     if (attacker->creatureState == MONSTER_ALLY
+        && attacker != &player
         && defender->status[STATUS_ENTRANCED]) {
         
         return false;
