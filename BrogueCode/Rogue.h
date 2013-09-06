@@ -1968,7 +1968,8 @@ typedef struct creature {
 	short spawnDepth;					// keep track of the depth of the machine to which they relate (for activation monsters)
     short machineHome;                  // monsters that spawn in a machine keep track of the machine number here (for activation monsters)
 	short xpxp;							// exploration experience (used to time telepathic bonding for allies)
-	short newPowerCount;                // how many times this monster can absorb a fallen monster
+	short newPowerCount;                // how many more times this monster can absorb a fallen monster
+    short totalPowerCount;              // how many times has the monster been empowered? Used to recover abilities when negated.
 	struct creature *leader;			// only if monster is a follower
 	struct creature *carriedMonster;	// when vampires turn into bats, one of the bats restores the vampire when it dies
 	struct creature *nextCreature;

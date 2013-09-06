@@ -96,7 +96,7 @@ creature *generateMonster(short monsterID, boolean itemPossible, boolean mutatio
 	monst->turnsSpentStationary = 0;
 	monst->xpxp = 0;
     monst->machineHome = 0;
-	monst->newPowerCount = 0;
+	monst->newPowerCount = monst->totalPowerCount = 0;
 	monst->targetCorpseLoc[0] = monst->targetCorpseLoc[1] = 0;
     monst->targetWaypointIndex = -1;
     for (i=0; i < MAX_WAYPOINT_COUNT; i++) {
@@ -423,6 +423,7 @@ void empowerMonster(creature *monst) {
     monst->info.damage.lowerBound += max(1, monst->info.damage.lowerBound / 7);
     monst->info.damage.upperBound += max(1, monst->info.damage.upperBound / 7);
     monst->newPowerCount++;
+    monst->totalPowerCount++;
     
     if (canSeeMonster(monst)) {
         monsterName(theMonsterName, monst, true);

@@ -545,6 +545,12 @@ void initializeRogue(unsigned long seed) {
 		identify(theItem);
 		theItem = addItemToPack(theItem);
 		
+		theItem = generateItem(WAND, WAND_EMPOWERMENT);
+		theItem->charges = 300;
+		theItem->flags &= ~ITEM_CURSED;
+		identify(theItem);
+		theItem = addItemToPack(theItem);
+		
 		theItem = generateItem(RING, RING_AWARENESS);
 		theItem->enchant1 = 30;
 		theItem->flags &= ~ITEM_CURSED;

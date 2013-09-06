@@ -3218,6 +3218,7 @@ void negate(creature *monst) {
 			refreshDungeonCell(monst->xLoc, monst->yLoc);
 			refreshSideBar(-1, -1, false);
 		}
+        monst->newPowerCount = monst->totalPowerCount; // Allies can re-learn lost ability slots.
 		applyInstantTileEffectsToCreature(monst); // in case it should immediately die or fall into a chasm
 	}
 }
@@ -5347,6 +5348,7 @@ boolean useStaffOrWand(item *theItem, boolean *commandsRecorded) {
     printString(buf, mapToWindowX(0), 1, &itemMessageColor, &black, NULL);
     if ((theItem->category & STAFF) && theItem->kind == STAFF_BLINKING
         && theItem->flags & (ITEM_IDENTIFIED | ITEM_MAX_CHARGES_KNOWN)) {
+        
         maxDistance = staffBlinkDistance(theItem->enchant1);
     } else {
         maxDistance = -1;
@@ -5361,7 +5363,7 @@ boolean useStaffOrWand(item *theItem, boolean *commandsRecorded) {
     if (((theItem->category & STAFF) && staffTable[theItem->kind].identified &&
          (theItem->kind == STAFF_HEALING || theItem->kind == STAFF_HASTE || theItem->kind == STAFF_PROTECTION))
         || ((theItem->category & WAND) && wandTable[theItem->kind].identified &&
-            (theItem->kind == WAND_INVISIBILITY || theItem->kind == WAND_PLENTY))) {
+            (theItem->kind == WAND_INVISIBILITY || theItem->kind == WAND_PLENTY || theItem->kind == WAND_EMPOWERMENT))) {
             targetAllies = true;
         }
     passThroughCreatures = false;
