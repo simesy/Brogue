@@ -1412,11 +1412,11 @@ boolean awareOfTarget(creature *observer, creature *target) {
     assert(perceivedDistance >= 0 && awareness >= 0);
 #endif
 	
-	if (perceivedDistance > awareness + 5) {
+	if (perceivedDistance > awareness * 3) {
 		// out of awareness range, even if hunting
 		retval = false;
     } else if (target->status[STATUS_INVISIBLE]
-               && perceivedDistance > awareness * 3) {
+               && perceivedDistance > awareness + (2 * 2)) {
         retval = false;
 	} else if (observer->creatureState == MONSTER_TRACKING_SCENT) {
 		// already aware of the target
