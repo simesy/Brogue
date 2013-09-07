@@ -31,7 +31,7 @@
 #define USE_UNICODE
 
 // version string -- no more than 16 bytes:
-#define BROGUE_VERSION_STRING "1.7.3d"
+#define BROGUE_VERSION_STRING "1.7.3"
 
 // debug macros -- define DEBUGGING as 1 to enable debugging.
 
@@ -56,7 +56,7 @@
 // set to false to disable references to keystrokes (e.g. for a tablet port)
 #define KEYBOARD_LABELS true
 
-#define BROGUE_ASSERTS		// introduces several assert()s -- useful to find certain array overruns
+//#define BROGUE_ASSERTS		// introduces several assert()s -- useful to find certain array overruns
 //#define AUDIT_RNG             // VERY slow, but sometimes necessary to debug out-of-sync recording errors
 //#define GENERATE_FONT_FILES	// Displays font in grid upon startup, which can be screen-captured into font files for PC.
 

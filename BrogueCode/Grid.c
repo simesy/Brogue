@@ -118,7 +118,9 @@ short floodFillGrid(short **grid, short x, short y, short eligibleValueMin, shor
     enum directions dir;
 	short newX, newY, fillCount = 1;
     
+#ifdef BROGUE_ASSERTS
     assert(fillValue < eligibleValueMin || fillValue > eligibleValueMax);
+#endif
     
     grid[x][y] = fillValue;
     for (dir = 0; dir < 4; dir++) {
