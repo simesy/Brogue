@@ -325,7 +325,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				ONLY_ACTIVE_ARCH = NO;
 				PRODUCT_NAME = Brogue;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.7;
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
@@ -347,7 +347,7 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				MACOSX_DEPLOYMENT_TARGET = 10.5;
 				PRODUCT_NAME = Brogue;
-				SDKROOT = macosx;
+				SDKROOT = macosx10.7;
 				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;

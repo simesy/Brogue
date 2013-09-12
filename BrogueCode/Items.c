@@ -2130,14 +2130,14 @@ Lumenstones are said to contain mysterious properties of untold power, but for y
 			strcat(buf, "\n\n");
 			if ((theItem->flags & (ITEM_IDENTIFIED | ITEM_MAX_CHARGES_KNOWN)) || rogue.playbackOmniscience) {
 				if (theItem->charges) {
-					sprintf(buf2, "%i charge%s remain%s. A scroll of recharging will add 1 charge, and enchanting this wand will add %i charge%s.",
+					sprintf(buf2, "%i charge%s remain%s. Enchanting this wand will add %i charge%s.",
 							theItem->charges,
 							(theItem->charges == 1 ? "" : "s"),
 							(theItem->charges == 1 ? "s" : ""),
                             wandTable[theItem->kind].range.lowerBound,
                             (wandTable[theItem->kind].range.lowerBound == 1 ? "" : "s"));
 				} else {
-					sprintf(buf2, "No charges remain.  A scroll of recharging will add 1 charge, and enchanting this wand will add %i charge%s.",
+					sprintf(buf2, "No charges remain.  Enchanting this wand will add %i charge%s.",
                             wandTable[theItem->kind].range.lowerBound,
                             (wandTable[theItem->kind].range.lowerBound == 1 ? "" : "s"));
 				}
