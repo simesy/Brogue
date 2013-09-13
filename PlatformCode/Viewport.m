@@ -161,7 +161,9 @@
     
     // we only need these attributes if we're drawing unicode
     if (character > 127 && character != kDotChar) {
-        [_attributes[x][y] setObject:[NSColor colorWithCGColor:letterColor] forKey:NSForegroundColorAttributeName];
+        // this exists to support 10.7 and under otherwise we'd use [NSColor colorWithCGColor:letterColor] 
+        const CGFloat *components = CGColorGetComponents(letterColor);
+        [_attributes[x][y] setObject:[NSColor colorWithCalibratedRed:components[0] green:components[1] blue:components[2] alpha:1.] forKey:NSForegroundColorAttributeName];
         [_attributes[x][y] setObject:(fancyFont ? [self slowFont] : [self fastFont]) forKey:NSFontAttributeName];
         stringSize = [self getStringSizeForString:c withAttributes:_attributes[x][y]];
     }
