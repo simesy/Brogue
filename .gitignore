@@ -28,3 +28,7 @@ DerivedData
 .idea/
 
 *.pbxproj
+
+libtcod-*
+
+
