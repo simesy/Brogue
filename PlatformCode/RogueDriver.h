@@ -28,12 +28,11 @@
 
 @interface RogueDriver : NSObject {
 	IBOutlet Viewport *theDisplay;
-	IBOutlet NSButton *theButton;
 	IBOutlet NSMenu *fileMenu;
 	IBOutlet NSWindow *theWindow;
 }
 
-- (IBAction)playBrogue:(id)sender;
+- (void)playBrogue:(id)sender;
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
 

@@ -39,7 +39,7 @@ static CGColorSpaceRef _colorSpace;
 
 - (void)awakeFromNib
 {
-	extern Viewport *theMainDisplay;
+	//extern Viewport *theMainDisplay;
 	NSSize theSize;
 	short versionNumber;
     
@@ -70,7 +70,7 @@ static CGColorSpaceRef _colorSpace;
 	mouseX = mouseY = 0;
 }
 
-- (IBAction)playBrogue:(id)__unused sender
+- (void)playBrogue:(id)__unused sender
 {
     _colorSpace = CGColorSpaceCreateDeviceRGB();
     //UNUSED(sender);
@@ -175,12 +175,12 @@ void pausingTimerStartsNow() {
 // Returns true if the player interrupted the wait with a keystroke; otherwise false.
 boolean pauseForMilliseconds(short milliseconds) {
 	NSEvent *theEvent;
-	NSDate *targetDate, *currentDate;
+	NSDate *targetDate;//, *currentDate;
     //    NSComparisonResult theCompare;
     
 	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
     
-    currentDate = [NSDate date];
+    //currentDate = [NSDate date];
     if (pauseStartDate) {
         //            NSLog(@"\nStarting a pause: previous date was %@.", pauseStartDate);
         targetDate = [NSDate dateWithTimeInterval:((double) milliseconds) / 1000 sinceDate:pauseStartDate];
@@ -460,8 +460,8 @@ boolean saveHighScore(rogueHighScoresEntry theEntry) {
 }
 
 void initializeLaunchArguments(enum NGCommands *command, char *path, unsigned long *seed) {
-	//*command = NG_SCUM;
     *command = NG_NOTHING;
+    //*command = NG_SCUM;
 	path[0] = '\0';
 	*seed = 0;
 }
